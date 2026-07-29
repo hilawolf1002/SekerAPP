@@ -6,6 +6,7 @@ import {
   CreateSurveyInput,
   UpdateSurveyStatusInput,
 } from '../../4-models/survey-schemas';
+import { assertInviteStillOpen } from './invitation-logic';
 
 type QuestionStored = {
   id: number;
@@ -242,6 +243,7 @@ async function assertRewardEligibility(
  */
 export async function startSurveyResponse(surveyId: string, userId: string) {
   assertNotSyntheticAdmin(userId);
+  await assertInviteStillOpen(surveyId, userId);
 
   return dal.$transaction(async (tx) => {
     await lockSurvey(tx, surveyId);

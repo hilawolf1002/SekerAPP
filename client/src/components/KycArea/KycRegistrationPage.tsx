@@ -7,6 +7,8 @@ import {
   applyForKyc,
   type KycFormData,
 } from '../../Services/kycService';
+import { isValidIsraeliMobile, normalizeIsraeliPhone } from '../../Utils/phoneValidation';
+import { UserLogoutButton } from '../LayoutArea/UserLogoutButton';
 import './KycRegistrationPage.css';
 
 const initialForm: KycFormData = {
@@ -50,12 +52,15 @@ export function KycRegistrationPage() {
   if (user?.status === 'APPROVED') {
     return (
       <main className="kyc-shell">
+        <div className="kyc-status-toolbar">
+          <UserLogoutButton />
+        </div>
         <section className="kyc-status-card">
           <div className="kyc-status-icon approved" aria-hidden="true">✓</div>
-          <p className="kyc-eyebrow">החשבון שלך פעיל</p>
-          <h1>כבר אושרת לפאנל העונים</h1>
-          <p>הפרופיל שלך מאומת ואין צורך למלא שוב את השאלון.</p>
-          <Link to="/home" className="kyc-primary-action">חזרה לדף הבית</Link>
+          <p className="kyc-eyebrow">החשבון פעיל</p>
+          <h1>כבר בפנים</h1>
+          <p>הפרופיל מאושר — אין צורך למלא שוב.</p>
+          <Link to="/home" className="kyc-primary-action">לדף הבית</Link>
         </section>
       </main>
     );
@@ -74,12 +79,20 @@ export function KycRegistrationPage() {
 
   function moveToNextStep() {
     if (step === 1) {
-      if (form.fullName.trim().length < 2 || !form.dateOfBirth || !form.city.trim()) {
-        showToast('יש למלא שם מלא, תאריך לידה ועיר מגורים');
+      if (form.fullName.trim().length < 2) {
+        showToast('יש להזין שם מלא (לפחות 2 תווים)');
+        return;
+      }
+      if (!form.dateOfBirth) {
+        showToast('יש לבחור תאריך לידה');
+        return;
+      }
+      if (!form.city.trim() || form.city.trim().length < 2) {
+        showToast('יש להזין עיר מגורים');
         return;
       }
       if (form.dateOfBirth > maxBirthDate) {
-        showToast('ההצטרפות לפאנל מיועדת לבני ובנות 18 ומעלה');
+        showToast('ההצטרפות מגיל 18 ומעלה');
         return;
       }
     }
@@ -88,14 +101,19 @@ export function KycRegistrationPage() {
 
   async function submit(event: FormEvent) {
     event.preventDefault();
+    if (form.fullName.trim().length < 2 || !form.dateOfBirth || form.city.trim().length < 2) {
+      showToast('יש להשלים שם, תאריך לידה ועיר לפני השליחה');
+      setStep(1);
+      return;
+    }
     if (!form.consent) {
-      showToast('יש לאשר שהפרטים שמסרת נכונים');
+      showToast('אפשר להמשיך אחרי אישור הפרטים');
       return;
     }
     if (form.arrivedViaFriend) {
-      const phone = form.referrerPhone.replace(/[\s\-()]/g, '');
-      if (!/^05\d{8}$/.test(phone) && !/^9725\d{8}$/.test(phone) && !/^\+9725\d{8}$/.test(phone)) {
-        showToast('יש להזין מספר נייד תקין של החבר שהזמין אותך');
+      const phone = normalizeIsraeliPhone(form.referrerPhone);
+      if (!isValidIsraeliMobile(phone)) {
+        showToast('נשמח למספר נייד תקין של החבר שהזמין');
         return;
       }
     }
@@ -105,7 +123,7 @@ export function KycRegistrationPage() {
       await applyForKyc(form);
       await refreshUser();
       setCompleted(true);
-      showToast('הבקשה נשלחה בהצלחה', 'success');
+      showToast('הבקשה נשלחה — נעדכן אותך ב-SMS', 'success');
     } catch (error) {
       showToast(getErrorMessage(error));
     } finally {
@@ -117,25 +135,34 @@ export function KycRegistrationPage() {
     <main className="kyc-shell">
       <section className="kyc-card">
         <header className="kyc-header">
-          <Link to="/home" className="kyc-back-link" aria-label="חזרה לדף הבית">
-            <span aria-hidden="true">→</span>
-            חזרה
-          </Link>
+          <div className="kyc-header-top">
+            <Link to="/home" className="kyc-back-link" aria-label="חזרה לדף הבית">
+              <span aria-hidden="true">→</span>
+              חזרה
+            </Link>
+            <UserLogoutButton />
+          </div>
           <div className="kyc-brand">
             <img src="/logo.png" alt="" />
             <span>SekerApp</span>
           </div>
-          <p className="kyc-eyebrow">הצטרפות לפאנל העונים המתוגמל</p>
-          <h1>כמה פרטים, ומתחילים להרוויח</h1>
+          <p className="kyc-eyebrow">הצטרפות לפאנל העונים</p>
+          <h1>עוד כמה פרטים — ואתם בפנים</h1>
           <p>
-            הפרטים עוזרים לנו להתאים לך סקרים בתשלום ולהעניק לך נקודות.
-            התהליך קצר – בלי העלאת מסמכים בשלב זה.
+            הפרטים עוזרים להתאים סקרים מתגמלים. התהליך קצר, בלי העלאת מסמכים עכשיו.
           </p>
+          <details className="kyc-info-details">
+            <summary>למה צריך את זה?</summary>
+            <p>
+              ליצירת סקרים חינמיים אין צורך באישור. ההצטרפות מיועדת למי שרוצה
+              לענות ולהרוויח נקודות. צילום ת.ז. יידרש רק בפדיון.
+            </p>
+          </details>
         </header>
 
         {user?.status === 'REJECTED' && (
           <div className="kyc-rejected-note" role="status">
-            אפשר לעדכן את הפרטים ולהגיש בקשה חדשה לבדיקה.
+            אפשר לעדכן פרטים ולשלוח בקשה חדשה.
           </div>
         )}
 
@@ -155,7 +182,7 @@ export function KycRegistrationPage() {
           {step === 1 && (
             <fieldset className="kyc-step">
               <legend>נתחיל בפרטים הבסיסיים</legend>
-              <p className="kyc-step-hint">כל השדות בשלב זה הם חובה.</p>
+              <p className="kyc-step-hint">השדות כאן חובה.</p>
               <label>
                 שם מלא
                 <input
@@ -164,6 +191,8 @@ export function KycRegistrationPage() {
                   autoComplete="name"
                   maxLength={100}
                   placeholder="שם פרטי ומשפחה"
+                  required
+                  minLength={2}
                 />
               </label>
               <div className="kyc-field-grid">
@@ -175,6 +204,7 @@ export function KycRegistrationPage() {
                     onChange={update('dateOfBirth')}
                     min={minBirthDate}
                     max={maxBirthDate}
+                    required
                   />
                   <small>ההצטרפות מגיל 18 בלבד</small>
                 </label>
@@ -186,6 +216,8 @@ export function KycRegistrationPage() {
                     autoComplete="address-level2"
                     maxLength={80}
                     placeholder="לדוגמה: ירושלים"
+                    required
+                    minLength={2}
                   />
                 </label>
               </div>
@@ -203,9 +235,9 @@ export function KycRegistrationPage() {
 
           {step === 2 && (
             <fieldset className="kyc-step">
-              <legend>קצת על הרקע שלך</legend>
+              <legend>קצת עליך</legend>
               <p className="kyc-step-hint">
-                המידע משמש להתאמת סקרים בלבד ולא משפיע על עצם האישור.
+                לעזרה בהתאמת סקרים — לא משפיע על עצם האישור.
               </p>
               <label>
                 מצב תעסוקתי
@@ -247,11 +279,11 @@ export function KycRegistrationPage() {
                       }))
                     }
                   />
-                  <span>הגעתי דרך חבר</span>
+                  <span>חבר הביא אותי</span>
                 </label>
                 {form.arrivedViaFriend && (
                   <label className="kyc-referral-phone">
-                    מספר הטלפון של החבר
+                    מספר של החבר
                     <input
                       type="tel"
                       inputMode="tel"
@@ -262,8 +294,7 @@ export function KycRegistrationPage() {
                       maxLength={15}
                     />
                     <small>
-                      אם החבר רשום במערכת, הוא יקבל בונוס נקודות כשהחשבון שלך
-                      יאושר.
+                      אם החבר רשום אצלנו — הוא יקבל בונוס כשתאושרו.
                     </small>
                   </label>
                 )}
@@ -272,8 +303,8 @@ export function KycRegistrationPage() {
               <div className="kyc-privacy-note">
                 <span aria-hidden="true">◎</span>
                 <div>
-                  <strong>למה אנחנו שואלים?</strong>
-                  <p>כדי לשלוח אליך רק סקרים שמתאימים לפרופיל שלך.</p>
+                  <strong>למה זה חשוב?</strong>
+                  <p>כדי לשלוח סקרים שיותר מתאימים לך.</p>
                 </div>
               </div>
               <label className="kyc-consent">
@@ -283,7 +314,7 @@ export function KycRegistrationPage() {
                   onChange={update('consent')}
                 />
                 <span>
-                  אני מאשר/ת שהפרטים שמסרתי נכונים ושאני בן/בת 18 ומעלה.
+                  אני מאשר/ת שהפרטים נכונים ושאני בן/בת 18 ומעלה.
                 </span>
               </label>
             </fieldset>
@@ -296,7 +327,7 @@ export function KycRegistrationPage() {
                 className="kyc-secondary-action"
                 onClick={() => setStep(1)}
               >
-                הקודם
+                חזרה
               </button>
             )}
             {step < 2 ? (
@@ -305,7 +336,7 @@ export function KycRegistrationPage() {
                 className="kyc-primary-action"
                 onClick={moveToNextStep}
               >
-                ממשיכים
+                המשך
               </button>
             ) : (
               <button
@@ -313,7 +344,7 @@ export function KycRegistrationPage() {
                 className="kyc-primary-action"
                 disabled={submitting}
               >
-                {submitting ? 'שולחים לבדיקה…' : 'שליחת הבקשה'}
+                {submitting ? 'שולחים…' : 'שליחה לבדיקה'}
               </button>
             )}
           </div>
@@ -326,19 +357,21 @@ export function KycRegistrationPage() {
 function PendingApproval() {
   return (
     <main className="kyc-shell">
+      <div className="kyc-status-toolbar">
+        <UserLogoutButton />
+      </div>
       <section className="kyc-status-card">
         <div className="kyc-status-icon pending" aria-hidden="true">⌛</div>
         <p className="kyc-eyebrow">הבקשה התקבלה</p>
-        <h1>הפרטים שלך ממתינים לבדיקה</h1>
+        <h1>ממתינים לאישור</h1>
         <p>
-          מנהל המערכת יעבור על הבקשה באופן ידני. ברגע שהחשבון יאושר,
-          תישלח אליך הודעת SMS למספר שאיתו נרשמת.
+          נעבור על הפרטים ידנית. ברגע שיאשרו — תקבלו SMS למספר שנרשמתם איתו.
         </p>
         <div className="kyc-next-box">
-          <strong>מה קורה עכשיו?</strong>
-          <span>אין צורך לשלוח שוב. נעדכן אותך לאחר סיום הבדיקה.</span>
+          <strong>מה עכשיו?</strong>
+          <span>אין צורך לשלוח שוב. נעדכן ברגע שיש תשובה.</span>
         </div>
-        <Link to="/home" className="kyc-primary-action">חזרה לדף הבית</Link>
+        <Link to="/home" className="kyc-primary-action">לדף הבית</Link>
       </section>
     </main>
   );

@@ -126,6 +126,7 @@ export type SurveyInvitationItem = {
   invitationId: string;
   status: string;
   sentAt: string;
+  expiresAt?: string | null;
   survey: {
     id: string;
     title: string;
@@ -143,6 +144,8 @@ export type InviteResult = {
   skipped: number;
   notFound?: number;
   failed: number;
+  expiresAt?: string;
+  expiresInMinutes?: number;
 };
 
 /** הזמנות פעילות לעונה מאושר */
@@ -203,12 +206,31 @@ export async function getMyCompletedResponses(
 export async function sendInvitations(
   surveyId: string,
   payload:
-    | { mode: 'phones'; phones: string[] }
-    | { mode: 'tags'; tagIds: string[] }
+    | { mode: 'phones'; phones: string[]; expiresInMinutes?: number }
+    | { mode: 'tags'; tagIds: string[]; expiresInMinutes?: number }
 ): Promise<InviteResult> {
   const { data } = await api.post<InviteResult>(
     `/surveys/${surveyId}/invite`,
     payload
   );
   return data;
+}
+
+/** כניסה מקישור הזמנה ב-SMS (בלי OTP) */
+export async function claimInviteToken(token: string): Promise<{
+  user: import('../Models/UserModel').AuthUser;
+  surveyId: string;
+  inviteExpiresAt: string | null;
+}> {
+  const { data } = await api.post<{
+    success: boolean;
+    user: import('../Models/UserModel').AuthUser;
+    surveyId: string;
+    inviteExpiresAt: string | null;
+  }>('/surveys/invite/claim', { token });
+  return {
+    user: data.user,
+    surveyId: data.surveyId,
+    inviteExpiresAt: data.inviteExpiresAt,
+  };
 }

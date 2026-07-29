@@ -112,6 +112,7 @@ export interface AdminRedemptionRequest {
   adminNote: string | null;
   idDocumentKey: string | null;
   createdAt: string;
+  updatedAt?: string;
   user: { id: string; name: string | null; phone: string };
 }
 
@@ -331,6 +332,37 @@ export async function setUserStatus(
 export async function getAdminTags(): Promise<AudienceTag[]> {
   const response = await api.get('/admin/tags');
   return response.data.tags;
+}
+
+export async function countAudienceByTags(
+  tagIds: string[],
+  options?: { surveyId?: string }
+): Promise<{
+  total: number;
+  perTag: { tagId: string; name: string; usersCount: number }[];
+}> {
+  if (tagIds.length === 0) return { total: 0, perTag: [] };
+  const response = await api.get('/admin/tags/audience-count', {
+    params: {
+      tagIds: tagIds.join(','),
+      ...(options?.surveyId ? { surveyId: options.surveyId } : {}),
+    },
+  });
+  return {
+    total: response.data.total ?? 0,
+    perTag: response.data.perTag ?? [],
+  };
+}
+
+export async function resyncDemographicTags(): Promise<{
+  processed: number;
+  tagged: number;
+}> {
+  const response = await api.post('/admin/tags/resync-demographics');
+  return {
+    processed: response.data.processed ?? 0,
+    tagged: response.data.tagged ?? 0,
+  };
 }
 
 export async function createAdminTag(name: string): Promise<AudienceTag> {

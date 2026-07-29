@@ -217,10 +217,11 @@ export async function submitRedemptionRequest(
 
   const settings = await getOrCreateSettings();
   const balance = await getUserBalance(userId);
+  const redeemAmount = settings.redemptionGoal;
 
-  if (balance < settings.redemptionGoal) {
+  if (balance < redeemAmount) {
     throw new AppError(
-      `נדרשות לפחות ${settings.redemptionGoal} נקודות כדי לפדות (יש לך ${balance})`,
+      `נדרשות לפחות ${redeemAmount} נקודות כדי לפדות (יש לך ${balance})`,
       400
     );
   }
@@ -249,7 +250,7 @@ export async function submitRedemptionRequest(
         userId,
         email,
         idDocumentKey: docKey,
-        pointsSpent: balance,
+        pointsSpent: redeemAmount,
         status: 'PENDING',
       },
     });
@@ -263,46 +264,92 @@ export async function submitRedemptionRequest(
     userName: user.name || 'לא ידוע',
     userPhone: user.phone,
     userEmail: email,
-    pointsSpent: balance,
+    pointsSpent: redeemAmount,
     redemptionId: redemption.id,
   }).catch((err) =>
     console.error('[redemption] admin email notification failed:', err)
   );
 
+  const remaining = balance - redeemAmount;
   return {
     redemptionId: redemption.id,
     message:
-      'הפנייה התקבלה! תוך 48 שעות תקבל קופון לכתובת המייל שסיפקת. ' +
-      'לאחר אישור על ידי מנהל המערכת, הצילום יימחק מהארכיון.',
+      `הפנייה התקבלה! לאחר אישור המנהל ינוכו ${redeemAmount} נקודות מהיתרה` +
+      (remaining > 0 ? ` ויישארו לך ${remaining} נקודות.` : '.') +
+      ' הקופון יישלח למייל תוך עד 48 שעות.',
   };
 }
 
 /**
- * אדמין מסמן בקשה כ-FULFILLED ומוחק את ת.ז.
+ * אדמין מסמן בקשה כ-FULFILLED, מנכה נקודות מהארנק, ומוחק את ת.ז.
  */
 export async function fulfillRedemption(redemptionId: string, adminNote?: string) {
   const req = await dal.redemptionRequest.findUnique({
     where: { id: redemptionId },
-    select: { id: true, status: true, idDocumentKey: true, userId: true },
+    select: {
+      id: true,
+      status: true,
+      idDocumentKey: true,
+      userId: true,
+      pointsSpent: true,
+    },
   });
   if (!req) throw new AppError('הבקשה לא נמצאה', 404);
   if (req.status !== 'PENDING') {
     throw new AppError('הבקשה כבר טופלה', 409);
   }
 
-  await dal.redemptionRequest.update({
-    where: { id: redemptionId },
-    data: {
-      status: 'FULFILLED',
-      idDocumentKey: null,
-      ...(adminNote ? { adminNote } : {}),
-    },
+  if (req.pointsSpent <= 0) {
+    throw new AppError('סכום הפדיון אינו תקין', 400);
+  }
+
+  await dal.$transaction(async (tx) => {
+    const alreadyDeducted = await tx.pointTransaction.findFirst({
+      where: {
+        userId: req.userId,
+        type: 'GIFT_REDEMPTION',
+        referenceId: req.id,
+      },
+    });
+
+    if (!alreadyDeducted) {
+      const balanceAgg = await tx.pointTransaction.aggregate({
+        where: { userId: req.userId },
+        _sum: { amount: true },
+      });
+      const balance = balanceAgg._sum.amount ?? 0;
+      if (balance < req.pointsSpent) {
+        throw new AppError(
+          `אין מספיק נקודות לניכוי (נדרש ${req.pointsSpent}, יתרה ${balance})`,
+          400
+        );
+      }
+
+      await tx.pointTransaction.create({
+        data: {
+          userId: req.userId,
+          amount: -req.pointsSpent,
+          type: 'GIFT_REDEMPTION',
+          referenceId: req.id,
+          note: 'פדיון לקופון',
+        },
+      });
+    }
+
+    await tx.redemptionRequest.update({
+      where: { id: redemptionId },
+      data: {
+        status: 'FULFILLED',
+        idDocumentKey: null,
+        ...(adminNote ? { adminNote } : {}),
+      },
+    });
   });
 
   // מחיקת ת.ז. לאחר אישור
   await removeRedemptionDoc(req.idDocumentKey);
 
-  return { ok: true, message: 'הפנייה סומנה כמטופלת. הצילום נמחק.' };
+  return { ok: true, message: 'הפנייה סומנה כמטופלת, הנקודות נוכו והצילום נמחק.' };
 }
 
 /**
@@ -400,6 +447,7 @@ export async function listAllRedemptions(options?: {
         adminNote: true,
         idDocumentKey: true,
         createdAt: true,
+        updatedAt: true,
         user: { select: { id: true, name: true, phone: true } },
       },
     }),
@@ -431,6 +479,8 @@ export async function getPointsProgress(userId: string) {
   return {
     balance,
     redemptionGoal: goal,
+    redemptionPointsCost: goal,
+    balanceAfterRedemption: canRedeem ? Math.max(0, balance - goal) : null,
     pointsNeeded,
     canRedeem,
     progressPercent,
@@ -451,11 +501,15 @@ export async function setUserStatus(
   if (!user) throw new AppError('המשתמש לא נמצא', 404);
   if (user.status === status) throw new AppError('סטטוס המשתמש כבר מעודכן', 409);
 
+  const resetsVerification =
+    status === 'REJECTED' || status === 'NEW' || status === 'BLOCKED';
+
   const updated = await dal.user.update({
     where: { id: userId },
     data: {
       status,
       ...(status === 'APPROVED' ? { idVerified: true } : {}),
+      ...(resetsVerification ? { idVerified: false, idDocumentUrl: null } : {}),
     },
   });
 

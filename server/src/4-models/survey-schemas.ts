@@ -81,6 +81,8 @@ export const inviteSurveySchema = z
     }),
     tagIds: z.array(z.string().uuid('מזהה תגית אינו תקין')).optional(),
     phones: z.array(z.string().min(9).max(20)).optional(),
+    /** דקות עד סגירת ההזמנה מרגע השליחה (ברירת מחדל 60) */
+    expiresInMinutes: z.number().int().min(5).max(10_080).optional(),
   })
   .superRefine((data, ctx) => {
     if (data.mode === 'tags') {
@@ -103,7 +105,15 @@ export const inviteSurveySchema = z
     }
   });
 
+export const claimInviteSchema = z.object({
+  token: z
+    .string({ required_error: 'חסר טוקן הזמנה' })
+    .min(16, 'קישור ההזמנה אינו תקין')
+    .max(128, 'קישור ההזמנה אינו תקין'),
+});
 export type CreateSurveyInput = z.infer<typeof createSurveySchema>;
 export type UpdateSurveyStatusInput = z.infer<typeof updateSurveyStatusSchema>;
 export type CompleteSurveyInput = z.infer<typeof completeSurveySchema>;
 export type InviteSurveyInput = z.infer<typeof inviteSurveySchema>;
+export type ClaimInviteInput = z.infer<typeof claimInviteSchema>;
+

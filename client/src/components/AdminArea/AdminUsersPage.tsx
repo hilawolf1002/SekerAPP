@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../Context/AuthContext';
 import { useToast } from '../../Context/ToastContext';
@@ -6,27 +6,36 @@ import { getErrorMessage } from '../../Services/api';
 import {
   getAllUsers,
   setUserStatus,
+  blockUser,
   getAdminTags,
+  createAdminTag,
   setUserTags,
   UserListItem,
   AudienceTag,
 } from '../../Services/adminService';
 import { PaginationBar } from '../LayoutArea/PaginationBar';
+import { AudienceTagPicker } from './AudienceTagPicker';
+import { AdminTopBar } from './AdminTopBar';
+import { AdminEmptyState, AdminSkeleton } from './AdminUiShared';
+import './AdminUiShared.css';
 import './AdminUsersPage.css';
 
 export function AdminUsersPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { showToast } = useToast();
+  const listRef = useRef<HTMLElement>(null);
   const [users, setUsers] = useState<UserListItem[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
+  const [searchInput, setSearchInput] = useState('');
+  const [appliedSearch, setAppliedSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [busyId, setBusyId] = useState<string | null>(null);
   const [allTags, setAllTags] = useState<AudienceTag[]>([]);
   const [editingTagsFor, setEditingTagsFor] = useState<string | null>(null);
   const [draftTagIds, setDraftTagIds] = useState<string[]>([]);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const PAGE_SIZE = 20;
 
@@ -36,10 +45,32 @@ export function AdminUsersPage() {
       return;
     }
     setPage(1);
-    loadUsers(1);
+    setExpandedId(null);
+    loadUsers(1, appliedSearch);
     loadTags();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, navigate, statusFilter]);
+
+  useEffect(() => {
+    if (!expandedId) return;
+    function onPointerDown(event: MouseEvent | TouchEvent) {
+      const target = event.target as Node | null;
+      if (!target || !listRef.current) return;
+      const card = listRef.current.querySelector(
+        `[data-user-id="${expandedId}"]`
+      );
+      if (card && !card.contains(target)) {
+        setExpandedId(null);
+        setEditingTagsFor(null);
+      }
+    }
+    document.addEventListener('mousedown', onPointerDown);
+    document.addEventListener('touchstart', onPointerDown);
+    return () => {
+      document.removeEventListener('mousedown', onPointerDown);
+      document.removeEventListener('touchstart', onPointerDown);
+    };
+  }, [expandedId]);
 
   async function loadTags() {
     try {
@@ -49,11 +80,11 @@ export function AdminUsersPage() {
     }
   }
 
-  async function loadUsers(nextPage = page) {
+  async function loadUsers(nextPage = page, query = appliedSearch) {
     try {
       setLoading(true);
       const data = await getAllUsers({
-        search: search.trim() || undefined,
+        search: query.trim() || undefined,
         status: statusFilter || undefined,
         page: nextPage,
         take: PAGE_SIZE,
@@ -68,9 +99,38 @@ export function AdminUsersPage() {
     }
   }
 
+  function handleSearchInputChange(value: string) {
+    setSearchInput(value);
+    if (!value.trim()) {
+      setAppliedSearch('');
+      loadUsers(1, '');
+    }
+  }
+
   function handleSearch(e: React.FormEvent) {
     e.preventDefault();
-    loadUsers(1);
+    const query = searchInput.trim();
+    setAppliedSearch(query);
+    setExpandedId(null);
+    loadUsers(1, query);
+  }
+
+  function clearSearch() {
+    setSearchInput('');
+    setAppliedSearch('');
+    setExpandedId(null);
+    loadUsers(1, '');
+  }
+
+  function toggleExpand(id: string) {
+    setExpandedId((prev) => {
+      if (prev === id) {
+        setEditingTagsFor(null);
+        return null;
+      }
+      setEditingTagsFor(null);
+      return id;
+    });
   }
 
   async function changeStatus(userId: string, status: string, label: string) {
@@ -99,6 +159,24 @@ export function AdminUsersPage() {
     }
   }
 
+  async function handleBlock(userId: string) {
+    const reason = prompt('סיבה לחסימה (אופציונלי):') ?? undefined;
+    if (reason === undefined) return;
+    if (!reason.trim() && !confirm('להמשיך בחסימה בלי סיבה?')) return;
+    if (!confirm('האם לחסום משתמש זה?')) return;
+
+    try {
+      setBusyId(userId);
+      await blockUser(userId, reason.trim() || undefined);
+      showToast('המשתמש נחסם', 'success');
+      await loadUsers(page);
+    } catch (error) {
+      showToast(getErrorMessage(error));
+    } finally {
+      setBusyId(null);
+    }
+  }
+
   function openTagEditor(u: UserListItem) {
     setEditingTagsFor(u.id);
     setDraftTagIds((u.tags || []).map((t) => t.id));
@@ -110,6 +188,18 @@ export function AdminUsersPage() {
     );
   }
 
+  async function handleQuickCreateTag(name: string) {
+    const tag = await createAdminTag(name);
+    setAllTags((prev) => {
+      if (prev.some((t) => t.id === tag.id)) return prev;
+      return [...prev, tag].sort((a, b) => a.name.localeCompare(b.name, 'he'));
+    });
+    setDraftTagIds((prev) =>
+      prev.includes(tag.id) ? prev : [...prev, tag.id]
+    );
+    showToast(`התגית "${tag.name}" נוצרה`, 'success');
+  }
+
   async function saveUserTags(userId: string) {
     try {
       setBusyId(userId);
@@ -119,6 +209,7 @@ export function AdminUsersPage() {
       );
       setEditingTagsFor(null);
       showToast('התגיות עודכנו', 'success');
+      await loadTags();
     } catch (error) {
       showToast(getErrorMessage(error));
     } finally {
@@ -126,36 +217,46 @@ export function AdminUsersPage() {
     }
   }
 
-  return (
-    <main className="admin-users-shell">
-      <header className="admin-users-header">
-        <Link to="/admin" className="admin-back-link">
-          ← חזרה לדשבורד
-        </Link>
-        <h1>כל המשתמשים</h1>
-        <p>
-          סה"כ: {total}
-          {allTags.length === 0 && (
-            <>
-              {' · '}
-              <Link to="/admin/tags">צרו תגיות קהל</Link> כדי לשייך עונים
-            </>
-          )}
-        </p>
+  const subtitle = useMemo(() => {
+    const parts = [`${total} משתמשים`];
+    if (appliedSearch) parts.push(`«${appliedSearch}»`);
+    return parts.join(' · ');
+  }, [total, appliedSearch]);
 
+  return (
+    <main className="admin-shell admin-users-shell">
+      <AdminTopBar title="משתמשים" subtitle={subtitle} />
+
+      <div className="admin-page-body">
         <form onSubmit={handleSearch} className="admin-search-bar">
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="חיפוש לפי טלפון, שם או מייל..."
-          />
-          <button type="submit">חיפוש</button>
+          <div className="admin-search-input-wrap">
+            <input
+              type="search"
+              value={searchInput}
+              onChange={(e) => handleSearchInputChange(e.target.value)}
+              placeholder="טלפון, שם או מייל"
+              enterKeyHint="search"
+            />
+            {searchInput && (
+              <button
+                type="button"
+                className="admin-search-clear"
+                onClick={clearSearch}
+                aria-label="ניקוי חיפוש"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+          <button type="submit" className="admin-search-submit" aria-label="חיפוש">
+            <i className="fas fa-search" aria-hidden="true" />
+            <span>חיפוש</span>
+          </button>
         </form>
 
         <div className="admin-filter-row">
-          <label>
-            <span>סינון לפי סטטוס:</span>
+          <label className="admin-filter-status">
+            <span>סטטוס</span>
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
@@ -169,135 +270,216 @@ export function AdminUsersPage() {
             </select>
           </label>
         </div>
-      </header>
 
-      {loading ? (
-        <div className="admin-users-loading">טוען משתמשים...</div>
-      ) : users.length === 0 ? (
-        <div className="admin-users-empty">לא נמצאו משתמשים</div>
-      ) : (
-        <section className="admin-users-list">
-          {users.map((u) => (
-            <article key={u.id} className="admin-user-card">
-              <div className="admin-user-header">
-                <div>
-                  <strong>{u.name || 'ללא שם'}</strong>
-                  <span className="admin-user-phone">{u.phone}</span>
-                  {u.email && <span className="admin-user-email">{u.email}</span>}
-                </div>
-                <span
-                  className={`admin-status-badge status-${u.status.toLowerCase()}`}
-                >
-                  {statusLabel(u.status)}
-                </span>
-              </div>
-              <div className="admin-user-meta">
-                <span>תפקיד: {u.role === 'ADMIN' ? 'מנהל' : 'משתמש'}</span>
-                <span>
-                  הצטרף: {new Date(u.createdAt).toLocaleDateString('he-IL')}
-                </span>
-              </div>
+        <p className="admin-users-hint">
+          לחצי על שם לפתיחת פרטים. לחיצה מחוץ לכרטיס סוגרת.
+        </p>
 
-              <div className="admin-user-tags">
-                {(u.tags || []).length === 0 ? (
-                  <span className="admin-user-tags-empty">ללא תגיות</span>
-                ) : (
-                  (u.tags || []).map((t) => (
-                    <span key={t.id} className="admin-user-tag-chip">
-                      {t.name}
-                    </span>
-                  ))
-                )}
-                {allTags.length > 0 && (
-                  <button
-                    type="button"
-                    className="admin-user-tags-edit"
-                    disabled={busyId === u.id}
-                    onClick={() =>
-                      editingTagsFor === u.id
-                        ? setEditingTagsFor(null)
-                        : openTagEditor(u)
-                    }
-                  >
-                    {editingTagsFor === u.id ? 'ביטול' : 'עריכת תגיות'}
-                  </button>
-                )}
-              </div>
-
-              {editingTagsFor === u.id && (
-                <div className="admin-user-tags-editor">
-                  {allTags.map((tag) => (
-                    <label key={tag.id} className="admin-user-tag-option">
-                      <input
-                        type="checkbox"
-                        checked={draftTagIds.includes(tag.id)}
-                        onChange={() => toggleDraftTag(tag.id)}
-                      />
-                      <span>{tag.name}</span>
-                    </label>
-                  ))}
-                  <button
-                    type="button"
-                    className="admin-user-tags-save"
-                    disabled={busyId === u.id}
-                    onClick={() => saveUserTags(u.id)}
-                  >
-                    שמירת תגיות
-                  </button>
-                </div>
-              )}
-
-              <div className="admin-user-actions">
-                {u.status !== 'APPROVED' && (
-                  <button
-                    type="button"
-                    disabled={busyId === u.id}
-                    onClick={() => changeStatus(u.id, 'APPROVED', 'אישור')}
-                  >
-                    אישור
-                  </button>
-                )}
-                {u.status !== 'BLOCKED' && (
-                  <button
-                    type="button"
-                    className="danger"
-                    disabled={busyId === u.id}
-                    onClick={() => changeStatus(u.id, 'BLOCKED', 'חסימה')}
-                  >
-                    חסימה
-                  </button>
-                )}
-                {u.status === 'BLOCKED' && (
-                  <button
-                    type="button"
-                    disabled={busyId === u.id}
-                    onClick={() => changeStatus(u.id, 'NEW', 'שחרור מחסימה')}
-                  >
-                    שחרור מחסימה
-                  </button>
-                )}
-                {u.status !== 'REJECTED' && u.status !== 'BLOCKED' && (
-                  <button
-                    type="button"
-                    className="warn"
-                    disabled={busyId === u.id}
-                    onClick={() => changeStatus(u.id, 'REJECTED', 'דחייה')}
-                  >
-                    דחייה
-                  </button>
-                )}
-              </div>
-            </article>
-          ))}
-          <PaginationBar
-            page={page}
-            pageSize={PAGE_SIZE}
-            total={total}
-            disabled={loading}
-            onPageChange={(p) => loadUsers(p)}
+        {loading ? (
+          <AdminSkeleton rows={4} />
+        ) : users.length === 0 ? (
+          <AdminEmptyState
+            title={
+              appliedSearch
+                ? `לא נמצאו תוצאות עבור "${appliedSearch}"`
+                : 'לא נמצאו משתמשים'
+            }
+            description={
+              appliedSearch
+                ? 'נסי חיפוש אחר או הציגי את כל המשתמשים.'
+                : undefined
+            }
+            icon="fa-users"
           />
-        </section>
-      )}
+        ) : (
+          <section ref={listRef} className="admin-users-list">
+            {users.map((u) => {
+              const open = expandedId === u.id;
+              const tagNames = (u.tags || []).map((t) => t.name).join(', ');
+              return (
+                <article
+                  key={u.id}
+                  data-user-id={u.id}
+                  className={`admin-user-card${open ? ' expanded' : ''}`}
+                >
+                  <button
+                    type="button"
+                    className="admin-user-summary"
+                    onClick={() => toggleExpand(u.id)}
+                    aria-expanded={open}
+                  >
+                    <div className="admin-user-summary-text">
+                      <strong className="admin-user-name-link">
+                        {u.name || 'ללא שם'}
+                      </strong>
+                      <span>
+                        {u.phone}
+                        {tagNames ? ` · ${tagNames}` : ''}
+                      </span>
+                    </div>
+                    <span
+                      className={`admin-status-badge status-${u.status.toLowerCase()}`}
+                    >
+                      {statusLabel(u.status)}
+                    </span>
+                    <i
+                      className={`fas fa-chevron-${open ? 'up' : 'down'}`}
+                      aria-hidden="true"
+                    />
+                  </button>
+
+                  {open && (
+                    <div className="admin-user-details">
+                      <div className="admin-user-meta">
+                        {u.email && <span>מייל: {u.email}</span>}
+                        <span>
+                          תפקיד: {u.role === 'ADMIN' ? 'מנהל' : 'משתמש'}
+                        </span>
+                        <span>
+                          הצטרף:{' '}
+                          {new Date(u.createdAt).toLocaleDateString('he-IL')}
+                        </span>
+                        {u.status === 'NEW' && (
+                          <span className="admin-user-hint-line">
+                            טרם הגיש בקשת הצטרפות
+                          </span>
+                        )}
+                        {u.status === 'PENDING_APPROVAL' && (
+                          <Link
+                            to="/admin/pending"
+                            className="admin-user-pending-link"
+                          >
+                            פרטים מלאים בממתינים לאישור
+                          </Link>
+                        )}
+                      </div>
+
+                      <div className="admin-user-tags">
+                        {(u.tags || []).length === 0 ? (
+                          <span className="admin-user-tags-empty">
+                            ללא תגיות
+                          </span>
+                        ) : (
+                          (u.tags || []).map((t) => (
+                            <span key={t.id} className="admin-user-tag-chip">
+                              {t.name}
+                            </span>
+                          ))
+                        )}
+                        <button
+                          type="button"
+                          className="admin-user-tags-edit"
+                          disabled={busyId === u.id}
+                          onClick={() =>
+                            editingTagsFor === u.id
+                              ? setEditingTagsFor(null)
+                              : openTagEditor(u)
+                          }
+                        >
+                          {editingTagsFor === u.id ? 'ביטול' : 'עריכת תגיות'}
+                        </button>
+                      </div>
+
+                      {editingTagsFor === u.id && (
+                        <div className="admin-user-tags-editor">
+                          <AudienceTagPicker
+                            tags={allTags}
+                            selectedIds={draftTagIds}
+                            onToggle={toggleDraftTag}
+                            onCreateTag={handleQuickCreateTag}
+                            disabled={busyId === u.id}
+                          />
+                          <button
+                            type="button"
+                            className="admin-user-tags-save"
+                            disabled={busyId === u.id}
+                            onClick={() => saveUserTags(u.id)}
+                          >
+                            שמירת תגיות
+                          </button>
+                        </div>
+                      )}
+
+                      <div className="admin-user-actions">
+                        {u.status === 'PENDING_APPROVAL' && (
+                          <>
+                            <button
+                              type="button"
+                              disabled={busyId === u.id}
+                              onClick={() =>
+                                changeStatus(u.id, 'APPROVED', 'אישור')
+                              }
+                            >
+                              אישור
+                            </button>
+                            <button
+                              type="button"
+                              className="warn"
+                              disabled={busyId === u.id}
+                              onClick={() =>
+                                changeStatus(u.id, 'REJECTED', 'דחייה')
+                              }
+                            >
+                              דחייה
+                            </button>
+                          </>
+                        )}
+                        {u.status === 'APPROVED' && (
+                          <button
+                            type="button"
+                            className="warn"
+                            disabled={busyId === u.id}
+                            onClick={() =>
+                              changeStatus(
+                                u.id,
+                                'REJECTED',
+                                'איפוס להרשמה מחדש'
+                              )
+                            }
+                          >
+                            איפוס
+                          </button>
+                        )}
+                        {u.status !== 'BLOCKED' && u.role !== 'ADMIN' && (
+                          <button
+                            type="button"
+                            className="danger"
+                            disabled={busyId === u.id}
+                            onClick={() => handleBlock(u.id)}
+                          >
+                            חסימה
+                          </button>
+                        )}
+                        {u.status === 'BLOCKED' && (
+                          <button
+                            type="button"
+                            disabled={busyId === u.id}
+                            onClick={() =>
+                              changeStatus(u.id, 'NEW', 'שחרור מחסימה')
+                            }
+                          >
+                            שחרור
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </article>
+              );
+            })}
+            <PaginationBar
+              page={page}
+              pageSize={PAGE_SIZE}
+              total={total}
+              disabled={loading}
+              onPageChange={(p) => {
+                setExpandedId(null);
+                loadUsers(p);
+              }}
+            />
+          </section>
+        )}
+      </div>
     </main>
   );
 }

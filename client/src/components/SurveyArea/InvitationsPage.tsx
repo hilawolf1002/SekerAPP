@@ -6,6 +6,8 @@ import { useToast } from '../../Context/ToastContext';
 import { useAuth } from '../../Context/AuthContext';
 import { useGender } from '../../Utils/useGender';
 import { PaginationBar } from '../LayoutArea/PaginationBar';
+import { UserBottomNav } from '../LayoutArea/UserBottomNav';
+import { UserLogoutButton } from '../LayoutArea/UserLogoutButton';
 import './survey-shared.css';
 import './InvitationsPage.css';
 
@@ -59,12 +61,11 @@ export function InvitationsPage() {
   }, [user, navigate]);
 
   return (
-    <section className="survey-page invitations-page">
-      <header className="survey-topbar">
-        <Link to="/home" className="survey-back-btn" aria-label="חזרה לדף הבית">
-          <i className="fas fa-arrow-right" aria-hidden="true" />
-        </Link>
+    <section className="survey-page invitations-page has-user-bottom-nav">
+      <header className="survey-topbar survey-topbar-nav-only">
+        <span className="survey-topbar-spacer" aria-hidden="true" />
         <h1>הזמנות לסקרים</h1>
+        <UserLogoutButton />
       </header>
 
       <div className="survey-content">
@@ -83,22 +84,26 @@ export function InvitationsPage() {
             <div className="invitations-empty-icon" aria-hidden="true">
               <i className="fas fa-inbox" />
             </div>
-            <h2>אין כרגע הזמנות פעילות</h2>
+            <h2>אין הזמנות כרגע</h2>
             <p>
               {g(
-                'כשישלחו אליך סקרים לענות עליהם – הם יופיעו כאן.',
-                'כשישלחו אליך סקרים לענות עליהם – הם יופיעו כאן.'
+                'כשישלחו אליך סקר — הוא יופיע כאן.',
+                'כשישלחו אליך סקר — הוא יופיע כאן.'
               )}
             </p>
             <Link to="/home" className="invitations-home-link">
-              חזרה לדף הבית
+              לדף הבית
             </Link>
           </div>
         ) : (
           <>
           <ul className="invitations-list">
             {invitations.map((item) => (
-              <li key={item.invitationId} className="invitation-card">
+              <li key={item.invitationId}>
+                <Link
+                  to={`/surveys/${item.survey.id}`}
+                  className="invitation-card invitation-card-link"
+                >
                 {item.survey.imageUrl && (
                   <img
                     className="invitation-thumb"
@@ -120,19 +125,22 @@ export function InvitationsPage() {
                     )}
                     <span className="invitation-chip">
                       <i className="fas fa-clock" aria-hidden="true" />
-                      {item.survey.timeLimitMinutes} דק׳
+                      {item.survey.timeLimitMinutes} דק׳ למענה
                     </span>
+                    {item.expiresAt && (
+                      <span className="invitation-chip muted">
+                        נסגר {formatDate(item.expiresAt)}
+                      </span>
+                    )}
                     <span className="invitation-chip muted">
                       נשלח {formatDate(item.sentAt)}
                     </span>
                   </div>
-                  <Link
-                    to={`/surveys/${item.survey.id}`}
-                    className="invitation-cta"
-                  >
-                    {g('עני עכשיו', 'ענה עכשיו')}
-                  </Link>
+                  <span className="invitation-cta">
+                    {g('לענות עכשיו', 'לענות עכשיו')}
+                  </span>
                 </div>
+                </Link>
               </li>
             ))}
           </ul>
@@ -146,6 +154,7 @@ export function InvitationsPage() {
           </>
         )}
       </div>
+      <UserBottomNav />
     </section>
   );
 }

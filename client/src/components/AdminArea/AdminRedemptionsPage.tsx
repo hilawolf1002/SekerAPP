@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../Context/AuthContext';
 import { useToast } from '../../Context/ToastContext';
 import { getErrorMessage } from '../../Services/api';
@@ -11,9 +11,35 @@ import {
   type AdminRedemptionRequest,
 } from '../../Services/adminService';
 import { PaginationBar } from '../LayoutArea/PaginationBar';
+import { AdminTopBar } from './AdminTopBar';
+import { AdminEmptyState, AdminSkeleton } from './AdminUiShared';
+import './AdminUiShared.css';
 import './AdminRedemptionsPage.css';
 
 const PAGE_SIZE = 20;
+
+function formatStatus(status: string): string {
+  switch (status) {
+    case 'FULFILLED':
+      return 'טופל — קופון נשלח';
+    case 'REJECTED':
+      return 'נדחה';
+    case 'PENDING':
+      return 'ממתין לטיפול';
+    default:
+      return status;
+  }
+}
+
+function formatDateTime(iso: string): string {
+  return new Date(iso).toLocaleString('he-IL', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
 
 export function AdminRedemptionsPage() {
   const navigate = useNavigate();
@@ -24,10 +50,12 @@ export function AdminRedemptionsPage() {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [actingId, setActingId] = useState<string | null>(null);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
   const [preview, setPreview] = useState<{
     id: string;
     imageData: string;
   } | null>(null);
+  const listRef = useRef<HTMLElement>(null);
 
   async function load(nextPage = page) {
     const data = await getAdminRedemptions(nextPage, PAGE_SIZE);
@@ -53,6 +81,26 @@ export function AdminRedemptionsPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, navigate, showToast]);
 
+  useEffect(() => {
+    if (!expandedId) return;
+    function onPointerDown(event: MouseEvent | TouchEvent) {
+      const target = event.target as Node | null;
+      if (!target || !listRef.current) return;
+      const card = listRef.current.querySelector(
+        `[data-redemption-id="${expandedId}"]`
+      );
+      if (card && !card.contains(target)) {
+        setExpandedId(null);
+      }
+    }
+    document.addEventListener('mousedown', onPointerDown);
+    document.addEventListener('touchstart', onPointerDown);
+    return () => {
+      document.removeEventListener('mousedown', onPointerDown);
+      document.removeEventListener('touchstart', onPointerDown);
+    };
+  }, [expandedId]);
+
   const pending = useMemo(
     () => redemptions.filter((r) => r.status === 'PENDING'),
     [redemptions]
@@ -61,6 +109,10 @@ export function AdminRedemptionsPage() {
     () => redemptions.filter((r) => r.status !== 'PENDING'),
     [redemptions]
   );
+
+  function toggleExpand(id: string) {
+    setExpandedId((prev) => (prev === id ? null : id));
+  }
 
   async function openDocument(id: string) {
     try {
@@ -86,8 +138,9 @@ export function AdminRedemptionsPage() {
     setActingId(id);
     try {
       await fulfillRedemption(id);
-      showToast('הפנייה סומנה כמטופלת', 'success');
+      showToast('הפנייה סומנה כמטופלת והנקודות נוכו', 'success');
       setPreview(null);
+      setExpandedId(null);
       await load();
     } catch (error) {
       showToast(getErrorMessage(error));
@@ -103,6 +156,7 @@ export function AdminRedemptionsPage() {
       await rejectRedemption(id, note || undefined);
       showToast('הבקשה נדחתה', 'success');
       setPreview(null);
+      setExpandedId(null);
       await load();
     } catch (error) {
       showToast(getErrorMessage(error));
@@ -111,109 +165,182 @@ export function AdminRedemptionsPage() {
     }
   }
 
+  function renderDetails(item: AdminRedemptionRequest, isPending: boolean) {
+    return (
+      <div className="admin-redemption-details">
+        <dl className="admin-redemption-meta">
+          <div>
+            <dt>טלפון</dt>
+            <dd>{item.user.phone}</dd>
+          </div>
+          <div>
+            <dt>מייל לשליחת קופון</dt>
+            <dd>
+              {item.email ? (
+                <a href={`mailto:${item.email}`}>{item.email}</a>
+              ) : (
+                'לא צוין'
+              )}
+            </dd>
+          </div>
+          <div>
+            <dt>נקודות</dt>
+            <dd>{item.pointsSpent}</dd>
+          </div>
+          <div>
+            <dt>הוגש</dt>
+            <dd>{formatDateTime(item.createdAt)}</dd>
+          </div>
+          {!isPending && item.updatedAt && (
+            <div>
+              <dt>{item.status === 'REJECTED' ? 'נדחה ב־' : 'טופל ב־'}</dt>
+              <dd>{formatDateTime(item.updatedAt)}</dd>
+            </div>
+          )}
+        </dl>
+        {item.adminNote && (
+          <p className="admin-redemption-note">הערת מנהל: {item.adminNote}</p>
+        )}
+        {isPending && (
+          <div className="admin-redemption-actions">
+            <button
+              type="button"
+              className="admin-btn-secondary"
+              onClick={() => openDocument(item.id)}
+              disabled={!item.idDocumentKey}
+            >
+              צפייה בת.ז.
+            </button>
+            <button
+              type="button"
+              className="admin-btn-approve"
+              disabled={actingId === item.id}
+              onClick={() => handleFulfill(item.id)}
+            >
+              {actingId === item.id ? '...' : 'מטופל (נשלח קופון)'}
+            </button>
+            <button
+              type="button"
+              className="admin-btn-reject"
+              disabled={actingId === item.id}
+              onClick={() => handleReject(item.id)}
+            >
+              דחייה
+            </button>
+          </div>
+        )}
+      </div>
+    );
+  }
+
   if (loading) {
     return (
-      <main className="admin-redemptions-shell">
-        <div className="admin-redemptions-loading">טוען נתוני פדיון...</div>
+      <main className="admin-shell admin-redemptions-shell">
+        <AdminTopBar title="פדיון נקודות" />
+        <div className="admin-page-body">
+          <AdminSkeleton rows={3} />
+        </div>
       </main>
     );
   }
 
   return (
-    <main className="admin-redemptions-shell">
-      <header className="admin-redemptions-header">
-        <Link to="/admin" className="admin-back-link">
-          ← חזרה לדשבורד
-        </Link>
-        <h1>פדיון נקודות</h1>
-        <p>
-          ממתינות לטיפול: {pending.length} · טופלו: {history.length}
-        </p>
-      </header>
+    <main className="admin-shell admin-redemptions-shell">
+      <AdminTopBar
+        title="פדיון נקודות"
+        subtitle={`ממתינות: ${pending.length} · בהיסטוריה: ${history.length}`}
+      />
 
-      <section className="admin-redemptions-list">
+      <section
+        className="admin-page-body admin-redemptions-list"
+        ref={listRef}
+      >
         <div className="admin-redemptions-note">
           <strong>איך זה עובד?</strong>
           <span>
-            העונה מגיש פנייה עם מייל + צילום ת.ז. אתה מקבל התראה במייל,
-            שולח קופון ידנית לכתובת שסיפק, ואז מסמן כאן &quot;מטופל&quot;.
-            הצילום נמחק אוטומטית אחרי הטיפול.
+            לחצי על שם העונה לפתיחת הפרטים. שלחי קופון למייל, ואז סמני
+            &quot;מטופל&quot;. לחיצה מחוץ לכרטיס סוגרת את הפרטים.
           </span>
         </div>
 
         <h2>ממתינות לטיפול</h2>
         {pending.length === 0 ? (
-          <div className="admin-empty-state compact">
-            <strong>אין בקשות פתוחות</strong>
-          </div>
+          <AdminEmptyState
+            title="אין בקשות פתוחות"
+            description="כשמישהו יגיש פדיון — זה יופיע כאן."
+            icon="fa-gift"
+          />
         ) : (
-          pending.map((item) => (
-            <article key={item.id} className="admin-redemption-card">
-              <div className="admin-redemption-header">
-                <div>
-                  <strong>{item.user.name || 'ללא שם'}</strong>
-                  <span className="admin-redemption-phone">{item.user.phone}</span>
-                </div>
-                <div className="admin-redemption-points">
-                  <span className="admin-points-number">{item.pointsSpent}</span>
-                  <span className="admin-points-label">נקודות</span>
-                </div>
-              </div>
-              <p>
-                מייל לשליחת קופון:{' '}
-                <a href={`mailto:${item.email || ''}`}>{item.email || '—'}</a>
-              </p>
-              <p>
-                הוגש: {new Date(item.createdAt).toLocaleString('he-IL')}
-              </p>
-              <div className="admin-redemption-actions">
+          pending.map((item) => {
+            const open = expandedId === item.id;
+            return (
+              <article
+                key={item.id}
+                data-redemption-id={item.id}
+                className={`admin-redemption-card${open ? ' expanded' : ''}`}
+              >
                 <button
                   type="button"
-                  className="admin-btn-secondary"
-                  onClick={() => openDocument(item.id)}
-                  disabled={!item.idDocumentKey}
+                  className="admin-redemption-summary"
+                  onClick={() => toggleExpand(item.id)}
+                  aria-expanded={open}
                 >
-                  צפייה בת.ז.
+                  <div className="admin-redemption-summary-text">
+                    <strong className="admin-redemption-name-link">
+                      {item.user.name || 'ללא שם'}
+                    </strong>
+                    <span>{item.pointsSpent} נק׳ · לחצי לפרטים</span>
+                  </div>
+                  <i
+                    className={`fas fa-chevron-${open ? 'up' : 'down'}`}
+                    aria-hidden="true"
+                  />
                 </button>
-                <button
-                  type="button"
-                  className="admin-btn-approve"
-                  disabled={actingId === item.id}
-                  onClick={() => handleFulfill(item.id)}
-                >
-                  {actingId === item.id ? '...' : 'מטופל (נשלח קופון)'}
-                </button>
-                <button
-                  type="button"
-                  className="admin-btn-reject"
-                  disabled={actingId === item.id}
-                  onClick={() => handleReject(item.id)}
-                >
-                  דחייה
-                </button>
-              </div>
-            </article>
-          ))
+                {open && renderDetails(item, true)}
+              </article>
+            );
+          })
         )}
 
         <h2>היסטוריה</h2>
         {history.length === 0 ? (
-          <div className="admin-empty-state compact">
-            <strong>עדיין אין היסטוריית פדיונות</strong>
-          </div>
+          <AdminEmptyState
+            title="עדיין אין היסטוריית פדיונות"
+            icon="fa-history"
+          />
         ) : (
-          history.map((item) => (
-            <article key={item.id} className="admin-redemption-card">
-              <strong>
-                {item.user.name || item.user.phone} · {item.pointsSpent} נק׳
-              </strong>
-              <span>מייל: {item.email || '—'}</span>
-              <span>
-                {new Date(item.createdAt).toLocaleString('he-IL')} · {item.status}
-              </span>
-              {item.adminNote && <span>הערה: {item.adminNote}</span>}
-            </article>
-          ))
+          history.map((item) => {
+            const open = expandedId === item.id;
+            return (
+              <article
+                key={item.id}
+                data-redemption-id={item.id}
+                className={`admin-redemption-card admin-redemption-history status-${item.status.toLowerCase()}${open ? ' expanded' : ''}`}
+              >
+                <button
+                  type="button"
+                  className="admin-redemption-summary"
+                  onClick={() => toggleExpand(item.id)}
+                  aria-expanded={open}
+                >
+                  <div className="admin-redemption-summary-text">
+                    <strong className="admin-redemption-name-link">
+                      {item.user.name || 'ללא שם'}
+                    </strong>
+                    <span>
+                      {item.pointsSpent} נק׳ · {formatStatus(item.status)}
+                    </span>
+                  </div>
+                  <span
+                    className={`admin-redemption-status-badge status-${item.status.toLowerCase()}`}
+                  >
+                    {formatStatus(item.status)}
+                  </span>
+                </button>
+                {open && renderDetails(item, false)}
+              </article>
+            );
+          })
         )}
 
         <PaginationBar
@@ -223,6 +350,7 @@ export function AdminRedemptionsPage() {
           disabled={loading}
           onPageChange={(p) => {
             setLoading(true);
+            setExpandedId(null);
             load(p)
               .catch((error) => showToast(getErrorMessage(error)))
               .finally(() => setLoading(false));

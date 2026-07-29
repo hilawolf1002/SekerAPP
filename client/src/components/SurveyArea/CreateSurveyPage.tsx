@@ -1,11 +1,16 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import * as surveyService from '../../Services/surveyService';
-import { getAdminTags, AudienceTag } from '../../Services/adminService';
+import {
+  getAdminTags,
+  countAudienceByTags,
+  AudienceTag,
+} from '../../Services/adminService';
 import { useToast } from '../../Context/ToastContext';
 import { useAuth } from '../../Context/AuthContext';
 import { useGender } from '../../Utils/useGender';
 import type { QuestionType } from '../../Models/SurveyModel';
+import { UserLogoutButton } from '../LayoutArea/UserLogoutButton';
 import './survey-shared.css';
 import './CreateSurveyPage.css';
 
@@ -60,6 +65,9 @@ export function CreateSurveyPage() {
   const [inviteMode, setInviteMode] = useState<'phones' | 'tags'>('phones');
   const [audienceTags, setAudienceTags] = useState<AudienceTag[]>([]);
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
+  const [audienceTotal, setAudienceTotal] = useState<number | null>(null);
+  const [audienceLoading, setAudienceLoading] = useState(false);
+  const [expiresInMinutes, setExpiresInMinutes] = useState(60);
 
   useEffect(() => {
     if (!createdSurvey || user?.role !== 'ADMIN') return;
@@ -67,6 +75,31 @@ export function CreateSurveyPage() {
       .then(setAudienceTags)
       .catch(() => setAudienceTags([]));
   }, [createdSurvey, user?.role]);
+
+  useEffect(() => {
+    if (inviteMode !== 'tags' || selectedTagIds.length === 0) {
+      setAudienceTotal(null);
+      return;
+    }
+    let cancelled = false;
+    setAudienceLoading(true);
+    const timer = window.setTimeout(() => {
+      countAudienceByTags(selectedTagIds, { surveyId: createdSurvey?.id })
+        .then((result) => {
+          if (!cancelled) setAudienceTotal(result.total);
+        })
+        .catch(() => {
+          if (!cancelled) setAudienceTotal(null);
+        })
+        .finally(() => {
+          if (!cancelled) setAudienceLoading(false);
+        });
+    }, 200);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [inviteMode, selectedTagIds, createdSurvey?.id]);
 
   const updateQuestion = (index: number, patch: Partial<QuestionDraft>) => {
     setQuestions((prev) =>
@@ -117,6 +150,11 @@ export function CreateSurveyPage() {
 
   const getFilledQuestions = (): QuestionDraft[] =>
     questions.filter((q) => !isBlankQuestionDraft(q));
+
+  const basicsDone = title.trim().length >= 2;
+  const questionsDone = getFilledQuestions().length > 0;
+  const settingsDone = timeLimitMinutes >= 1 && thankYouMessage.trim().length > 0;
+  const designDone = Boolean(imageUrl || backgroundColor);
 
   const validate = (filledQuestions: QuestionDraft[]): string | null => {
     if (title.trim().length < 2) return 'יש להזין כותרת לסקר';
@@ -265,6 +303,7 @@ export function CreateSurveyPage() {
         result = await surveyService.sendInvitations(createdSurvey.id, {
           mode: 'tags',
           tagIds: selectedTagIds,
+          expiresInMinutes,
         });
       } else {
         const phones = invitePhones
@@ -279,13 +318,17 @@ export function CreateSurveyPage() {
         result = await surveyService.sendInvitations(createdSurvey.id, {
           mode: 'phones',
           phones,
+          expiresInMinutes,
         });
       }
 
       const msg =
         `נשלחו ${result.sent} הזמנות` +
         (result.skipped ? `, דולגו ${result.skipped}` : '') +
-        (result.failed ? `, נכשלו ${result.failed}` : '');
+        (result.failed ? `, נכשלו ${result.failed}` : '') +
+        (result.expiresInMinutes
+          ? ` · נסגרות בעוד ${result.expiresInMinutes} דקות`
+          : '');
       setInviteResult(msg);
       showToast(msg, 'success');
       if (inviteMode === 'phones') setInvitePhones('');
@@ -304,6 +347,7 @@ export function CreateSurveyPage() {
             <i className="fas fa-arrow-right" aria-hidden="true" />
           </Link>
           <h1>הסקר מוכן</h1>
+          <UserLogoutButton />
         </header>
 
         <div className="survey-content">
@@ -322,8 +366,30 @@ export function CreateSurveyPage() {
           <div className="survey-card create-distribute-card">
             <h2 className="create-distribute-title">הפצה ב-SMS</h2>
             <p className="survey-hint">
-              שלחו הזמנות לפי מספרי טלפון או לפי תגיות קהל. עונים מאושרים במערכת
-              גם יראו את הסקר במסך ההזמנות.
+              שלחו הזמנות לפי מספרי טלפון או לפי תגיות קהל (עונה עם לפחות תגית
+              אחת מהנבחרות). עונים מאושרים יראו גם במסך ההזמנות. קישור ה-SMS
+              מכניס אוטומטית בלי התחברות רק לעונים רשומים ומאושרים.
+            </p>
+
+            <label className="survey-label" htmlFor="invite-expires">
+              תוקף ההזמנה (דקות מרגע השליחה)
+            </label>
+            <input
+              id="invite-expires"
+              type="number"
+              className="survey-input"
+              min={5}
+              max={10080}
+              value={expiresInMinutes}
+              onChange={(e) =>
+                setExpiresInMinutes(
+                  Math.min(10080, Math.max(5, Number(e.target.value) || 60))
+                )
+              }
+            />
+            <p className="create-distribute-note">
+              ב-SMS יופיע: יש לך {expiresInMinutes} דקות לענות מרגע השליחה –
+              אחר כך ההזמנה תיסגר.
             </p>
 
             <div className="create-invite-mode" role="tablist" aria-label="מצב הפצה">
@@ -374,8 +440,8 @@ export function CreateSurveyPage() {
             ) : audienceTags.length === 0 ? (
               <p className="create-distribute-note">
                 אין תגיות עדיין.{' '}
-                <Link to="/admin/tags">צרו תגיות באדמין</Link> ושייכו אותן
-                למשתמשים.
+                <Link to="/admin/tags">צרו תגיות באדמין</Link> או סנכרנו
+                מדמוגרפיית הרישום.
               </p>
             ) : (
               <div className="create-tags-picker">
@@ -398,14 +464,24 @@ export function CreateSurveyPage() {
                         />
                         <span>
                           {tag.name}
-                          {typeof tag.usersCount === 'number'
-                            ? ` (${tag.usersCount})`
-                            : ''}
+                          <span className="create-tag-count">
+                            {' '}
+                            · {tag.usersCount ?? 0} עונים
+                          </span>
                         </span>
                       </label>
                     );
                   })}
                 </div>
+                {selectedTagIds.length > 0 && (
+                  <p className="create-audience-total" role="status">
+                    {audienceLoading
+                      ? 'מחשב קהל יעד…'
+                      : audienceTotal !== null
+                        ? `ישלח כעת ל־${audienceTotal} עונים מאושרים (ייחודיים; בניכוי שכבר הוזמנו או ענו)`
+                        : 'לא ניתן לחשב קהל יעד'}
+                  </p>
+                )}
               </div>
             )}
 
@@ -445,7 +521,7 @@ export function CreateSurveyPage() {
   }
 
   return (
-    <section className="survey-page">
+    <section className="survey-page create-survey-page has-create-sticky">
       <header className="survey-topbar">
         <Link
           to={canCreateRewarded ? '/admin' : '/surveys'}
@@ -455,16 +531,24 @@ export function CreateSurveyPage() {
           <i className="fas fa-arrow-right" aria-hidden="true" />
         </Link>
         <h1>סקר חדש</h1>
+        <UserLogoutButton />
       </header>
 
-      <form className="survey-content" onSubmit={handleSubmit} noValidate>
+      <form
+        id="create-survey-form"
+        className="survey-content create-survey-form"
+        onSubmit={handleSubmit}
+        noValidate
+      >
         {error && (
           <div className="survey-alert survey-alert-error" role="alert">
             {error}
           </div>
         )}
 
-        <div className="survey-card">
+        <details className="survey-accordion" open>
+          <summary>פרטי הסקר{basicsDone ? ' ✓' : ''}</summary>
+          <div className="survey-card survey-accordion-panel">
           <div className="survey-field">
             <label className="survey-label" htmlFor="title">
               כותרת הסקר *
@@ -491,9 +575,12 @@ export function CreateSurveyPage() {
               placeholder="הסבר קצר על מטרת הסקר"
             />
           </div>
-        </div>
+          </div>
+        </details>
 
-        <div className="survey-card">
+        <details className="survey-accordion" open>
+          <summary>שאלות{questionsDone ? ' ✓' : ''}</summary>
+          <div className="survey-card survey-accordion-panel">
           <h2 className="survey-section-title">שאלות</h2>
           <p className="survey-hint">
             {g(
@@ -649,9 +736,12 @@ export function CreateSurveyPage() {
           >
             <i className="fas fa-plus" aria-hidden="true" /> הוספת שאלה
           </button>
-        </div>
+          </div>
+        </details>
 
-        <div className="survey-card">
+        <details className="survey-accordion" open>
+          <summary>הגדרות{settingsDone ? ' ✓' : ''}</summary>
+          <div className="survey-card survey-accordion-panel">
           <h2 className="survey-section-title">הגדרות</h2>
 
           {canCreateRewarded ? (
@@ -751,21 +841,61 @@ export function CreateSurveyPage() {
           </div>
 
           <div className="survey-field">
-            <label className="survey-label" htmlFor="surveyImage">
-              תמונה לסקר (אופציונלי)
+            <label className="survey-label">
+              <input
+                type="checkbox"
+                checked={publish}
+                onChange={(e) => setPublish(e.target.checked)}
+                style={{ marginLeft: '0.5rem' }}
+              />
+              פרסום מיידי (פתוח למענה)
             </label>
-            <input
-              id="surveyImage"
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              className="survey-input"
-              onChange={handleImagePick}
-              disabled={uploadingImage || submitting}
-            />
             <p className="survey-hint">
-              JPG / PNG / WEBP · עד 5MB. התמונה נשמרת בשרת ומוצגת למענים.
+              אם לא מסומן – הסקר נשמר כטיוטה ולא ניתן לענות עליו.
             </p>
-            {uploadingImage && <p className="survey-hint">מעלה תמונה…</p>}
+          </div>
+          </div>
+        </details>
+
+        <details className="survey-accordion">
+          <summary>עיצוב{designDone ? ' ✓' : ''}</summary>
+          <div className="survey-card survey-accordion-panel">
+          <h2 className="survey-section-title">עיצוב</h2>
+
+          <div className="survey-field">
+            <span className="survey-label">תמונה לסקר (אופציונלי)</span>
+            <div className="survey-file-upload">
+              <input
+                id="surveyImage"
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                className="survey-file-input-hidden"
+                onChange={handleImagePick}
+                disabled={uploadingImage || submitting}
+              />
+              <label
+                htmlFor="surveyImage"
+                className={`survey-file-drop${imageUrl ? ' has-file' : ''}${uploadingImage || submitting ? ' disabled' : ''}`}
+              >
+                <span className="survey-file-drop-icon" aria-hidden="true">
+                  <i className="fas fa-image" />
+                </span>
+                <span className="survey-file-drop-text">
+                  <strong>
+                    {uploadingImage
+                      ? 'מעלה תמונה…'
+                      : imageName
+                        ? imageName
+                        : 'בחרי תמונה מהמכשיר'}
+                  </strong>
+                  <span>
+                    {imageUrl
+                      ? 'לחצי להחלפת התמונה'
+                      : 'JPG, PNG או WEBP · עד 5MB'}
+                  </span>
+                </span>
+              </label>
+            </div>
             {imageUrl && (
               <div className="survey-image-preview">
                 <img src={imageUrl} alt="תצוגה מקדימה של תמונת הסקר" />
@@ -778,7 +908,6 @@ export function CreateSurveyPage() {
                   }}
                 >
                   הסרת תמונה
-                  {imageName ? ` (${imageName})` : ''}
                 </button>
               </div>
             )}
@@ -814,37 +943,24 @@ export function CreateSurveyPage() {
               )}
             </div>
           </div>
-
-          <div className="survey-field">
-            <label className="survey-label">
-              <input
-                type="checkbox"
-                checked={publish}
-                onChange={(e) => setPublish(e.target.checked)}
-                style={{ marginLeft: '0.5rem' }}
-              />
-              פרסום מיידי (פתוח למענה)
-            </label>
-            <p className="survey-hint">
-              אם לא מסומן – הסקר נשמר כטיוטה ולא ניתן לענות עליו.
-            </p>
           </div>
-        </div>
-
-        <div className="survey-fab-row">
-          <button
-            type="submit"
-            className="survey-btn survey-btn-primary"
-            disabled={submitting}
-          >
-            {submitting
-              ? g('שומרת...', 'שומר...')
-              : publish
-                ? 'יצירה ופרסום'
-                : 'שמירה כטיוטה'}
-          </button>
-        </div>
+        </details>
       </form>
+
+      <div className="create-survey-sticky" aria-hidden={false}>
+        <button
+          type="submit"
+          form="create-survey-form"
+          className="survey-btn survey-btn-primary"
+          disabled={submitting}
+        >
+          {submitting
+            ? g('שומרת...', 'שומר...')
+            : publish
+              ? 'יצירה ופרסום'
+              : 'שמירה כטיוטה'}
+        </button>
+      </div>
     </section>
   );
 }

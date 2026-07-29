@@ -3,14 +3,22 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../Context/AuthContext';
 import { useToast } from '../../Context/ToastContext';
 import { getErrorMessage } from '../../Services/api';
-import { getAdminStats, AdminStats } from '../../Services/adminService';
+import {
+  getAdminStats,
+  getAdminRedemptions,
+  AdminStats,
+} from '../../Services/adminService';
+import { AdminTopBar } from './AdminTopBar';
+import { AdminSkeleton } from './AdminUiShared';
+import './AdminUiShared.css';
 import './AdminDashboardPage.css';
 
 export function AdminDashboardPage() {
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const { showToast } = useToast();
   const [stats, setStats] = useState<AdminStats | null>(null);
+  const [pendingRedemptions, setPendingRedemptions] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -18,15 +26,23 @@ export function AdminDashboardPage() {
       navigate('/');
       return;
     }
-    
     loadStats();
   }, [user, navigate]);
 
   async function loadStats() {
     try {
       setLoading(true);
-      const data = await getAdminStats();
+      const [data, redemptions] = await Promise.all([
+        getAdminStats(),
+        getAdminRedemptions(1, 50).catch(() => ({
+          redemptions: [] as { status: string }[],
+          total: 0,
+        })),
+      ]);
       setStats(data);
+      setPendingRedemptions(
+        redemptions.redemptions.filter((r) => r.status === 'PENDING').length
+      );
     } catch (error) {
       showToast(getErrorMessage(error));
     } finally {
@@ -34,159 +50,217 @@ export function AdminDashboardPage() {
     }
   }
 
-  function handleLogout() {
-    logout();
-    navigate('/admin/login');
-  }
-
   if (loading) {
     return (
-      <main className="admin-dashboard-shell">
-        <div className="admin-loading">טוען נתונים...</div>
+      <main className="admin-shell admin-dashboard-shell">
+        <AdminTopBar title="דשבורד" showBack={false} />
+        <div className="admin-page-body">
+          <AdminSkeleton rows={4} />
+        </div>
       </main>
     );
   }
 
-  return (
-    <main className="admin-dashboard-shell">
-      <header className="admin-dashboard-header">
-        <div className="admin-brand">
-          <img src="/logo.png" alt="" />
-          <div>
-            <strong>SekerApp</strong>
-            <span>מערכת ניהול</span>
-          </div>
-        </div>
-        <button onClick={handleLogout} className="admin-logout-btn">
-          התנתקות
-        </button>
-      </header>
+  const pendingUsers = stats?.users.pendingApprovals ?? 0;
+  const hasTasks = pendingUsers > 0 || pendingRedemptions > 0;
 
-      <section className="admin-dashboard-content">
-        <h1>שלום, מנהל המערכת</h1>
-        <p className="admin-dashboard-subtitle">
-          מכאן תוכל לנהל את כל המשתמשים, לאשר עונים ולצפות בפעילות המערכת.
-        </p>
+  return (
+    <main className="admin-shell admin-dashboard-shell">
+      <AdminTopBar title="דשבורד" subtitle="ניהול המערכת" showBack={false} />
+
+      <section className="admin-page-body admin-dashboard-content">
+        <div className="admin-dashboard-intro">
+          <h2>שלום</h2>
+          <p>סקירה קצרה של המערכת, ומשם לכל מה שצריך.</p>
+        </div>
+
+        <section className="admin-tasks" aria-label="משימות לטיפול">
+          <h3 className="admin-section-title">דורש טיפול</h3>
+          {!hasTasks ? (
+            <div className="admin-tasks-clear">
+              <i className="fas fa-check-circle" aria-hidden="true" />
+              <span>אין משימות ממתינות — הכל מעודכן</span>
+            </div>
+          ) : (
+            <div className="admin-tasks-grid">
+              {pendingUsers > 0 && (
+                <Link to="/admin/pending" className="admin-task-card urgent">
+                  <span className="admin-task-icon" aria-hidden="true">
+                    <i className="fas fa-user-clock" />
+                  </span>
+                  <div>
+                    <strong>עונים לאישור</strong>
+                    <span>{pendingUsers} ממתינים</span>
+                  </div>
+                  <span className="admin-task-count">{pendingUsers}</span>
+                </Link>
+              )}
+              {pendingRedemptions > 0 && (
+                <Link to="/admin/redemptions" className="admin-task-card urgent">
+                  <span className="admin-task-icon" aria-hidden="true">
+                    <i className="fas fa-gift" />
+                  </span>
+                  <div>
+                    <strong>פדיון נקודות</strong>
+                    <span>{pendingRedemptions} בקשות פתוחות</span>
+                  </div>
+                  <span className="admin-task-count">{pendingRedemptions}</span>
+                </Link>
+              )}
+            </div>
+          )}
+        </section>
 
         {stats && (
-          <div className="admin-stats-grid">
-            <div className="admin-stat-card">
-              <span className="admin-stat-icon">👥</span>
-              <div className="admin-stat-info">
-                <strong>{stats.users.total}</strong>
-                <span>סה"כ משתמשים</span>
+          <section aria-label="סטטיסטיקות">
+            <h3 className="admin-section-title">סקירה מהירה</h3>
+            <div className="admin-stats-grid">
+              <div className="admin-stat-card">
+                <span className="admin-stat-icon" aria-hidden="true">
+                  <i className="fas fa-users" />
+                </span>
+                <div className="admin-stat-info">
+                  <strong>{stats.users.total}</strong>
+                  <span>משתמשים</span>
+                </div>
+              </div>
+              <div className="admin-stat-card highlight">
+                <span className="admin-stat-icon" aria-hidden="true">
+                  <i className="fas fa-hourglass-half" />
+                </span>
+                <div className="admin-stat-info">
+                  <strong>{stats.users.pendingApprovals}</strong>
+                  <span>ממתינים</span>
+                </div>
+              </div>
+              <div className="admin-stat-card">
+                <span className="admin-stat-icon accent" aria-hidden="true">
+                  <i className="fas fa-user-check" />
+                </span>
+                <div className="admin-stat-info">
+                  <strong>{stats.users.approvedResponders}</strong>
+                  <span>מאושרים</span>
+                </div>
+              </div>
+              <div className="admin-stat-card">
+                <span className="admin-stat-icon" aria-hidden="true">
+                  <i className="fas fa-clipboard-list" />
+                </span>
+                <div className="admin-stat-info">
+                  <strong>{stats.surveys.total}</strong>
+                  <span>סקרים</span>
+                </div>
+              </div>
+              <div className="admin-stat-card">
+                <span className="admin-stat-icon" aria-hidden="true">
+                  <i className="fas fa-reply-all" />
+                </span>
+                <div className="admin-stat-info">
+                  <strong>{stats.surveys.totalResponses}</strong>
+                  <span>תשובות</span>
+                </div>
+              </div>
+              <div className="admin-stat-card points">
+                <span className="admin-stat-icon" aria-hidden="true">
+                  <i className="fas fa-coins" />
+                </span>
+                <div className="admin-stat-info">
+                  <strong>{stats.points.totalAwarded}</strong>
+                  <span>נקודות</span>
+                </div>
               </div>
             </div>
-
-            <div className="admin-stat-card highlight">
-              <span className="admin-stat-icon">⏳</span>
-              <div className="admin-stat-info">
-                <strong>{stats.users.pendingApprovals}</strong>
-                <span>ממתינים לאישור</span>
-              </div>
-            </div>
-
-            <div className="admin-stat-card">
-              <span className="admin-stat-icon">✓</span>
-              <div className="admin-stat-info">
-                <strong>{stats.users.approvedResponders}</strong>
-                <span>עונים מאושרים</span>
-              </div>
-            </div>
-
-            <div className="admin-stat-card">
-              <span className="admin-stat-icon">📋</span>
-              <div className="admin-stat-info">
-                <strong>{stats.surveys.total}</strong>
-                <span>סה"כ סקרים</span>
-              </div>
-            </div>
-
-            <div className="admin-stat-card">
-              <span className="admin-stat-icon">📝</span>
-              <div className="admin-stat-info">
-                <strong>{stats.surveys.totalResponses}</strong>
-                <span>תשובות שהתקבלו</span>
-              </div>
-            </div>
-
-            <div className="admin-stat-card">
-              <span className="admin-stat-icon">⭐</span>
-              <div className="admin-stat-info">
-                <strong>{stats.points.totalAwarded}</strong>
-                <span>נקודות שחולקו</span>
-              </div>
-            </div>
-          </div>
+          </section>
         )}
 
         <div className="admin-actions">
-          <h2>פעולות ראשיות</h2>
+          <h3 className="admin-section-title">פעולות</h3>
           <div className="admin-action-grid">
             <Link to="/admin/pending" className="admin-action-card primary">
-              <span className="admin-action-icon">⏳</span>
+              <span className="admin-action-icon" aria-hidden="true">
+                <i className="fas fa-user-clock" />
+              </span>
               <div>
-                <strong>עונים הממתינים לאישור</strong>
-                <span>צפייה בבקשות חדשות, אישור או דחייה</span>
+                <strong>אישור עונים</strong>
+                <span>בקשות הצטרפות</span>
               </div>
-              {stats && stats.users.pendingApprovals > 0 && (
-                <span className="admin-badge">{stats.users.pendingApprovals}</span>
+              {pendingUsers > 0 && (
+                <span className="admin-badge">{pendingUsers}</span>
               )}
             </Link>
 
             <Link to="/admin/users" className="admin-action-card">
-              <span className="admin-action-icon">👥</span>
+              <span className="admin-action-icon" aria-hidden="true">
+                <i className="fas fa-users" />
+              </span>
               <div>
-                <strong>כל המשתמשים</strong>
-                <span>צפייה, חיפוש וניהול משתמשים במערכת</span>
+                <strong>משתמשים</strong>
+                <span>חיפוש ותגיות</span>
               </div>
             </Link>
 
             <Link to="/admin/tags" className="admin-action-card">
-              <span className="admin-action-icon">🏷️</span>
+              <span className="admin-action-icon" aria-hidden="true">
+                <i className="fas fa-tags" />
+              </span>
               <div>
-                <strong>תגיות קהל</strong>
-                <span>יצירת קהלים להפצת סקרים ב-SMS</span>
+                <strong>תגיות</strong>
+                <span>קהלים להפצה</span>
               </div>
             </Link>
 
             <Link to="/admin/redemptions" className="admin-action-card">
-              <span className="admin-action-icon">🎁</span>
+              <span className="admin-action-icon" aria-hidden="true">
+                <i className="fas fa-gift" />
+              </span>
               <div>
-                <strong>פדיון נקודות</strong>
-                <span>מי זכאי, היסטוריית פדיונות וקופונים שנמסרו</span>
+                <strong>פדיון</strong>
+                <span>בקשות וקופונים</span>
               </div>
+              {pendingRedemptions > 0 && (
+                <span className="admin-badge">{pendingRedemptions}</span>
+              )}
             </Link>
 
+            {/* מתנות וקופונים — מושבת זמנית; פדיון ידני דרך מייל
             <Link to="/admin/gifts" className="admin-action-card">
-              <span className="admin-action-icon">🏪</span>
+              <span className="admin-action-icon" aria-hidden="true">
+                <i className="fas fa-store" />
+              </span>
               <div>
-                <strong>מתנות וקופונים</strong>
-                <span>הוספת חנויות ומלאי קודי קופון לפדיון</span>
+                <strong>מתנות</strong>
+                <span>חנויות ומלאי</span>
               </div>
             </Link>
+            */}
 
             <Link to="/admin/settings" className="admin-action-card">
-              <span className="admin-action-icon">⚙️</span>
+              <span className="admin-action-icon" aria-hidden="true">
+                <i className="fas fa-sliders-h" />
+              </span>
               <div>
-                <strong>הגדרות מערכת</strong>
-                <span>יעד פדיון, בונוסים והגדרות ברירת מחדל</span>
+                <strong>הגדרות</strong>
+                <span>יעד ובונוסים</span>
               </div>
             </Link>
 
             <Link to="/surveys" className="admin-action-card">
-              <span className="admin-action-icon">📊</span>
+              <span className="admin-action-icon" aria-hidden="true">
+                <i className="fas fa-chart-bar" />
+              </span>
               <div>
-                <strong>ניהול סקרים</strong>
-                <span>רשימה, סטטיסטיקות, פרסום וסגירה של סקרים</span>
+                <strong>סקרים</strong>
+                <span>רשימה וסטטיסטיקות</span>
               </div>
             </Link>
 
             <Link to="/surveys/create" className="admin-action-card">
-              <span className="admin-action-icon">📋</span>
+              <span className="admin-action-icon" aria-hidden="true">
+                <i className="fas fa-plus" />
+              </span>
               <div>
-                <strong>יצירת סקר מתוגמל</strong>
-                <span>רק מנהל יכול ליצור סקר עם נקודות</span>
+                <strong>סקר מתוגמל</strong>
+                <span>יצירה והפצה</span>
               </div>
             </Link>
           </div>

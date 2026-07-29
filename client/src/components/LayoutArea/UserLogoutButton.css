@@ -1,0 +1,33 @@
+.user-logout-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 0.55rem;
+  border: 1.5px solid var(--border, #e2e8f0);
+  border-radius: var(--radius-md, 12px);
+  background: #fff;
+  color: var(--text-muted, #64748b);
+  font-size: 0.82rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+.user-logout-btn:hover {
+  color: var(--error, #e5484d);
+  border-color: rgba(229, 72, 77, 0.35);
+  background: rgba(229, 72, 77, 0.06);
+}
+
+.user-logout-btn i {
+  font-size: 1rem;
+}
+
+.user-logout-btn span {
+  white-space: nowrap;
+}

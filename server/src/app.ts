@@ -69,6 +69,21 @@ app.use('/api/surveys', surveyController);
 app.use('/api/points', pointsController);
 app.use('/api/admin', adminController);
 
+// --- Frontend (production / Railway) ---
+// בבילד: client/dist. בריצה מ-server/dist → ../../client/dist
+if (!appConfig.isDev) {
+  const clientDist = path.resolve(__dirname, '../../client/dist');
+  app.use(express.static(clientDist, { index: false, maxAge: '1h' }));
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
+      return next();
+    }
+    res.sendFile(path.join(clientDist, 'index.html'), (err) => {
+      if (err) next(err);
+    });
+  });
+}
+
 // --- שגיאות ---
 app.use(errorMiddleware);
 

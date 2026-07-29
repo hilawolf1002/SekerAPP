@@ -48,7 +48,7 @@ export function transactionTypeLabel(type: PointTransactionType): string {
     case 'REFERRAL_BONUS':
       return 'בונוס חבר מביא חבר';
     case 'GIFT_REDEMPTION':
-      return 'מימוש נקודות';
+      return 'פדיון לקופון';
     case 'ADJUSTMENT':
       return 'עדכון ידני';
     default:

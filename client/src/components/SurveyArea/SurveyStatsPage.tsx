@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import * as surveyService from '../../Services/surveyService';
 import type { SurveyStats } from '../../Models/SurveyModel';
 import './survey-shared.css';
+import { UserLogoutButton } from '../LayoutArea/UserLogoutButton';
 
 /** סטטיסטיקות סקר ליוצר */
 export function SurveyStatsPage() {
@@ -45,6 +46,7 @@ export function SurveyStatsPage() {
           <i className="fas fa-arrow-right" aria-hidden="true" />
         </Link>
         <h1>סטטיסטיקות</h1>
+        <UserLogoutButton />
       </header>
 
       <div className="survey-content">

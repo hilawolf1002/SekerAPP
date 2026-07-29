@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import * as surveyService from '../../Services/surveyService';
 import { useToast } from '../../Context/ToastContext';
@@ -6,6 +6,7 @@ import { useAuth } from '../../Context/AuthContext';
 import { useGender } from '../../Utils/useGender';
 import type { SurveyListItem, SurveyStatus } from '../../Models/SurveyModel';
 import { PaginationBar } from '../LayoutArea/PaginationBar';
+import { UserLogoutButton } from '../LayoutArea/UserLogoutButton';
 import './survey-shared.css';
 import './SurveysListPage.css';
 
@@ -35,6 +36,19 @@ export function SurveysListPage() {
   const [error, setError] = useState('');
   const [actionId, setActionId] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [menuOpenId, setMenuOpenId] = useState<string | null>(null);
+  const menuRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!menuOpenId) return;
+    const close = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setMenuOpenId(null);
+      }
+    };
+    document.addEventListener('click', close);
+    return () => document.removeEventListener('click', close);
+  }, [menuOpenId]);
 
   const load = async (nextPage = page) => {
     setError('');
@@ -121,6 +135,7 @@ export function SurveysListPage() {
         >
           <i className="fas fa-plus" aria-hidden="true" />
         </Link>
+        <UserLogoutButton />
       </header>
 
       <div className="survey-content">
@@ -139,8 +154,8 @@ export function SurveysListPage() {
             <i className="fas fa-clipboard-list" aria-hidden="true" />
             <p>
               {g(
-                'עדיין אין סקרים. צרי סקר ראשון בלחיצה על +',
-                'עדיין אין סקרים. צור סקר ראשון בלחיצה על +'
+                'עדיין אין סקרים. אפשר להתחיל באחד חדש.',
+                'עדיין אין סקרים. אפשר להתחיל באחד חדש.'
               )}
             </p>
             <div className="survey-fab-row">
@@ -152,14 +167,6 @@ export function SurveysListPage() {
           </div>
         ) : (
           <>
-            <Link
-              to="/surveys/create"
-              className="survey-btn survey-btn-primary surveys-new-top"
-            >
-              <i className="fas fa-plus" aria-hidden="true" />
-              סקר חדש
-            </Link>
-
             {surveys.map((survey) => (
               <article key={survey.id} className="survey-card surveys-list-card">
                 <div className="surveys-list-card-top">
@@ -194,46 +201,71 @@ export function SurveysListPage() {
                   )}
                 </div>
 
-                <div className="survey-actions-row">
+                <div className="survey-actions-row surveys-card-actions">
                   <Link
                     to={`/surveys/${survey.id}/stats`}
-                    className="survey-btn survey-btn-ghost"
+                    className="survey-btn survey-btn-primary surveys-primary-action"
                   >
                     סטטיסטיקות
                   </Link>
-                  <button
-                    type="button"
-                    className="survey-btn survey-btn-ghost"
-                    onClick={() => copyLink(survey.id, survey.status)}
+                  <div
+                    className="surveys-menu-wrap"
+                    ref={menuOpenId === survey.id ? menuRef : null}
                   >
-                    {copiedId === survey.id ? 'הועתק!' : 'העתקת קישור'}
-                  </button>
-                  {survey.status === 'ACTIVE' && (
-                    <Link
-                      to={`/surveys/${survey.id}`}
-                      className="survey-btn survey-btn-ghost"
+                    <button
+                      type="button"
+                      className="survey-btn survey-btn-ghost surveys-menu-btn"
+                      aria-label="פעולות נוספות"
+                      aria-expanded={menuOpenId === survey.id}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setMenuOpenId((id) =>
+                          id === survey.id ? null : survey.id
+                        );
+                      }}
                     >
-                      תצוגה
-                    </Link>
-                  )}
-                  {survey.status === 'DRAFT' && (
-                    <Link
-                      to={`/surveys/${survey.id}`}
-                      className="survey-btn survey-btn-ghost"
-                    >
-                      תצוגה מקדימה
-                    </Link>
-                  )}
-                  <button
-                    type="button"
-                    className="survey-btn survey-btn-ghost"
-                    disabled={actionId === survey.id}
-                    onClick={() => handleStatusToggle(survey)}
-                  >
-                    {actionId === survey.id
-                      ? g('מעדכנת...', 'מעדכן...')
-                      : statusActionLabel(survey.status)}
-                  </button>
+                      <i className="fas fa-ellipsis-v" aria-hidden="true" />
+                    </button>
+                    {menuOpenId === survey.id && (
+                      <div className="surveys-menu-dropdown" role="menu">
+                        <button
+                          type="button"
+                          role="menuitem"
+                          onClick={() => {
+                            void copyLink(survey.id, survey.status);
+                            setMenuOpenId(null);
+                          }}
+                        >
+                          {copiedId === survey.id ? 'הועתק!' : 'העתקת קישור'}
+                        </button>
+                        {(survey.status === 'ACTIVE' ||
+                          survey.status === 'DRAFT') && (
+                          <Link
+                            to={`/surveys/${survey.id}`}
+                            role="menuitem"
+                            onClick={() => setMenuOpenId(null)}
+                          >
+                            {survey.status === 'DRAFT'
+                              ? 'תצוגה מקדימה'
+                              : 'תצוגה'}
+                          </Link>
+                        )}
+                        <button
+                          type="button"
+                          role="menuitem"
+                          disabled={actionId === survey.id}
+                          onClick={() => {
+                            void handleStatusToggle(survey);
+                            setMenuOpenId(null);
+                          }}
+                        >
+                          {actionId === survey.id
+                            ? g('מעדכנת...', 'מעדכן...')
+                            : statusActionLabel(survey.status)}
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </article>
             ))}

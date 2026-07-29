@@ -1,5 +1,5 @@
 import { FormEvent, useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../Context/AuthContext';
 import { useToast } from '../../Context/ToastContext';
 import { getErrorMessage } from '../../Services/api';
@@ -10,6 +10,9 @@ import {
   addAdminGiftCoupons,
   GiftOptionAdmin,
 } from '../../Services/adminService';
+import { AdminTopBar } from './AdminTopBar';
+import { AdminEmptyState, AdminSkeleton } from './AdminUiShared';
+import './AdminUiShared.css';
 import './AdminGiftsPage.css';
 
 export function AdminGiftsPage() {
@@ -96,18 +99,10 @@ export function AdminGiftsPage() {
   }
 
   return (
-    <main className="admin-gifts-shell">
-      <header className="admin-gifts-header">
-        <Link to="/admin" className="admin-back-link">
-          ← חזרה לדשבורד
-        </Link>
-        <h1>מתנות וקופונים לפדיון</h1>
-        <p>
-          הוסיפי חנויות/חברות וקודי קופון. כשעונה פודה – הוא בוחר חנות ומקבל קוד
-          מיד.
-        </p>
-      </header>
+    <main className="admin-shell admin-gifts-shell">
+      <AdminTopBar title="מתנות וקופונים" subtitle="חנויות ומלאי קודים" />
 
+      <div className="admin-page-body">
       <form className="admin-gifts-create" onSubmit={handleCreate}>
         <h2>הוספת מתנה חדשה</h2>
         <input
@@ -143,11 +138,15 @@ export function AdminGiftsPage() {
       </form>
 
       {loading ? (
-        <div className="admin-gifts-loading">טוען מתנות...</div>
+        <AdminSkeleton rows={3} />
       ) : (
         <section className="admin-gifts-list">
           {gifts.length === 0 ? (
-            <div className="admin-gifts-empty">עדיין אין מתנות. הוסיפי את הראשונה למעלה.</div>
+            <AdminEmptyState
+              title="עדיין אין מתנות"
+              description="הוסיפי חנות וקופונים למעלה."
+              icon="fa-store"
+            />
           ) : (
             gifts.map((gift) => (
               <article key={gift.id} className="admin-gift-card">
@@ -190,6 +189,7 @@ export function AdminGiftsPage() {
           )}
         </section>
       )}
+      </div>
     </main>
   );
 }

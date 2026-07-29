@@ -8,6 +8,8 @@ import type { PointTransaction } from '../../Models/SurveyModel';
 import type { PointsProgress } from '../../Services/pointsService';
 import type { MyCompletedResponse } from '../../Services/surveyService';
 import { PaginationBar } from '../LayoutArea/PaginationBar';
+import { UserBottomNav } from '../LayoutArea/UserBottomNav';
+import { UserLogoutButton } from '../LayoutArea/UserLogoutButton';
 import '../SurveyArea/survey-shared.css';
 import './PointsDashboardPage.css';
 
@@ -22,6 +24,13 @@ function formatDate(iso: string): string {
     hour: '2-digit',
     minute: '2-digit',
   }).format(new Date(iso));
+}
+
+function formatTransactionAmount(amount: number): string {
+  const abs = Math.abs(amount).toLocaleString('he-IL');
+  if (amount > 0) return `+${abs}`;
+  if (amount < 0) return `−${abs}`;
+  return '0';
 }
 
 function transactionIcon(type: PointTransaction['type']): string {
@@ -72,9 +81,7 @@ export function PointsDashboardPage() {
     setTxPage(nextPage);
     setProgress(data.progress);
     if (data.progress.hasPendingRedemption) {
-      setSubmittedMessage(
-        'קיימת בקשת פדיון פתוחה. תוך 48 שעות תקבל/י קופון למייל שסיפקת.'
-      );
+      setSubmittedMessage('pending');
       setShowRedeemForm(false);
     }
   }
@@ -123,12 +130,12 @@ export function PointsDashboardPage() {
     if (!file) return;
     const allowed = ['image/jpeg', 'image/png', 'image/webp'];
     if (!allowed.includes(file.type)) {
-      showToast('יש לבחור צילום מסוג JPG, PNG או WEBP', 'error');
+      showToast('נשמח לצילום מסוג JPG, PNG או WEBP', 'error');
       event.target.value = '';
       return;
     }
     if (file.size > 8 * 1024 * 1024) {
-      showToast('גודל הצילום יכול להיות עד 8MB', 'error');
+      showToast('הקובץ גדול מדי — עד 8MB', 'error');
       event.target.value = '';
       return;
     }
@@ -138,25 +145,25 @@ export function PointsDashboardPage() {
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
     if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
-      showToast('יש להזין כתובת מייל תקינה', 'error');
+      showToast('נשמח לכתובת מייל תקינה', 'error');
       return;
     }
     if (!idDocument) {
-      showToast('יש להעלות צילום תעודת זהות לצורך אימות', 'error');
+      showToast('חסר צילום תעודת זהות לאימות', 'error');
       return;
     }
 
     setSubmitting(true);
     try {
-      const result = await pointsService.submitRedemptionRequest(
+      await pointsService.submitRedemptionRequest(
         email.trim(),
         idDocument
       );
-      setSubmittedMessage(result.message);
+      setSubmittedMessage('submitted');
       setShowRedeemForm(false);
       setEmail('');
       setIdDocument(null);
-      showToast('הפנייה נשלחה בהצלחה', 'success');
+      showToast('הבקשה נשלחה', 'success');
       await loadPoints();
     } catch (err) {
       showToast(pointsService.getErrorMessage(err), 'error');
@@ -166,12 +173,11 @@ export function PointsDashboardPage() {
   }
 
   return (
-    <section className="survey-page points-page">
-      <header className="survey-topbar">
-        <Link to="/home" className="survey-back-btn" aria-label="חזרה לדף הבית">
-          <i className="fas fa-arrow-right" aria-hidden="true" />
-        </Link>
-        <h1>האזור האישי</h1>
+    <section className="survey-page points-page has-user-bottom-nav">
+      <header className="survey-topbar survey-topbar-nav-only">
+        <span className="survey-topbar-spacer" aria-hidden="true" />
+        <h1>הנקודות שלי</h1>
+        <UserLogoutButton />
       </header>
 
       <div className="survey-content">
@@ -191,12 +197,9 @@ export function PointsDashboardPage() {
               <div className="points-balance-icon" aria-hidden="true">
                 <i className="fas fa-coins" />
               </div>
-              <p className="points-balance-label">יתרה נוכחית</p>
+              <p className="points-balance-label">נקודות זמינות עכשיו</p>
               <p className="points-balance-value">
                 {balance.toLocaleString('he-IL')}
-              </p>
-              <p className="points-balance-hint">
-                נקודות מסקרים מתוגמלים ומבונוסים
               </p>
             </div>
 
@@ -217,7 +220,7 @@ export function PointsDashboardPage() {
                 className={tab === 'surveys' ? 'active' : ''}
                 onClick={() => setTab('surveys')}
               >
-                סקרים שעניתי
+                סקרים שקיבלתי עליהם נקודות
               </button>
             </div>
 
@@ -226,10 +229,7 @@ export function PointsDashboardPage() {
                 {progress && (
                   <div className="points-progress-card">
                     <div className="points-progress-head">
-                      <strong>התקדמות לפדיון</strong>
-                      <span>
-                        {progress.progressPercent}% מיעד {progress.redemptionGoal}
-                      </span>
+                      <strong>התקדמות לפדיון הבא</strong>
                     </div>
                     <div className="points-progress-bar" aria-hidden="true">
                       <div
@@ -239,20 +239,31 @@ export function PointsDashboardPage() {
                     </div>
                     {!progress.canRedeem ? (
                       <p className="points-progress-hint">
-                        עוד {progress.pointsNeeded} נקודות עד שתוכל/י לפדות
+                        חסרות לך עוד{' '}
+                        <strong>
+                          {progress.pointsNeeded.toLocaleString('he-IL')}
+                        </strong>{' '}
+                        נקודות כדי לבקש קופון
                       </p>
                     ) : !progress.hasPendingRedemption && !submittedMessage ? (
                       <div className="points-redeem-banner" role="status">
-                        <strong>הגעת ליעד הפדיון!</strong>
+                        <strong>אפשר לבקש קופון</strong>
                         <span>
-                          אם את/ה מעוניין/ת לפדות את הנקודות שצברת – לחץ/י כאן.
+                          בפדיון ינוכו{' '}
+                          {progress.redemptionPointsCost.toLocaleString('he-IL')}{' '}
+                          נקודות
+                          {progress.balanceAfterRedemption != null &&
+                          progress.balanceAfterRedemption > 0
+                            ? ` — יישארו לך ${progress.balanceAfterRedemption.toLocaleString('he-IL')} נקודות`
+                            : ''}
+                          .
                         </span>
                         <button
                           type="button"
                           className="points-redeem-cta"
                           onClick={() => setShowRedeemForm(true)}
                         >
-                          לפדיון הנקודות
+                          לפדיון
                         </button>
                       </div>
                     ) : null}
@@ -261,8 +272,23 @@ export function PointsDashboardPage() {
 
                 {submittedMessage && (
                   <div className="points-coupon-result" role="status">
-                    <strong>הפנייה התקבלה</strong>
-                    <span>{submittedMessage}</span>
+                    <strong>
+                      {submittedMessage === 'pending'
+                        ? 'בקשת פדיון בטיפול'
+                        : 'הפנייה התקבלה'}
+                    </strong>
+                    <span>
+                      {submittedMessage === 'pending'
+                        ? 'הקופון יישלח למייל בקרוב.'
+                        : 'הבקשה נשלחה — נעדכן כשתאושר.'}
+                    </span>
+                    <details className="points-status-details">
+                      <summary>מה קורה עכשיו?</summary>
+                      <p>
+                        המנהל יאשר את הבקשה, ישלח קופון למייל שסיפקת, ואז
+                        ינוכו הנקודות מהיתרה. צילום ת.ז. נמחק אחרי האישור.
+                      </p>
+                    </details>
                   </div>
                 )}
 
@@ -272,16 +298,31 @@ export function PointsDashboardPage() {
                     onSubmit={handleSubmit}
                   >
                     <h2 className="points-history-title">בקשת פדיון</h2>
+                    <ol className="points-redeem-steps" aria-label="שלבי הפדיון">
+                      <li className={email.trim() ? 'done' : 'current'}>
+                        <span>1</span> מייל
+                      </li>
+                      <li
+                        className={
+                          idDocument ? 'done' : email.trim() ? 'current' : ''
+                        }
+                      >
+                        <span>2</span> ת.ז.
+                      </li>
+                      <li className={email.trim() && idDocument ? 'current' : ''}>
+                        <span>3</span> שליחה
+                      </li>
+                    </ol>
                     <p className="survey-hint">
-                      מלא/י כתובת מייל והעלה/י צילום תעודת זהות לאימות אחרון.
-                      לאחר אישור המנהל יישלח אליך קופון למייל תוך 48 שעות.
-                    </p>
-                    <p className="points-privacy-line">
-                      מיד אחרי שתאושר על ידי מנהל המערכת – התמונה תימחק מהארכיון.
+                      הקופון יישלח למייל. צילום ת.ז. לאימות בלבד
+                      {progress
+                        ? ` · ינוכו ${progress.redemptionPointsCost.toLocaleString('he-IL')} נקודות`
+                        : ''}
+                      .
                     </p>
 
                     <label className="points-form-label">
-                      כתובת מייל לקבלת הקופון
+                      מייל לקבלת הקופון
                       <input
                         type="email"
                         value={email}
@@ -334,22 +375,22 @@ export function PointsDashboardPage() {
                         className="points-form-submit"
                         disabled={submitting}
                       >
-                        {submitting ? 'שולח…' : 'שליחת הפנייה'}
+                        {submitting ? 'שולחים…' : 'שליחת בקשה'}
                       </button>
                     </div>
                   </form>
                 )}
 
                 <div className="points-history-card survey-card">
-                  <h2 className="points-history-title">היסטוריית נקודות</h2>
+                  <h2 className="points-history-title">תנועות נקודות</h2>
 
                   {transactions.length === 0 ? (
                     <div className="points-empty">
                       <i className="fas fa-receipt" aria-hidden="true" />
                       <p>
                         {g(
-                          'עדיין אין תנועות נקודות.',
-                          'עדיין אין תנועות נקודות.'
+                          'עדיין אין תנועות.',
+                          'עדיין אין תנועות.'
                         )}
                       </p>
                       <p className="survey-hint">
@@ -389,8 +430,7 @@ export function PointsDashboardPage() {
                               tx.amount >= 0 ? 'positive' : 'negative'
                             }`}
                           >
-                            {tx.amount >= 0 ? '+' : ''}
-                            {tx.amount}
+                            {formatTransactionAmount(tx.amount)}
                           </span>
                         </li>
                       ))}
@@ -413,7 +453,7 @@ export function PointsDashboardPage() {
 
             {tab === 'surveys' && (
               <div className="points-history-card survey-card">
-                <h2 className="points-history-title">סקרים שעניתי</h2>
+                <h2 className="points-history-title">סקרים שקיבלתי עליהם נקודות</h2>
                 {surveysLoading ? (
                   <div className="survey-empty" role="status">
                     טוען סקרים...
@@ -421,12 +461,12 @@ export function PointsDashboardPage() {
                 ) : completedSurveys.length === 0 ? (
                   <div className="points-empty">
                     <i className="fas fa-clipboard-list" aria-hidden="true" />
-                    <p>טרם ענית על סקרים</p>
+                    <p>עדיין לא ענית על סקרים</p>
                     <p className="survey-hint">
-                      כשתענה/י על סקרים – הם יופיעו כאן עם הנקודות שקיבלת.
+                      כשתענה/י — הם יופיעו כאן עם הנקודות שקיבלת.
                     </p>
                     <Link to="/invitations" className="points-surveys-link">
-                      להזמנות פעילות
+                      להזמנות
                     </Link>
                   </div>
                 ) : (
@@ -468,6 +508,7 @@ export function PointsDashboardPage() {
           </>
         )}
       </div>
+      <UserBottomNav />
     </section>
   );
 }

@@ -24,7 +24,7 @@ export function AdminLoginPage() {
     try {
       await loginAdmin(password);
       await refreshUser();
-      showToast('התחברת בהצלחה למערכת הניהול', 'success');
+      showToast('התחברת בהצלחה', 'success');
       navigate('/admin');
     } catch (error) {
       showToast(getErrorMessage(error));
@@ -40,25 +40,24 @@ export function AdminLoginPage() {
           <img src="/logo.png" alt="" />
           <span>SekerApp</span>
         </div>
-        <h1>התחברות למערכת הניהול</h1>
-        <p className="admin-login-subtitle">
-          כניסה למנהלים בלבד - הזן סיסמת מנהל להמשך
-        </p>
+        <h1>כניסה לניהול</h1>
+        <p className="admin-login-subtitle">הזן סיסמת מנהל</p>
 
         <label>
-          <span>סיסמת מנהל</span>
+          <span className="visually-hidden">סיסמת מנהל</span>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="הזן סיסמה"
+            placeholder="סיסמת מנהל"
             autoFocus
             disabled={loading}
+            aria-label="סיסמת מנהל"
           />
         </label>
 
         <button type="submit" disabled={loading} className="admin-login-submit">
-          {loading ? 'מתחבר...' : 'כניסה למערכת'}
+          {loading ? 'מתחבר...' : 'כניסה'}
         </button>
       </form>
     </main>

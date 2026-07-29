@@ -2,6 +2,7 @@ import { Prisma } from '@prisma/client';
 import { dal } from '../../2-utils/dal';
 import { AppError } from '../../2-utils/app-error';
 import { KycApplicationInput } from '../../4-models/auth-schemas';
+import { syncUserDemographicTags } from '../admin/auto-tag-logic';
 
 /**
  * הגשת בקשת KYC – פרטים אישיים בלבד (ללא ת.ז.).
@@ -82,6 +83,19 @@ export async function submitKycApplication(
       referredById: true,
     },
   });
+
+  // שיוך אוטומטי לתגיות לפי עיר / גיל / תעסוקה / השכלה / מגדר
+  try {
+    await syncUserDemographicTags(userId, {
+      dateOfBirth: input.dateOfBirth,
+      city: input.city,
+      gender: input.gender,
+      employmentStatus: input.employmentStatus,
+      education: input.education,
+    });
+  } catch (error) {
+    console.error(`[auto-tag] failed for user=${userId}:`, error);
+  }
 
   return updated;
 }

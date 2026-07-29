@@ -2,12 +2,22 @@ import { Prisma } from '@prisma/client';
 import { dal } from '../../2-utils/dal';
 import { AppError } from '../../2-utils/app-error';
 
+const approvedAudienceFilter = {
+  user: {
+    status: 'APPROVED' as const,
+    role: 'USER' as const,
+  },
+};
+
 export async function listTags() {
   const tags = await dal.tag.findMany({
     orderBy: { name: 'asc' },
     include: {
       _count: {
-        select: { users: true, surveys: true },
+        select: {
+          users: { where: approvedAudienceFilter },
+          surveys: true,
+        },
       },
     },
   });
@@ -16,9 +26,82 @@ export async function listTags() {
     id: tag.id,
     name: tag.name,
     createdAt: tag.createdAt,
+    /** עונים מאושרים עם התגית – רלוונטי להפצת SMS */
     usersCount: tag._count.users,
     surveysCount: tag._count.surveys,
   }));
+}
+
+/**
+ * ספירת קהל ייחודי (OR בין תגיות) – עונים מאושרים בלבד.
+ * אם מועבר surveyId – מנכים מי שכבר הוזמן בהזמנה פעילה או שכבר השלים.
+ */
+export async function countAudienceByTags(
+  tagIds: string[],
+  options?: { surveyId?: string }
+): Promise<{
+  total: number;
+  perTag: { tagId: string; name: string; usersCount: number }[];
+}> {
+  const uniqueIds = [...new Set(tagIds)];
+  if (uniqueIds.length === 0) {
+    return { total: 0, perTag: [] };
+  }
+
+  const tags = await dal.tag.findMany({
+    where: { id: { in: uniqueIds } },
+    include: {
+      _count: {
+        select: {
+          users: { where: approvedAudienceFilter },
+        },
+      },
+    },
+  });
+
+  const now = new Date();
+  const excludeForSurvey = options?.surveyId
+    ? {
+        OR: [
+          {
+            invitations: {
+              some: {
+                surveyId: options.surveyId,
+                OR: [{ expiresAt: null }, { expiresAt: { gt: now } }],
+              },
+            },
+          },
+          {
+            responses: {
+              some: {
+                surveyId: options.surveyId,
+                status: 'COMPLETED' as const,
+              },
+            },
+          },
+        ],
+      }
+    : undefined;
+
+  const total = await dal.user.count({
+    where: {
+      status: 'APPROVED',
+      role: 'USER',
+      tags: {
+        some: { tagId: { in: tags.map((t) => t.id) } },
+      },
+      ...(excludeForSurvey ? { NOT: excludeForSurvey } : {}),
+    },
+  });
+
+  return {
+    total,
+    perTag: tags.map((t) => ({
+      tagId: t.id,
+      name: t.name,
+      usersCount: t._count.users,
+    })),
+  };
 }
 
 export async function createTag(name: string) {

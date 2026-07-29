@@ -12,14 +12,20 @@
   min-height: 44px;
   min-width: 72px;
   padding: 0 0.85rem;
-  border: 1px solid #cbd5e1;
-  border-radius: 10px;
-  background: #fff;
-  color: #1e3a8a;
+  border: 1.5px solid var(--border, #e4e7ec);
+  border-radius: var(--radius-md, 14px);
+  background: var(--surface, #fff);
+  color: var(--brand, #6c5ce7);
   font: inherit;
   font-weight: 700;
   font-size: 0.88rem;
   cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  border-color: var(--brand, #6c5ce7);
+  background: var(--brand-soft, #eeebff);
 }
 
 .pagination-btn:disabled {
@@ -30,7 +36,7 @@
 .pagination-meta {
   flex: 1;
   text-align: center;
-  color: #64748b;
+  color: var(--text-muted, #667085);
   font-size: 0.8rem;
   font-weight: 600;
   line-height: 1.35;

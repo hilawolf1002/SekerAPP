@@ -1,6 +1,7 @@
 import { lazy, Suspense, ComponentType } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { PrivateRoute } from '../AuthArea/PrivateRoute';
+import { ApprovedResponderRoute } from '../AuthArea/ApprovedResponderRoute';
 import { AdminRoute } from '../AdminArea/AdminRoute';
 import { LandingPage } from '../HomeArea/LandingPage';
 import { LoginPage } from '../AuthArea/LoginPage';
@@ -74,11 +75,13 @@ const AdminSettingsPage = lazy(() =>
     default: m.AdminSettingsPage,
   }))
 );
+/* מתנות וקופונים — מושבת זמנית (פדיון ידני במייל)
 const AdminGiftsPage = lazy(() =>
   import('../AdminArea/AdminGiftsPage').then((m) => ({
     default: m.AdminGiftsPage,
   }))
 );
+*/
 const AdminTagsPage = lazy(() =>
   import('../AdminArea/AdminTagsPage').then((m) => ({
     default: m.AdminTagsPage,
@@ -133,6 +136,18 @@ function withAdmin(Page: ComponentType) {
   );
 }
 
+function withApproved(Page: ComponentType) {
+  return (
+    <Lazy>
+      <PrivateRoute>
+        <ApprovedResponderRoute>
+          <Page />
+        </ApprovedResponderRoute>
+      </PrivateRoute>
+    </Lazy>
+  );
+}
+
 export function AppRoutes() {
   return (
     <Routes>
@@ -142,8 +157,8 @@ export function AppRoutes() {
       <Route path="/join" element={withPrivate(KycRegistrationPage)} />
       <Route path="/surveys" element={withPrivate(SurveysListPage)} />
       <Route path="/surveys/create" element={withPrivate(CreateSurveyPage)} />
-      <Route path="/invitations" element={withPrivate(InvitationsPage)} />
-      <Route path="/points" element={withPrivate(PointsDashboardPage)} />
+      <Route path="/invitations" element={withApproved(InvitationsPage)} />
+      <Route path="/points" element={withApproved(PointsDashboardPage)} />
       <Route path="/surveys/:id/stats" element={withPrivate(SurveyStatsPage)} />
       <Route
         path="/surveys/:id"
@@ -167,7 +182,7 @@ export function AppRoutes() {
       <Route path="/admin/users" element={withAdmin(AdminUsersPage)} />
       <Route path="/admin/redemptions" element={withAdmin(AdminRedemptionsPage)} />
       <Route path="/admin/settings" element={withAdmin(AdminSettingsPage)} />
-      <Route path="/admin/gifts" element={withAdmin(AdminGiftsPage)} />
+      {/* <Route path="/admin/gifts" element={withAdmin(AdminGiftsPage)} /> */}
       <Route path="/admin/tags" element={withAdmin(AdminTagsPage)} />
 
       <Route path="*" element={<Navigate to="/login" replace />} />

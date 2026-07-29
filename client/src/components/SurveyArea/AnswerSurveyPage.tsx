@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../Context/AuthContext';
 import { useToast } from '../../Context/ToastContext';
 import { useGender } from '../../Utils/useGender';
@@ -7,6 +7,7 @@ import * as surveyService from '../../Services/surveyService';
 import type { Survey, SurveyQuestion } from '../../Models/SurveyModel';
 import './survey-shared.css';
 import './AnswerSurveyPage.css';
+import { UserLogoutButton } from '../LayoutArea/UserLogoutButton';
 
 type Phase = 'loading' | 'intro' | 'questions' | 'done' | 'error';
 
@@ -66,7 +67,8 @@ function toServerAnswer(value: AnswerValue, q: SurveyQuestion): string | string[
 /** מענה לסקר – שאלה אחת במסך, טיימר, מותאם למובייל */
 export function AnswerSurveyPage() {
   const { id } = useParams<{ id: string }>();
-  const { user, loading: authLoading } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { user, loading: authLoading, setUser } = useAuth();
   const { showToast } = useToast();
   const g = useGender();
 
@@ -75,6 +77,8 @@ export function AnswerSurveyPage() {
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [starting, setStarting] = useState(false);
+  const [claimingInvite, setClaimingInvite] = useState(false);
+  const [inviteExpiresAt, setInviteExpiresAt] = useState<string | null>(null);
 
   const [expiresAt, setExpiresAt] = useState<Date | null>(null);
   const [timeLeftMs, setTimeLeftMs] = useState(0);
@@ -83,6 +87,41 @@ export function AnswerSurveyPage() {
   const [doneMessage, setDoneMessage] = useState('');
   const [pointsAwarded, setPointsAwarded] = useState(0);
   const [resumeInfo, setResumeInfo] = useState('');
+
+  const inviteToken = searchParams.get('t');
+
+  useEffect(() => {
+    if (!inviteToken) return;
+    let cancelled = false;
+    (async () => {
+      setClaimingInvite(true);
+      try {
+        const result = await surveyService.claimInviteToken(inviteToken);
+        if (cancelled) return;
+        setUser(result.user);
+        setInviteExpiresAt(result.inviteExpiresAt);
+        setSearchParams(
+          (prev) => {
+            const next = new URLSearchParams(prev);
+            next.delete('t');
+            return next;
+          },
+          { replace: true }
+        );
+      } catch (err) {
+        if (cancelled) return;
+        const msg = surveyService.getErrorMessage(err);
+        setError(msg);
+        showToast(msg, 'error');
+        setPhase('error');
+      } finally {
+        if (!cancelled) setClaimingInvite(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [inviteToken, setUser, setSearchParams, showToast]);
 
   const loadSurvey = useCallback(async () => {
     if (!id) return;
@@ -107,8 +146,9 @@ export function AnswerSurveyPage() {
   }, [id, showToast]);
 
   useEffect(() => {
+    if (claimingInvite || inviteToken) return;
     loadSurvey();
-  }, [loadSurvey]);
+  }, [loadSurvey, claimingInvite, inviteToken]);
 
   useEffect(() => {
     if (!expiresAt || phase !== 'questions') return;
@@ -203,7 +243,6 @@ export function AnswerSurveyPage() {
 
     const validationError = validateAllAnswers();
     if (validationError) {
-      setError(validationError);
       showToast(validationError, 'error');
       return;
     }
@@ -220,11 +259,10 @@ export function AnswerSurveyPage() {
       );
       setPhase('done');
       if (result.pointsAwarded > 0) {
-        showToast(`קיבלת ${result.pointsAwarded} נקודות`, 'success');
+        showToast(`נוספו ${result.pointsAwarded} נקודות`, 'success');
       }
     } catch (err) {
       const msg = surveyService.getErrorMessage(err);
-      setError(msg);
       showToast(msg, 'error');
     } finally {
       setSubmitting(false);
@@ -247,11 +285,13 @@ export function AnswerSurveyPage() {
     handleSubmit();
   };
 
-  if (authLoading || phase === 'loading') {
+  if (authLoading || claimingInvite || phase === 'loading') {
     return (
       <section className="survey-page">
         <div className="survey-empty" role="status">
-          {g('טוענת סקר...', 'טוען סקר...')}
+          {claimingInvite
+            ? g('פותחת הזמנה...', 'פותח הזמנה...')
+            : g('טוענת סקר...', 'טוען סקר...')}
         </div>
       </section>
     );
@@ -265,6 +305,7 @@ export function AnswerSurveyPage() {
             <i className="fas fa-arrow-right" aria-hidden="true" />
           </Link>
           <h1>סקר</h1>
+          {user && <UserLogoutButton />}
         </header>
         <div className="survey-content">
           <div className="survey-alert survey-alert-error" role="alert">
@@ -285,6 +326,11 @@ export function AnswerSurveyPage() {
   if (phase === 'done') {
     return (
       <section className="survey-page answer-done">
+        <header className="survey-topbar survey-topbar-nav-only">
+          <span className="survey-topbar-spacer" aria-hidden="true" />
+          <h1>סיימת!</h1>
+          {user && <UserLogoutButton />}
+        </header>
         <div className="survey-content">
           <div className="survey-card answer-done-card">
             <div className="answer-done-icon" aria-hidden="true">
@@ -345,7 +391,8 @@ export function AnswerSurveyPage() {
           >
             <i className="fas fa-arrow-right" aria-hidden="true" />
           </Link>
-          <h1>{survey.title}</h1>
+          <h1>סקר</h1>
+          {user && <UserLogoutButton />}
         </header>
 
         <div className="survey-content">
@@ -392,6 +439,17 @@ export function AnswerSurveyPage() {
               <div className="survey-reward-pill">
                 <i className="fas fa-coins" aria-hidden="true" />
                 {survey.rewardPoints} נקודות למענה
+              </div>
+            )}
+
+            {inviteExpiresAt && (
+              <div className="survey-alert survey-alert-info" role="status">
+                ניתן לענות עד{' '}
+                {new Date(inviteExpiresAt).toLocaleString('he-IL', {
+                  dateStyle: 'short',
+                  timeStyle: 'short',
+                })}
+                . אחרי מועד זה ההזמנה תיסגר.
               </div>
             )}
 
@@ -493,6 +551,7 @@ export function AnswerSurveyPage() {
               {formatTimeLeft(timeLeftMs)}
             </div>
           )}
+          {user && <UserLogoutButton />}
         </header>
 
         <div className="survey-progress" aria-hidden="true">
@@ -503,11 +562,6 @@ export function AnswerSurveyPage() {
           {resumeInfo && (
             <div className="survey-alert survey-alert-info" role="status">
               {resumeInfo}
-            </div>
-          )}
-          {error && (
-            <div className="survey-alert survey-alert-error" role="alert">
-              {error}
             </div>
           )}
 

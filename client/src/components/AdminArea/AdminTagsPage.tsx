@@ -1,5 +1,5 @@
 import { FormEvent, useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../Context/AuthContext';
 import { useToast } from '../../Context/ToastContext';
 import { getErrorMessage } from '../../Services/api';
@@ -7,9 +7,25 @@ import {
   getAdminTags,
   createAdminTag,
   deleteAdminTag,
+  resyncDemographicTags,
   AudienceTag,
 } from '../../Services/adminService';
+import { AdminTopBar } from './AdminTopBar';
+import { AdminEmptyState, AdminSkeleton } from './AdminUiShared';
+import './AdminUiShared.css';
 import './AdminTagsPage.css';
+
+const TAG_PRESETS = [
+  'תל אביב',
+  'ירושלים',
+  'גיל 18-24',
+  'גיל 25-34',
+  'גיל 35-44',
+  'סטודנטים',
+  'נשים',
+  'גברים',
+  'VIP',
+];
 
 export function AdminTagsPage() {
   const navigate = useNavigate();
@@ -26,19 +42,19 @@ export function AdminTagsPage() {
       navigate('/');
       return;
     }
-    loadTags();
-  }, [user, navigate]);
-
-  async function loadTags() {
-    try {
-      setLoading(true);
-      setTags(await getAdminTags());
-    } catch (error) {
-      showToast(getErrorMessage(error));
-    } finally {
-      setLoading(false);
-    }
-  }
+    (async () => {
+      try {
+        setLoading(true);
+        // סנכרון שקט לעונים ישנים — רישום חדש כבר מתויג אוטומטית
+        await resyncDemographicTags().catch(() => undefined);
+        setTags(await getAdminTags());
+      } catch (error) {
+        showToast(getErrorMessage(error));
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [user, navigate, showToast]);
 
   async function handleCreate(event: FormEvent) {
     event.preventDefault();
@@ -52,7 +68,7 @@ export function AdminTagsPage() {
       await createAdminTag(trimmed);
       setName('');
       showToast('התגית נוצרה', 'success');
-      await loadTags();
+      setTags(await getAdminTags());
     } catch (error) {
       showToast(getErrorMessage(error));
     } finally {
@@ -72,7 +88,7 @@ export function AdminTagsPage() {
       setBusyId(tag.id);
       await deleteAdminTag(tag.id);
       showToast('התגית נמחקה', 'success');
-      await loadTags();
+      setTags(await getAdminTags());
     } catch (error) {
       showToast(getErrorMessage(error));
     } finally {
@@ -81,60 +97,80 @@ export function AdminTagsPage() {
   }
 
   return (
-    <main className="admin-tags-shell">
-      <header className="admin-tags-header">
-        <Link to="/admin" className="admin-back-link">
-          ← חזרה לדשבורד
-        </Link>
-        <h1>תגיות קהל</h1>
-        <p>
-          תגיות חופשיות להגדרת קהלים (עיר, גיל, תחום עניין וכו׳). אחר כך משייכים
-          אותן למשתמשים ומפיצים סקרים לפי תגית.
-        </p>
-      </header>
+    <main className="admin-shell admin-tags-shell">
+      <AdminTopBar title="תגיות קהל" subtitle="למי יופץ הסקר ב-SMS" />
 
-      <form className="admin-tags-create" onSubmit={handleCreate}>
-        <h2>תגית חדשה</h2>
-        <div className="admin-tags-create-row">
-          <input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder='לדוגמה: "תל אביב", "גיל 25-34", "VIP"'
-            maxLength={60}
-            required
-          />
-          <button type="submit" disabled={creating}>
-            {creating ? 'יוצר…' : 'הוספה'}
-          </button>
+      <div className="admin-page-body">
+        <div className="admin-tags-info">
+          <strong>איך זה עובד?</strong>
+          <p>
+            כשעונה נרשם — הוא משויך אוטומטית לפי עיר, גיל, מגדר, תעסוקה והשכלה.
+            כאן רואים את הקהלים ויוצרים תגיות ידניות (למשל VIP). המספר ליד כל
+            תגית = כמה עונים מאושרים יקבלו SMS אם תבחרי אותה בהפצה.
+          </p>
         </div>
-      </form>
 
-      {loading ? (
-        <div className="admin-tags-loading">טוען תגיות...</div>
-      ) : tags.length === 0 ? (
-        <div className="admin-tags-empty">עדיין אין תגיות — צרו את הראשונה למעלה</div>
-      ) : (
-        <section className="admin-tags-list">
-          {tags.map((tag) => (
-            <article key={tag.id} className="admin-tag-card">
-              <div className="admin-tag-info">
-                <strong>{tag.name}</strong>
-                <span>
-                  {tag.usersCount ?? 0} עונים · {tag.surveysCount ?? 0} סקרים
-                </span>
-              </div>
+        <form className="admin-tags-create" onSubmit={handleCreate}>
+          <h2>הוספת תגית</h2>
+          <p className="admin-tags-presets-label">בחירה מהירה:</p>
+          <div className="admin-tags-presets">
+            {TAG_PRESETS.map((preset) => (
               <button
+                key={preset}
                 type="button"
-                className="admin-tag-delete"
-                disabled={busyId === tag.id}
-                onClick={() => handleDelete(tag)}
+                className="admin-tags-preset-btn"
+                disabled={creating || tags.some((t) => t.name === preset)}
+                onClick={() => setName(preset)}
               >
-                מחיקה
+                {preset}
               </button>
-            </article>
-          ))}
-        </section>
-      )}
+            ))}
+          </div>
+          <div className="admin-tags-create-row">
+            <input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder='שם תגית, למשל "VIP"'
+              maxLength={60}
+              required
+            />
+            <button type="submit" disabled={creating}>
+              {creating ? '…' : 'הוספה'}
+            </button>
+          </div>
+        </form>
+
+        <h2 className="admin-tags-list-title">הקהלים שלך</h2>
+        {loading ? (
+          <AdminSkeleton rows={3} />
+        ) : tags.length === 0 ? (
+          <AdminEmptyState
+            title="עדיין אין תגיות"
+            description="הוסיפי תגית למעלה — או המתיני שעונים יירשמו."
+            icon="fa-tags"
+          />
+        ) : (
+          <section className="admin-tags-list">
+            {tags.map((tag) => (
+              <article key={tag.id} className="admin-tag-card">
+                <div className="admin-tag-info">
+                  <strong>{tag.name}</strong>
+                  <span>{tag.usersCount ?? 0} עונים מאושרים</span>
+                </div>
+                <button
+                  type="button"
+                  className="admin-tag-delete"
+                  disabled={busyId === tag.id}
+                  onClick={() => handleDelete(tag)}
+                  aria-label={`מחיקת ${tag.name}`}
+                >
+                  מחיקה
+                </button>
+              </article>
+            ))}
+          </section>
+        )}
+      </div>
     </main>
   );
 }

@@ -13,7 +13,7 @@ function required(name: string, fallback?: string): string {
 const nodeEnv = process.env.NODE_ENV || 'development';
 const isDev = nodeEnv !== 'production';
 
-/** sms = שליחה אמיתית | console = הדפסה ללוג (רק לפיתוח מקומי בלי SMS) */
+/** sms = שליחה אמיתית | console = הדפסה ללוג (פיתוח / דמו עם ALLOW_CONSOLE_OTP) */
 const otpDelivery =
   (process.env.OTP_DELIVERY || 'sms').toLowerCase() === 'console'
     ? 'console'
@@ -26,8 +26,11 @@ const jwtSecret = required(
 if (!isDev && jwtSecret.length < 32) {
   throw new Error('JWT_SECRET must contain at least 32 characters in production');
 }
-if (!isDev && otpDelivery === 'console') {
-  throw new Error('OTP_DELIVERY=console is forbidden in production');
+const allowConsoleOtp = process.env.ALLOW_CONSOLE_OTP === 'true';
+if (!isDev && otpDelivery === 'console' && !allowConsoleOtp) {
+  throw new Error(
+    'OTP_DELIVERY=console is forbidden in production (set ALLOW_CONSOLE_OTP=true only for temporary demos)'
+  );
 }
 
 export const appConfig = {

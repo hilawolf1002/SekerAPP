@@ -39,8 +39,11 @@ import {
   createTag,
   deleteTag,
   setUserTags,
+  countAudienceByTags,
 } from '../../5-logic/admin/tags-logic';
+import { resyncAllDemographicTags } from '../../5-logic/admin/auto-tag-logic';
 import { parsePagination } from '../../2-utils/pagination';
+import { dal } from '../../2-utils/dal';
 
 const router = Router();
 
@@ -136,11 +139,30 @@ router.post(
   validateBody(setUserStatusSchema),
   async (req, res, next) => {
     try {
-      const result = await setUserStatus(
-        req.params.id,
-        req.body.status,
-        req.body.reason
-      );
+      const userId = req.params.id;
+      const { status, reason } = req.body;
+
+      const existing = await dal.user.findUnique({
+        where: { id: userId },
+        select: { status: true },
+      });
+
+      if (status === 'APPROVED' && existing?.status === 'PENDING_APPROVAL') {
+        const result = await approveResponder(userId);
+        res.json({ success: true, ...result });
+        return;
+      }
+
+      if (status === 'REJECTED' && existing?.status === 'PENDING_APPROVAL') {
+        const result = await rejectResponder(userId, {
+          sendSms: true,
+          reason,
+        });
+        res.json({ success: true, ...result });
+        return;
+      }
+
+      const result = await setUserStatus(userId, status, reason);
       res.json({ success: true, ...result });
     } catch (error) {
       next(error);
@@ -223,6 +245,35 @@ router.get('/tags', async (_req, res, next) => {
   try {
     const tags = await listTags();
     res.json({ success: true, tags });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/** GET /api/admin/tags/audience-count?tagIds=id1,id2&surveyId=… – ספירת קהל ייחודי */
+router.get('/tags/audience-count', async (req, res, next) => {
+  try {
+    const raw = String(req.query.tagIds || '');
+    const tagIds = raw
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean);
+    const surveyId =
+      typeof req.query.surveyId === 'string' && req.query.surveyId
+        ? req.query.surveyId
+        : undefined;
+    const result = await countAudienceByTags(tagIds, { surveyId });
+    res.json({ success: true, ...result });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/** POST /api/admin/tags/resync-demographics – סנכרון תגיות מרישום לכל העונים */
+router.post('/tags/resync-demographics', async (_req, res, next) => {
+  try {
+    const result = await resyncAllDemographicTags();
+    res.json({ success: true, ...result });
   } catch (error) {
     next(error);
   }

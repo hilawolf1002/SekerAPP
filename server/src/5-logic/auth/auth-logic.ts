@@ -77,6 +77,29 @@ async function ensureUserAndToken(phone: string) {
   };
 }
 
+/** יצירת סשן למשתמש קיים (למשל כניסה מקישור הזמנה ב-SMS) */
+export async function createSessionForUser(userId: string) {
+  const user = await dal.user.findUnique({ where: { id: userId } });
+  if (!user) throw new AppError('המשתמש לא נמצא', 404);
+  if (user.status === 'BLOCKED') throw new AppError('החשבון חסום', 403);
+
+  const token = signToken({ userId: user.id, role: user.role });
+
+  return {
+    token,
+    user: {
+      id: user.id,
+      phone: user.phone,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+      status: user.status,
+      referralCode: user.referralCode,
+      demographics: user.demographics,
+    },
+  };
+}
+
 /**
  * בקשת קוד OTP לטלפון.
  * כברירת מחדל נשלח SMS אמיתי דרך Micropay.

@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import './Toast.css';
 
 export type ToastType = 'error' | 'success' | 'info';
@@ -19,6 +20,10 @@ const TOAST_DURATION_MS = 3000;
 
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
+  const location = useLocation();
+  const aboveBottomNav = ['/home', '/invitations', '/points'].includes(
+    location.pathname
+  );
 
   const showToast = useCallback((message: string, type: ToastType = 'error') => {
     const trimmed = message.trim();
@@ -37,7 +42,11 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   return (
     <ToastContext.Provider value={value}>
       {children}
-      <div className="toast-viewport" aria-live="polite" aria-relevant="additions">
+      <div
+        className={`toast-viewport${aboveBottomNav ? ' toast-above-nav' : ''}`}
+        aria-live="polite"
+        aria-relevant="additions"
+      >
         {toasts.map((toast) => (
           <div
             key={toast.id}

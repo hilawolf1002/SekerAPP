@@ -1,7 +1,7 @@
 .admin-pending-shell {
   min-height: 100vh;
   direction: rtl;
-  background: #f8fafc;
+  background: var(--bg, #f7f8fc);
 }
 
 .admin-pending-header {

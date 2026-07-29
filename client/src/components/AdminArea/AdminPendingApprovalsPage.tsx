@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../Context/AuthContext';
 import { useToast } from '../../Context/ToastContext';
 import { getErrorMessage } from '../../Services/api';
@@ -11,6 +11,9 @@ import {
   PendingResponder,
   IdDocumentPreview,
 } from '../../Services/adminService';
+import { AdminTopBar } from './AdminTopBar';
+import { AdminEmptyState, AdminSkeleton } from './AdminUiShared';
+import './AdminUiShared.css';
 import './AdminPendingApprovalsPage.css';
 
 export function AdminPendingApprovalsPage() {
@@ -96,28 +99,32 @@ export function AdminPendingApprovalsPage() {
 
   if (loading) {
     return (
-      <main className="admin-pending-shell">
-        <div className="admin-pending-loading">טוען רשימת ממתינים...</div>
+      <main className="admin-shell admin-pending-shell">
+        <AdminTopBar
+          title="אישור עונים"
+          subtitle="בקשות ממתינות"
+        />
+        <div className="admin-page-body">
+          <AdminSkeleton rows={3} />
+        </div>
       </main>
     );
   }
 
   return (
-    <main className="admin-pending-shell">
-      <header className="admin-pending-header">
-        <Link to="/admin" className="admin-back-link">
-          ← חזרה לדשבורד
-        </Link>
-        <h1>עונים ממתינים לאישור</h1>
-        <p>סה"כ: {responders.length}</p>
-      </header>
+    <main className="admin-shell admin-pending-shell">
+      <AdminTopBar
+        title="אישור עונים"
+        subtitle={`סה״כ ממתינים: ${responders.length}`}
+      />
 
+      <div className="admin-page-body">
       {responders.length === 0 ? (
-        <div className="admin-empty-state">
-          <span className="admin-empty-icon">✓</span>
-          <strong>אין עונים הממתינים לאישור כרגע</strong>
-          <span>כל הבקשות החדשות יופיעו כאן</span>
-        </div>
+        <AdminEmptyState
+          title="אין עונים ממתינים לאישור"
+          description="בקשות חדשות יופיעו כאן אוטומטית."
+          icon="fa-user-check"
+        />
       ) : (
         <section className="admin-pending-list">
           {responders.map((responder) => (
@@ -185,6 +192,7 @@ export function AdminPendingApprovalsPage() {
           ))}
         </section>
       )}
+      </div>
 
       {idDocument && (
         <div className="admin-modal-overlay" onClick={closePreview}>

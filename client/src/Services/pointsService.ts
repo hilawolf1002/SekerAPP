@@ -5,6 +5,8 @@ export { getErrorMessage };
 
 export type PointsProgress = {
   redemptionGoal: number;
+  redemptionPointsCost: number;
+  balanceAfterRedemption: number | null;
   pointsNeeded: number;
   canRedeem: boolean;
   progressPercent: number;

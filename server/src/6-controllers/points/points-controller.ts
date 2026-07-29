@@ -74,6 +74,8 @@ router.get(
         take: summary.take,
         progress: {
           redemptionGoal: progress.redemptionGoal,
+          redemptionPointsCost: progress.redemptionPointsCost,
+          balanceAfterRedemption: progress.balanceAfterRedemption,
           pointsNeeded: progress.pointsNeeded,
           canRedeem: progress.canRedeem,
           progressPercent: progress.progressPercent,

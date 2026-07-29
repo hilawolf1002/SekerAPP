@@ -15,6 +15,7 @@ import {
   inviteByTags,
   inviteByPhones,
   getInvitedSurveys,
+  claimInviteAccess,
 } from '../../5-logic/surveys/invitation-logic';
 import { saveSurveyImage } from '../../5-logic/surveys/survey-image-logic';
 import {
@@ -22,6 +23,7 @@ import {
   updateSurveyStatusSchema,
   completeSurveySchema,
   inviteSurveySchema,
+  claimInviteSchema,
 } from '../../4-models/survey-schemas';
 import { validateBody } from '../../3-middleware/validate-middleware';
 import {
@@ -32,6 +34,7 @@ import {
 } from '../../3-middleware/auth-middleware';
 import { AppError } from '../../2-utils/app-error';
 import { parsePagination } from '../../2-utils/pagination';
+import { setAuthCookie } from '../../5-logic/auth/auth-logic';
 
 const router = Router();
 
@@ -204,6 +207,31 @@ router.get(
   }
 );
 
+/**
+ * POST /api/surveys/invite/claim – כניסה מקישור SMS בלי OTP
+ * חייב לפני /:id כדי שלא ייבלע.
+ * Body: { token }
+ */
+router.post(
+  '/invite/claim',
+  inviteLimiter,
+  validateBody(claimInviteSchema),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const result = await claimInviteAccess(req.body.token);
+      setAuthCookie(res, result.token);
+      res.json({
+        success: true,
+        user: result.user,
+        surveyId: result.surveyId,
+        inviteExpiresAt: result.inviteExpiresAt,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 /** GET /api/surveys/:id – צפייה בסקר (פעיל לכולם; טיוטה/סגור רק ליוצר/אדמין) */
 router.get('/:id', optionalAuth, async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -255,7 +283,7 @@ router.get(
 
 /**
  * POST /api/surveys/:id/invite – שליחת הזמנות (אדמין בלבד)
- * Body: { mode: 'tags'|'phones', tagIds?: string[], phones?: string[] }
+ * Body: { mode: 'tags'|'phones', tagIds?: string[], phones?: string[], expiresInMinutes?: number }
  */
 router.post(
   '/:id/invite',
@@ -265,11 +293,12 @@ router.post(
   validateBody(inviteSurveySchema),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { mode, tagIds, phones } = req.body;
+      const { mode, tagIds, phones, expiresInMinutes } = req.body;
+      const opts = { expiresInMinutes };
       const result =
         mode === 'tags'
-          ? await inviteByTags(req.params.id, tagIds ?? [])
-          : await inviteByPhones(req.params.id, phones ?? []);
+          ? await inviteByTags(req.params.id, tagIds ?? [], opts)
+          : await inviteByPhones(req.params.id, phones ?? [], opts);
 
       res.json({ success: true, ...result });
     } catch (error) {

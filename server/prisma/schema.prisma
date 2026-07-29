@@ -314,6 +314,10 @@ model SurveyInvitation {
   sentAt      DateTime         @default(now())
   openedAt    DateTime?
   respondedAt DateTime?
+  /// טוקן חד-פעמי לכניסה בלי OTP מקישור ה-SMS
+  accessToken String?          @unique
+  /// מועד סגירה קשיח להזמנה (מחושב מרגע השליחה)
+  expiresAt   DateTime?
 
   survey Survey @relation(fields: [surveyId], references: [id], onDelete: Cascade)
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -322,4 +326,5 @@ model SurveyInvitation {
   @@index([userId, status])
   @@index([surveyId])
   @@index([sentAt])
+  @@index([expiresAt])
 }

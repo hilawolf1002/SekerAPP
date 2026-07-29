@@ -1,5 +1,5 @@
 import { FormEvent, useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../Context/AuthContext';
 import { useToast } from '../../Context/ToastContext';
 import { getErrorMessage } from '../../Services/api';
@@ -8,6 +8,9 @@ import {
   updateAdminSettings,
   GlobalSettings,
 } from '../../Services/adminService';
+import { AdminTopBar } from './AdminTopBar';
+import { AdminSkeleton } from './AdminUiShared';
+import './AdminUiShared.css';
 import './AdminSettingsPage.css';
 
 export function AdminSettingsPage() {
@@ -66,23 +69,23 @@ export function AdminSettingsPage() {
 
   if (loading || !form) {
     return (
-      <main className="admin-settings-shell">
-        <div className="admin-settings-loading">טוען הגדרות...</div>
+      <main className="admin-shell admin-settings-shell">
+        <AdminTopBar title="הגדרות מערכת" />
+        <div className="admin-page-body">
+          <AdminSkeleton rows={3} />
+        </div>
       </main>
     );
   }
 
   return (
-    <main className="admin-settings-shell">
-      <header className="admin-settings-header">
-        <Link to="/admin" className="admin-back-link">
-          ← חזרה לדשבורד
-        </Link>
-        <h1>הגדרות מערכת</h1>
-        <p>כאן קובעים את כללי הפדיון והבונוסים לכל המערכת.</p>
-      </header>
+    <main className="admin-shell admin-settings-shell">
+      <AdminTopBar
+        title="הגדרות מערכת"
+        subtitle="יעד פדיון, בונוסים וסקרים"
+      />
 
-      <form className="admin-settings-form" onSubmit={handleSubmit}>
+      <form className="admin-page-body admin-settings-form" onSubmit={handleSubmit}>
         <label>
           <strong>יעד פדיון נקודות</strong>
           <span>מכמה נקודות העונה יכול להתחיל לפדות מתנה</span>

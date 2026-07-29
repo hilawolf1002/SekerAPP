@@ -4,6 +4,7 @@ import { readFile, unlink } from 'fs/promises';
 import { dal } from '../../2-utils/dal';
 import { AppError } from '../../2-utils/app-error';
 import { sendSms } from '../auth/sms-service';
+import { syncUserDemographicTags } from './auto-tag-logic';
 import { getOrCreateSettings } from './settings-redemption-logic';
 
 const uploadRoot = path.resolve(__dirname, '../../../private-uploads/kyc');
@@ -417,6 +418,12 @@ export async function approveResponder(userId: string) {
 
     return approved;
   });
+
+  try {
+    await syncUserDemographicTags(userId, demographics);
+  } catch (error) {
+    console.error(`[auto-tag] approve failed for user=${userId}:`, error);
+  }
 
   // שליחת SMS למשתמש (בפיתוח עם OTP_DELIVERY=console – נכתב ללוג)
   try {

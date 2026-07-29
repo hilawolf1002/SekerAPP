@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../Context/AuthContext';
 import { useToast } from '../../Context/ToastContext';
 import * as authService from '../../Services/authService';
+import { formatPhoneValidationError, normalizeIsraeliPhone } from '../../Utils/phoneValidation';
 import './LoginPage.css';
 
 type Step = 'phone' | 'code';
@@ -41,9 +42,18 @@ export function LoginPage() {
     event.preventDefault();
     setError('');
     setInfo('');
+
+    const phoneError = formatPhoneValidationError(phone);
+    if (phoneError) {
+      setError(phoneError);
+      showToast(phoneError, 'error');
+      return;
+    }
+
+    const normalizedPhone = normalizeIsraeliPhone(phone.trim());
     setSubmitting(true);
     try {
-      const result = await authService.requestOtp(phone.trim());
+      const result = await authService.requestOtp(normalizedPhone);
 
       if (result.bypassLogin && result.user) {
         setUser(result.user);
@@ -53,6 +63,7 @@ export function LoginPage() {
 
       setInfo(result.message);
       if (result.devCode) setDevCode(result.devCode);
+      setPhone(normalizedPhone);
       setStep('code');
       setCode('');
     } catch (err) {
@@ -67,6 +78,14 @@ export function LoginPage() {
   const handleVerifyOtp = async (event: React.FormEvent) => {
     event.preventDefault();
     setError('');
+
+    if (!/^\d{6}$/.test(code.trim())) {
+      const msg = 'קוד האימות חייב להכיל 6 ספרות';
+      setError(msg);
+      showToast(msg, 'error');
+      return;
+    }
+
     setSubmitting(true);
     try {
       const result = await authService.verifyOtp(phone.trim(), code.trim());
@@ -106,25 +125,21 @@ export function LoginPage() {
       </div>
 
       <div className="login-container">
-        <Link to="/" className="back-home" aria-label="חזרה לדף הבית">
-          <i className="fas fa-arrow-right" aria-hidden="true" />
-        </Link>
-
         <div className="login-header">
           <div className="logo">
             <img src="/logo.png" alt="" />
             <span>SekerApp</span>
           </div>
-          <h1 className="header-title">ברוך שובך!</h1>
+          <h1 className="header-title">היי, טוב שבאת</h1>
           <p className="header-subtitle">
-            התחבר לחשבון שלך עם קוד חד-פעמי לנייד
+            כניסה עם קוד לנייד — בלי סיסמה לזכור
           </p>
         </div>
 
         {step === 'phone' ? (
           <form className="login-form" onSubmit={handleRequestOtp} noValidate>
             <p className="form-hint">
-              הזינו מספר נייד ישראלי. נשלח אליכם קוד ב-SMS להתחברות.
+              הזינו מספר נייד ישראלי ונשלח אליכם קוד ב-SMS.
             </p>
 
             <div className="form-group">
@@ -156,18 +171,18 @@ export function LoginPage() {
             )}
 
             <button type="submit" className="submit-btn" disabled={submitting}>
-              {submitting ? 'שולח...' : 'שלחו לי קוד'}
+              {submitting ? 'שולחים…' : 'שליחת קוד'}
             </button>
           </form>
         ) : (
           <form className="login-form" onSubmit={handleVerifyOtp} noValidate>
             <p className="form-hint">
-              נשלח קוד ל־<strong>{phone}</strong>. הזינו אותו כאן (תוקף כ־5 דקות).
+              הקוד נשלח ל־<strong>{phone}</strong>. תוקף כ־5 דקות.
             </p>
 
             <div className="form-group">
               <label className="form-label" htmlFor="code">
-                קוד אימות
+                קוד אימות (6 ספרות)
               </label>
               <div className="input-icon">
                 <input
@@ -177,7 +192,7 @@ export function LoginPage() {
                   inputMode="numeric"
                   autoComplete="one-time-code"
                   className="form-input form-input-code"
-                  placeholder="6 ספרות"
+                  placeholder="000000"
                   value={code}
                   onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
                   maxLength={6}
@@ -211,17 +226,17 @@ export function LoginPage() {
               className="submit-btn"
               disabled={submitting || code.length !== 6}
             >
-              {submitting ? 'מאמת...' : 'התחברות'}
+              {submitting ? 'מאמתים…' : 'כניסה'}
             </button>
 
             <button type="button" className="link-button change-phone" onClick={goBackToPhone}>
-              שינוי מספר / שליחה מחדש
+              מספר אחר / שליחה מחדש
             </button>
           </form>
         )}
 
         <div className="register-link">
-          כניסה מאובטחת · בלי סיסמה לזכור
+          מאובטח · בלי סיסמה
         </div>
       </div>
     </section>
