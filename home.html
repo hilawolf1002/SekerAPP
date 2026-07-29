@@ -1,0 +1,1709 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SekerApp - מערכת הסקרים המובילה</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WNRFLCEHLT"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-WNRFLCEHLT');
+    </script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --gradient-primary: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            --gradient-secondary: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+            --gradient-success: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --gradient-warning: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            --gradient-info: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
+            --shadow-2xl: 0 25px 50px rgba(0, 0, 0, 0.25);
+            
+            --border-radius: 12px;
+            --border-radius-lg: 16px;
+            --border-radius-xl: 20px;
+            --border-radius-2xl: 24px;
+            
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-fast: all 0.15s ease;
+            --transition-slow: all 0.5s ease;
+            
+            --spacing-xs: 8px;
+            --spacing-sm: 16px;
+            --spacing-md: 24px;
+            --spacing-lg: 32px;
+            --spacing-xl: 48px;
+            --spacing-2xl: 64px;
+            --spacing-3xl: 96px;
+            
+            --text-xs: 12px;
+            --text-sm: 14px;
+            --text-base: 16px;
+            --text-lg: 18px;
+            --text-xl: 20px;
+            --text-2xl: 24px;
+            --text-3xl: 30px;
+            --text-4xl: 36px;
+            --text-5xl: 48px;
+            --text-6xl: 60px;
+            
+            --font-light: 300;
+            --font-normal: 400;
+            --font-medium: 500;
+            --font-semibold: 600;
+            --font-bold: 700;
+            --font-extrabold: 800;
+            --font-black: 900;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+            font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+            scroll-behavior: smooth;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Enhanced mesh gradient background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 15% 25%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 85% 15%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 50% 85%, rgba(245, 158, 11, 0.08) 0%, transparent 50%),
+                linear-gradient(135deg, #f8fafc 0%, #e2e8f0 25%, #cbd5e1 50%, #94a3b8 75%, #64748b 100%);
+            z-index: -1;
+        }
+
+        /* Floating orbs */
+        .floating-orbs {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(40px);
+            opacity: 0.4;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .orb:nth-child(1) {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, #6366f1, transparent);
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .orb:nth-child(2) {
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, #8b5cf6, transparent);
+            top: 60%;
+            right: 15%;
+            animation-delay: -7s;
+        }
+
+        .orb:nth-child(3) {
+            width: 250px;
+            height: 250px;
+            background: radial-gradient(circle, #f59e0b, transparent);
+            bottom: 20%;
+            left: 20%;
+            animation-delay: -14s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(30px, -30px) rotate(120deg); }
+            66% { transform: translate(-20px, 20px) rotate(240deg); }
+        }
+
+        /* Hide orbs on mobile for performance */
+        @media (max-width: 768px) {
+            .floating-orbs,
+            body::before {
+                background: var(--dark-bg);
+            }
+            
+            .orb {
+                display: none;
+            }
+        }
+
+        /* Scroll indicator */
+        .scroll-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 4px;
+            background: var(--gradient-primary);
+            z-index: 9999;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.6);
+        }
+
+        /* Header */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(24px);
+            border-bottom: 2px solid #e2e8f0;
+            padding: 0 2rem;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            transition: var(--transition);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 28px;
+            font-weight: 800;
+            color: #1e293b;
+            letter-spacing: -0.02em;
+        }
+
+        .logo img {
+            height: 48px;
+            width: auto;
+            filter: drop-shadow(0 0 8px rgba(14, 165, 233, 0.3));
+            transition: all 0.3s ease;
+        }
+
+        .logo img:hover {
+            filter: drop-shadow(0 0 12px rgba(14, 165, 233, 0.5));
+            transform: scale(1.05);
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            border: none;
+            position: relative;
+            overflow: hidden;
+            letter-spacing: -0.01em;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-secondary {
+            background: #ffffff;
+            color: #475569;
+            border: 2px solid #e2e8f0;
+            backdrop-filter: blur(12px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-secondary:hover {
+            background: #f8fafc;
+            border-color: #6366f1;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: var(--shadow-lg);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        /* Mobile menu */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: #475569;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+
+        .mobile-menu-btn:hover {
+            background: #f1f5f9;
+            color: #6366f1;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 120px 2rem 100px;
+            position: relative;
+            min-height: auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+        }
+
+        .hero-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 10;
+            width: 100%;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 900;
+            margin-bottom: 24px;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+            animation: fadeInUp 1s ease-out;
+            text-align: center;
+        }
+
+        .hero p {
+            font-size: clamp(1.1rem, 2.2vw, 1.4rem);
+            margin-bottom: 40px;
+            color: #475569;
+            font-weight: 500;
+            line-height: 1.6;
+            animation: fadeInUp 1s ease-out 0.2s both;
+            text-align: center;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeInUp 1s ease-out 0.4s both;
+            margin-top: 20px;
+        }
+
+        .btn-hero {
+            padding: 20px 40px;
+            font-size: var(--text-lg);
+            border-radius: var(--border-radius-xl);
+            font-weight: 800;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(20px);
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-hero.primary {
+            background: #ffffff;
+            color: #6366f1;
+            box-shadow: var(--shadow-xl);
+        }
+
+        .btn-hero.secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-hero:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-2xl);
+        }
+
+        /* Features Section */
+        .features {
+            background: linear-gradient(135deg, #ffffff, #f8fafc);
+            backdrop-filter: blur(24px);
+            padding: 120px 2rem;
+            border-top: 2px solid #e2e8f0;
+            position: relative;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            font-weight: 900;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 24px;
+            letter-spacing: -0.02em;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            font-size: clamp(1.1rem, 2.2vw, 1.3rem);
+            color: #64748b;
+            margin-bottom: 80px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            font-weight: 500;
+            line-height: 1.6;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 40px;
+            margin-bottom: 80px;
+        }
+
+        .feature-card {
+            background: #ffffff;
+            backdrop-filter: blur(24px);
+            border-radius: var(--border-radius-2xl);
+            padding: 48px 36px;
+            text-align: center;
+            transition: var(--transition);
+            border: 2px solid #e2e8f0;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient-primary);
+            opacity: 0;
+            transition: var(--transition);
+            z-index: -1;
+        }
+
+        .feature-card:hover::before {
+            opacity: 0.02;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-12px);
+            box-shadow: var(--shadow-2xl);
+            border-color: #6366f1;
+        }
+
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: var(--border-radius-xl);
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 32px;
+            font-size: 32px;
+            color: white;
+            box-shadow: var(--shadow-xl);
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .feature-card:hover .feature-icon {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: var(--shadow-2xl);
+        }
+
+        .feature-title {
+            font-size: var(--text-xl);
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 20px;
+            letter-spacing: -0.01em;
+        }
+
+        .feature-description {
+            color: #64748b;
+            line-height: 1.7;
+            font-size: var(--text-base);
+            font-weight: 500;
+        }
+
+        /* Surveys Grid */
+        .surveys-section {
+            background: linear-gradient(135deg, #ffffff, #f8fafc);
+            backdrop-filter: blur(24px);
+            padding: 120px 2rem;
+            border-top: 2px solid #e2e8f0;
+            position: relative;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .surveys-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 40px;
+            position: relative;
+            margin-top: 40px;
+        }
+
+        .survey-card {
+            background: #ffffff;
+            border-radius: var(--border-radius-2xl);
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            transition: var(--transition);
+            cursor: pointer;
+            border: 2px solid #e2e8f0;
+            position: relative;
+            backdrop-filter: blur(24px);
+        }
+
+        @media (max-width: 768px) {
+            .survey-card {
+                margin: 0 8px;
+            }
+        }
+
+        .survey-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient-primary);
+            opacity: 0;
+            transition: var(--transition);
+            z-index: -1;
+        }
+
+        .survey-card:hover::before {
+            opacity: 0.02;
+        }
+
+        .survey-card:hover {
+            transform: translateY(-12px);
+            box-shadow: var(--shadow-2xl);
+            border-color: #6366f1;
+        }
+
+        .survey-image {
+            width: 100%;
+            height: 220px;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .survey-image::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            z-index: 0;
+        }
+
+        .survey-uploaded-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 2;
+        }
+
+        .survey-image-fallback {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+            z-index: 1;
+        }
+
+        .survey-content {
+            padding: 36px;
+            background: #ffffff;
+            border-top: 2px solid #e2e8f0;
+        }
+
+        .survey-title {
+            font-size: var(--text-lg);
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 16px;
+            letter-spacing: -0.01em;
+            line-height: 1.3;
+        }
+
+        .survey-description {
+            color: #475569;
+            margin-bottom: 24px;
+            line-height: 1.6;
+            font-size: var(--text-base);
+            font-weight: 500;
+        }
+
+        .survey-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #64748b;
+            font-size: var(--text-sm);
+            font-weight: 600;
+        }
+
+        .survey-participants {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--gradient-primary);
+            padding: 8px 16px;
+            border-radius: var(--border-radius);
+            color: white;
+            font-weight: 700;
+            border: none;
+            box-shadow: var(--shadow-md);
+        }
+
+        .survey-status {
+            background: var(--gradient-success);
+            color: white;
+            padding: 8px 16px;
+            border-radius: var(--border-radius);
+            font-weight: 700;
+            border: none;
+            box-shadow: var(--shadow-md);
+        }
+
+        .survey-status.completed {
+            background: var(--gradient-info);
+            color: white;
+            border: none;
+        }
+
+        /* Loading states */
+        .loading-surveys, .no-surveys, .error-loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 100px 20px;
+            text-align: center;
+            color: #64748b;
+            background: #ffffff;
+            border-radius: var(--border-radius-xl);
+            border: 2px solid #e2e8f0;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .loading-surveys .spinner {
+            width: 48px;
+            height: 48px;
+            border: 3px solid #e2e8f0;
+            border-top: 3px solid #6366f1;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 24px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-surveys p, .no-surveys p, .error-loading p {
+            font-size: var(--text-base);
+            font-weight: 600;
+            margin: 0;
+            color: #64748b;
+        }
+
+        .no-surveys h3, .error-loading h3 {
+            font-size: var(--text-2xl);
+            font-weight: 800;
+            margin-bottom: 16px;
+            color: #1e293b;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: var(--gradient-primary);
+            backdrop-filter: blur(24px);
+            color: white;
+            text-align: center;
+            padding: 120px 2rem;
+            border-top: 2px solid #e2e8f0;
+            position: relative;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .cta-title {
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            font-weight: 900;
+            margin-bottom: 24px;
+            color: white;
+            letter-spacing: -0.02em;
+        }
+
+        .cta-description {
+            font-size: clamp(1.1rem, 2.2vw, 1.3rem);
+            margin-bottom: 48px;
+            color: rgba(255, 255, 255, 0.9);
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            font-weight: 500;
+            line-height: 1.6;
+        }
+
+        /* Footer */
+        .footer {
+            background: linear-gradient(135deg, #1e293b, #334155);
+            backdrop-filter: blur(24px);
+            color: #94a3b8;
+            padding: 80px 2rem 40px;
+            border-top: 2px solid #e2e8f0;
+            font-size: var(--text-sm);
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-section h3 {
+            color: #f1f5f9;
+            font-size: var(--text-lg);
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .footer-section p {
+            color: #cbd5e1;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .footer-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 8px;
+        }
+
+        .footer-section ul li a {
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-section ul li a:hover {
+            color: #6366f1;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 40px;
+            border-top: 2px solid #475569;
+        }
+
+        .footer-bottom p {
+            color: #94a3b8;
+            margin: 0;
+            font-size: var(--text-sm);
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        /* Mobile dropdown */
+        .mobile-dropdown {
+            position: fixed;
+            top: 70px;
+            right: 0;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(24px);
+            border: 2px solid #e2e8f0;
+            border-radius: var(--border-radius-lg);
+            padding: 16px;
+            min-width: 200px;
+            box-shadow: var(--shadow-2xl);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: var(--transition);
+            z-index: 1000;
+            margin-top: 0;
+        }
+
+        .mobile-dropdown.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .mobile-dropdown .btn {
+            display: block;
+            width: 100%;
+            margin-bottom: 8px;
+            text-align: center;
+            padding: 12px 16px;
+            font-size: 14px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .mobile-dropdown .btn:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Scroll animations */
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease-out;
+        }
+
+        .animate-on-scroll.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .features-grid {
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 32px;
+            }
+            
+            .surveys-grid {
+                grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+                gap: 32px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 0 1rem;
+                height: 70px;
+            }
+
+            .auth-buttons {
+                display: none;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .logo {
+                font-size: 24px;
+            }
+
+            .hero {
+                padding: 80px 1rem 60px;
+                min-height: auto;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+                gap: 16px;
+            }
+            
+            .features, .cta-section, .surveys-section {
+                padding: 80px 1rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+            
+            .surveys-grid {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+
+            .feature-card {
+                padding: 36px 28px;
+            }
+
+            .survey-content {
+                padding: 28px;
+            }
+
+            .mobile-dropdown {
+                right: 1rem;
+                top: 70px;
+                position: fixed;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 0 1rem;
+                height: 65px;
+            }
+            
+            .logo {
+                font-size: 22px;
+            }
+            
+            .hero {
+                padding: 70px 1rem 50px;
+            }
+            
+            .btn {
+                padding: 12px 24px;
+                font-size: 14px;
+            }
+
+            .btn-hero {
+                padding: 16px 32px;
+                font-size: 16px;
+            }
+
+            .features, .cta-section, .surveys-section {
+                padding: 60px 1rem;
+            }
+
+            .feature-card {
+                padding: 28px 24px;
+            }
+
+            .survey-content {
+                padding: 24px;
+            }
+
+            .survey-image {
+                height: 180px;
+                font-size: 32px;
+            }
+
+            .mobile-dropdown {
+                right: 1rem;
+                min-width: 180px;
+                top: 65px;
+                position: fixed;
+            }
+        }
+
+        /* Enhanced interactions */
+        .btn-hero:hover {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                box-shadow: 0 8px 32px rgba(14, 165, 233, 0.3);
+            }
+            50% {
+                box-shadow: 0 8px 32px rgba(14, 165, 233, 0.5), 0 0 20px rgba(14, 165, 233, 0.3);
+            }
+        }
+
+        /* Glass morphism effect */
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Smooth transitions for better UX */
+        * {
+            transition: var(--transition);
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating Orbs -->
+    <div class="floating-orbs">
+        <div class="orb"></div>
+        <div class="orb"></div>
+        <div class="orb"></div>
+    </div>
+
+    <!-- Scroll Progress Indicator -->
+    <div class="scroll-indicator" id="scrollIndicator"></div>
+
+    <!-- Mobile Dropdown Menu -->
+    <div class="mobile-dropdown" id="mobileDropdown">
+        <a href="login.html" class="btn btn-secondary">
+            <i class="fas fa-sign-in-alt"></i>
+            התחברות
+        </a>
+        <a href="register.html" class="btn btn-primary">
+            <i class="fas fa-user-plus"></i>
+            הרשמה
+        </a>
+    </div>
+
+    <header class="header">
+        <div class="logo">
+            <img src="logo.png" alt="SekerApp Logo" style="height: 48px; width: auto; margin-left: 12px;">
+            <span style="font-size: 26px; font-weight: 800; background: var(--gradient-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">SekerApp</span>
+        </div>
+        <div class="auth-buttons">
+            <a href="login.html" class="btn btn-secondary">
+                <i class="fas fa-sign-in-alt"></i>
+                התחברות
+            </a>
+            <a href="register.html" class="btn btn-primary">
+                <i class="fas fa-user-plus"></i>
+                הרשמה
+            </a>
+        </div>
+        <button class="mobile-menu-btn" id="mobileMenuBtn">
+            <i class="fas fa-bars"></i>
+        </button>
+    </header>
+
+
+    <section class="cta-section animate-on-scroll">
+        <h2 class="cta-title">מוכן להתחיל?</h2>
+        <p class="cta-description">הצטרף לאלפי משתמשים שכבר יוצרים סקרים מדהימים עם SekerApp ומקבלים תובנות עמוקות</p>
+        <div class="hero-buttons">
+            <a href="register.html" class="btn btn-hero primary">
+                <i class="fas fa-rocket"></i>
+                צור חשבון חינם
+            </a>
+            <a href="login.html" class="btn btn-hero secondary">
+                <i class="fas fa-sign-in-alt"></i>
+                התחבר עכשיו
+            </a>
+        </div>
+    </section>
+
+    <section class="surveys-section animate-on-scroll">
+        <div class="container">
+            <h2 class="section-title">הסקרים הפופולריים ביותר</h2>
+            <p class="section-subtitle">גלה מה מעניין את הקהילה וקח חלק בדיונים החשובים</p>
+            
+            <div class="surveys-grid" id="recentSurveysContainer">
+                <div class="loading-surveys">
+                    <div class="spinner"></div>
+                    <p>טוען הסקרים הפופולריים ביותר...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="features animate-on-scroll" id="features">
+        <div class="container">
+            <h2 class="section-title">למה לבחור ב-SekerApp?</h2>
+            <p class="section-subtitle">כלים מתקדמים ליצירת סקרים מקצועיים וניתוח נתונים מדויק עם טכנולוגיית AI</p>
+            
+            <div class="features-grid">
+                <div class="feature-card animate-on-scroll">
+                    <div class="feature-icon">
+                        <i class="fas fa-magic"></i>
+                    </div>
+                    <h3 class="feature-title">עיצוב אינטואיטיבי</h3>
+                    <p class="feature-description">יצירת סקרים בקלות עם ממשק ידידותי מתקדם, תבניות מעוצבות וכלים חכמים לעיצוב מקצועי</p>
+                </div>
+                
+                <div class="feature-card animate-on-scroll">
+                    <div class="feature-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3 class="feature-title">בינה מלאכותית</h3>
+                    <p class="feature-description">ניתוח מתקדם עם AI לתובנות מדויקות, זיהוי דפוסים אוטומטי וחיזוי מגמות עתידיות</p>
+                </div>
+                
+                <div class="feature-card animate-on-scroll">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3 class="feature-title">רספונסיבי לחלוטין</h3>
+                    <p class="feature-description">עובד מושלם על כל מכשיר עם חוויית משתמש מותאמת - מחשב, טאבלט או סמארטפון</p>
+                </div>
+                
+                <div class="feature-card animate-on-scroll">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3 class="feature-title">אבטחה מתקדמת</h3>
+                    <p class="feature-description">הגנה מלאה על הנתונים שלך עם הצפנה מתקדמת, אבטחה ברמה בנקאית וציות מלא לתקני פרטיות</p>
+                </div>
+                
+                <div class="feature-card animate-on-scroll">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3 class="feature-title">ויזואליזציה מתקדמת</h3>
+                    <p class="feature-description">גרפים אינטראקטיביים, דוחות מקצועיים וייצוא תוצאות בפורמטים מתקדמים עם ניתוח עמוק</p>
+                </div>
+                
+                <div class="feature-card animate-on-scroll">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3 class="feature-title">שיתוף חכם</h3>
+                    <p class="feature-description">שיתוף סקרים בקלות עם קישורים מאובטחים, הטמעה באתרים וחלוקה ברשתות חברתיות</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>SekerApp</h3>
+                    <p>המערכת המתקדמת בעולם ליצירת סקרים, איסוף נתונים וניתוח תוצאות עם בינה מלאכותית</p>
+                </div>
+                <div class="footer-section">
+                    <h3>קישורים מהירים</h3>
+                    <ul>
+                        <li><a href="#features">תכונות</a></li>
+                        <li><a href="about.html">אודות</a></li>
+                        <li><a href="#contact">צור קשר</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>תמיכה</h3>
+                    <ul>
+                        <li><a href="help.html">עזרה</a></li>
+                        <li><a href="faq.html">שאלות נפוצות</a></li>
+                    </ul>
+                </div>
+                                    <div class="footer-section">
+                        <h3>משפטי</h3>
+                        <ul>
+                            <li><a href="terms.html">תקנון שימוש</a></li>
+                            <li><a href="privacy.html">מדיניות פרטיות</a></li>
+                            <li><a href="cookies.html">מדיניות עוגיות</a></li>
+                        </ul>
+                    </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 SekerApp. כל הזכויות שמורות. | <a href="terms.html" style="color: #6366f1; text-decoration: none; font-weight: 600;">תקנון שימוש</a> | <a href="privacy.html" style="color: #6366f1; text-decoration: none; font-weight: 600;">מדיניות פרטיות</a> | <a href="cookies.html" style="color: #6366f1; text-decoration: none; font-weight: 600;">מדיניות עוגיות</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Enhanced UI interactions and modern effects
+        document.addEventListener('DOMContentLoaded', function() {
+            // Track home page view
+            gtag('event', 'home_page_view', {
+                'event_category': 'page_interaction',
+                'event_label': 'home_page_load'
+            });
+            
+            // Scroll progress indicator
+            updateScrollIndicator();
+            
+            // Intersection Observer for animations
+            setupScrollAnimations();
+            
+            // Mobile menu functionality
+            setupMobileMenu();
+            
+            // Smooth scrolling for anchor links
+            setupSmoothScrolling();
+            
+            // Survey card interactions
+            setupSurveyCards();
+            
+            // Header scroll effect
+            setupHeaderScroll();
+            
+            // Load popular surveys
+            loadRecentSurveys();
+        });
+
+        // Update scroll progress indicator
+        function updateScrollIndicator() {
+            window.addEventListener('scroll', function() {
+                const scrollTop = document.documentElement.scrollTop;
+                const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                const progress = (scrollTop / scrollHeight) * 100;
+                
+                document.getElementById('scrollIndicator').style.width = progress + '%';
+            });
+        }
+
+        // Setup scroll animations with Intersection Observer
+        function setupScrollAnimations() {
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, observerOptions);
+
+            // Observe all elements with animate-on-scroll class
+            document.querySelectorAll('.animate-on-scroll').forEach(el => {
+                observer.observe(el);
+            });
+
+            // Stagger animation for feature cards
+            const featureCards = document.querySelectorAll('.feature-card');
+            featureCards.forEach((card, index) => {
+                card.style.transitionDelay = `${index * 0.1}s`;
+            });
+
+            // Stagger animation for survey cards
+            const surveyCards = document.querySelectorAll('.survey-card');
+            surveyCards.forEach((card, index) => {
+                card.style.transitionDelay = `${index * 0.15}s`;
+            });
+        }
+
+        // Mobile menu functionality
+        function setupMobileMenu() {
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const mobileDropdown = document.getElementById('mobileDropdown');
+
+            mobileMenuBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                mobileDropdown.classList.toggle('active');
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!mobileMenuBtn.contains(e.target) && !mobileDropdown.contains(e.target)) {
+                    mobileDropdown.classList.remove('active');
+                }
+            });
+
+            // Close dropdown when clicking on a button
+            mobileDropdown.addEventListener('click', function() {
+                mobileDropdown.classList.remove('active');
+            });
+
+            // Close dropdown when scrolling
+            window.addEventListener('scroll', function() {
+                mobileDropdown.classList.remove('active');
+            });
+        }
+
+        // Smooth scrolling for anchor links
+        function setupSmoothScrolling() {
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+        }
+
+        // Survey card interactions
+        function setupSurveyCards() {
+            document.querySelectorAll('.survey-card').forEach(card => {
+                // Enhanced hover effect with 3D transform
+                card.addEventListener('mousemove', function(e) {
+                    const rect = this.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    
+                    const rotateX = (y - centerY) / 20;
+                    const rotateY = (centerX - x) / 20;
+                    
+                    this.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-8px)`;
+                });
+
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = '';
+                });
+
+                // Click effect
+                card.addEventListener('click', function(e) {
+                    // Add ripple effect
+                    createRipple(e, this);
+                    
+                    // Scale animation
+                    this.style.transform = 'scale(0.98)';
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 150);
+                });
+            });
+        }
+
+        // Header scroll effect
+        function setupHeaderScroll() {
+            let lastScrollTop = 0;
+            const header = document.querySelector('.header');
+
+            window.addEventListener('scroll', function() {
+                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                
+                if (scrollTop > lastScrollTop && scrollTop > 100) {
+                    // Scrolling down
+                    header.style.transform = 'translateY(-100%)';
+                } else {
+                    // Scrolling up
+                    header.style.transform = 'translateY(0)';
+                }
+                
+                lastScrollTop = scrollTop;
+            });
+        }
+
+        // Create ripple effect
+        function createRipple(event, element) {
+            const ripple = document.createElement('span');
+            const rect = element.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            const x = event.clientX - rect.left - size / 2;
+            const y = event.clientY - rect.top - size / 2;
+            
+            ripple.style.cssText = `
+                position: absolute;
+                border-radius: 50%;
+                background: rgba(14, 165, 233, 0.3);
+                transform: scale(0);
+                animation: ripple 0.8s linear;
+                width: ${size}px;
+                height: ${size}px;
+                left: ${x}px;
+                top: ${y}px;
+                pointer-events: none;
+                z-index: 10;
+            `;
+            
+            element.style.position = 'relative';
+            element.appendChild(ripple);
+            
+            setTimeout(() => {
+                ripple.remove();
+            }, 800);
+        }
+
+        // Load recent surveys
+        async function loadRecentSurveys() {
+            const container = document.getElementById('recentSurveysContainer');
+            
+            if (!container) {
+                console.error('Container not found in loadRecentSurveys!');
+                return;
+            }
+            
+            // Show loading state
+            container.innerHTML = `
+                <div class="loading-surveys">
+                    <div class="spinner"></div>
+                    <p>טוען הסקרים הפופולריים ביותר...</p>
+                </div>
+            `;
+            
+            try {
+                console.log('Trying to load from server API...');
+                const response = await fetch('/api/surveys/recent', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('Server API response:', data);
+                    
+                    if (data.success && data.surveys && data.surveys.length > 0) {
+                        // Ensure server data has the correct format for images and all required fields
+                        const serverSurveys = data.surveys.map(survey => {
+                            console.log('Processing server survey:', survey);
+                            console.log('Server survey image fields:', {
+                                imageUrl: survey.imageUrl,
+                                image: survey.image,
+                                image_url: survey.image_url
+                            });
+                            
+                            const processedSurvey = {
+                                id: survey.id || survey._id,
+                                title: survey.title || 'סקר ללא כותרת',
+                                description: survey.description || survey.desc || 'סקר מרתק',
+                                category: survey.category || 'סתם כדי לדעת',
+                                status: survey.status || 'active',
+                                createdAt: survey.createdAt || survey.created_at || new Date().toISOString(),
+                                responses: survey.responses || survey.responseCount || 0,
+                                imageUrl: survey.imageUrl || survey.image || survey.image_url || null // Use imageUrl consistently
+                            };
+                            console.log('Server survey imageUrl:', processedSurvey.imageUrl, 'from original:', survey.imageUrl);
+                            return processedSurvey;
+                        });
+                        
+                        // Sort by responses count (highest first) - ensure proper numeric sorting
+                        serverSurveys.sort((a, b) => {
+                            const aResponses = parseInt(a.responses) || 0;
+                            const bResponses = parseInt(b.responses) || 0;
+                            return bResponses - aResponses;
+                        });
+                        
+                        console.log('Processed and sorted server surveys:', serverSurveys);
+                        displayRecentSurveys(serverSurveys);
+                        return;
+                    }
+                }
+                
+                // If server API failed or returned no data, show error
+                console.log('Server API failed or returned no data');
+                container.innerHTML = `
+                    <div class="no-surveys">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: var(--pink-500); margin-bottom: 16px;"></i>
+                        <h3>לא ניתן לטעון סקרים</h3>
+                        <p>השרת לא זמין כרגע, נסה שוב מאוחר יותר</p>
+                    </div>
+                `;
+                
+            } catch (error) {
+                console.log('Server API error:', error);
+                container.innerHTML = `
+                    <div class="no-surveys">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: var(--pink-500); margin-bottom: 16px;"></i>
+                        <h3>שגיאה בטעינת סקרים</h3>
+                        <p>לא ניתן להתחבר לשרת כרגע</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Display popular surveys
+        function displayRecentSurveys(surveys) {
+            console.log('displayRecentSurveys called with:', surveys);
+            const container = document.getElementById('recentSurveysContainer');
+            console.log('Container in displayRecentSurveys:', container);
+            
+            if (!container) {
+                console.error('Container not found in displayRecentSurveys!');
+                return;
+            }
+            
+            // Ensure surveys are always sorted by responses count (highest first) - ensure proper numeric sorting
+            const sortedSurveys = [...surveys].sort((a, b) => {
+                const aResponses = parseInt(a.responses) || 0;
+                const bResponses = parseInt(b.responses) || 0;
+                return bResponses - aResponses;
+            });
+            console.log('Final sorted surveys for display:', sortedSurveys);
+            
+            try {
+                const surveysHTML = sortedSurveys.map(survey => `
+                    <div class="survey-card" onclick="openSurvey('${survey.id}')">
+                        <div class="survey-image">
+                            ${survey.imageUrl ? 
+                                `<img src="${survey.imageUrl}" alt="${survey.title}" class="survey-uploaded-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" onload="this.style.display='block';">
+                                <div class="survey-image-fallback" style="display:none;">
+                                    <i class="fas fa-${getSurveyIcon(survey.category)}"></i>
+                                </div>` : 
+                                `<i class="fas fa-${getSurveyIcon(survey.category)}"></i>`
+                            }
+                        </div>
+                        <div class="survey-content">
+                            <h3 class="survey-title">${survey.title}</h3>
+                            <p class="survey-description">${survey.description || 'סקר מרתק'}</p>
+                            <div class="survey-meta">
+                                <span class="survey-participants">
+                                    <i class="fas fa-users"></i>
+                                    ${survey.responses || 0} משתתפים
+                                </span>
+                                <span class="survey-status ${survey.status === 'completed' ? 'completed' : ''}">
+                                    ${survey.status === 'completed' ? 'הושלם' : 'פעיל'}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+
+                console.log('Generated HTML:', surveysHTML);
+                container.innerHTML = surveysHTML;
+                console.log('HTML set to container');
+                
+                // Setup survey cards after rendering
+                try {
+                    setupSurveyCards();
+                } catch (error) {
+                    console.error('Error in setupSurveyCards:', error);
+                }
+            } catch (error) {
+                console.error('Error in displayRecentSurveys:', error);
+                container.innerHTML = `
+                    <div class="error-loading">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: var(--pink-500); margin-bottom: 16px;"></i>
+                        <h3>שגיאה בהצגת סקרים</h3>
+                        <p>לא ניתן להציג את הסקרים הפופולריים כרגע</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Get appropriate icon for survey category
+        function getSurveyIcon(category) {
+            const iconMap = {
+                'פוליטי': 'flag',
+                'מוניציפאלי': 'city',
+                'חברתי': 'users',
+                'עסקי': 'briefcase',
+                'מחאתי': 'megaphone',
+                'סתם כדי לדעת': 'question-circle',
+                'חינוכי': 'graduation-cap',
+                'בריאות': 'heartbeat',
+                'טכנולוגיה': 'laptop-code',
+                'ספורט': 'futbol',
+                'תרבות': 'theater-masks',
+                'מזון': 'utensils',
+                'default': 'clipboard-list'
+            };
+            
+            return iconMap[category] || iconMap.default;
+        }
+
+        // Open survey in new tab
+        function openSurvey(surveyId) {
+            window.open(`/survey/${surveyId}`, '_blank');
+        }
+
+        // Social login functions
+        function socialLogin(provider) {
+            const providerNames = {
+                'google': 'גוגל',
+                'facebook': 'פייסבוק'
+            };
+            
+            showNotification(
+                `התחברות ל${providerNames[provider]}`,
+                'מתחבר... זהו דמו - בגרסה הסופית זה יחבר ל-API האמיתי'
+            );
+            
+            // Simulate login process
+            setTimeout(() => {
+                showNotification(
+                    'התחברות הושלמה!',
+                    'ברוך הבא ל-SekerApp! מעביר אותך לדשבורד...'
+                );
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 1500);
+            }, 2000);
+        }
+
+        function socialRegister(provider) {
+            const providerNames = {
+                'google': 'גוגל',
+                'facebook': 'פייסבוק'
+            };
+            
+            showNotification(
+                `הרשמה דרך ${providerNames[provider]}`,
+                'מתחבר ומרשם... זהו דמו - בגרסה הסופית זה יחבר ל-API האמיתי'
+            );
+            
+            // Simulate registration process
+            setTimeout(() => {
+                showNotification(
+                    'הרשמה הושלמה!',
+                    'ברוך הבא ל-SekerApp! מעביר אותך לדשבורד...'
+                );
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 1500);
+            }, 2500);
+        }
+
+        // Modern notification system
+        function showNotification(title, message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 100px;
+                right: 24px;
+                background: rgba(30, 41, 59, 0.95);
+                backdrop-filter: blur(20px);
+                border: 1px solid rgba(14, 165, 233, 0.3);
+                border-radius: 12px;
+                padding: 16px 20px;
+                color: white;
+                font-size: 14px;
+                font-weight: 600;
+                z-index: 10000;
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+                transform: translateX(400px);
+                transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                max-width: 280px;
+            `;
+            
+            notification.innerHTML = `
+                <div style="font-weight: 700; margin-bottom: 4px; color: var(--primary-400);">${title}</div>
+                <div style="color: var(--gray-300); font-size: 13px;">${message}</div>
+                <div style="position: absolute; top: 8px; left: 8px; width: 6px; height: 6px; background: var(--emerald-500); border-radius: 50%; animation: pulse 2s infinite;"></div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+            
+            // Animate out and remove
+            setTimeout(() => {
+                notification.style.transform = 'translateX(400px)';
+                setTimeout(() => {
+                    notification.remove();
+                }, 400);
+            }, 3500);
+        }
+
+        // Add additional CSS animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes ripple {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+            
+            @keyframes pulse {
+                0%, 100% { 
+                    transform: scale(1); 
+                    opacity: 1; 
+                }
+                50% { 
+                    transform: scale(1.2); 
+                    opacity: 0.7; 
+                }
+            }
+
+            .header {
+                transition: transform 0.3s ease-in-out;
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

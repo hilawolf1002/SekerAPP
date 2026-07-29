@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ניהול סקרים - SekerApp</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" crossorigin="anonymous">
+    
+    <!-- Authentication utilities -->
+    <script src="auth.js"></script>
+    
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WNRFLCEHLT"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-WNRFLCEHLT');
+    </script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4338ca;
+            --secondary: #8b5cf6;
+            --accent: #ec4899;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #0a0a0a;
+            --gray: #64748b;
+            --light: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+
+        /* Enhanced Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(236, 72, 153, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+                linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            z-index: -1;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .logo img {
+            height: 40px;
+            width: auto;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .main-content {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--light);
+        }
+
+        .create-survey-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .create-survey-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(99, 102, 241, 0.4);
+        }
+
+        .surveys-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .survey-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .survey-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        .survey-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+
+        .survey-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .survey-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--light);
+            margin-bottom: 0.5rem;
+        }
+
+        .survey-category {
+            background: rgba(99, 102, 241, 0.2);
+            color: var(--primary);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .survey-description {
+            color: var(--gray);
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        .survey-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding: 1rem 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+
+        .survey-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            flex: 1;
+        }
+
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .action-btn.primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-color: transparent;
+        }
+
+        .action-btn.danger {
+            background: linear-gradient(135deg, var(--danger), #dc2626);
+            border-color: transparent;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--gray);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--light);
+        }
+
+        .empty-state p {
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 50vh;
+            font-size: 1.2rem;
+            color: var(--gray);
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(99, 102, 241, 0.1);
+            border-left: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 1rem;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+
+            .page-header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .surveys-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .survey-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">
+            <img src="logo.png" alt="SekerApp Logo">
+            SekerApp
+        </div>
+        <div class="nav-buttons">
+            <a href="dashboard.html" class="nav-btn">
+                <i class="fas fa-home"></i>
+                דשבורד
+            </a>
+            <button class="nav-btn" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                התנתק
+            </button>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div id="loadingContent" class="loading">
+            <div class="spinner"></div>
+            טוען סקרים...
+        </div>
+
+        <div id="surveysContent" style="display: none;">
+            <div class="page-header">
+                <h1 class="page-title">הסקרים שלי</h1>
+                <button class="create-survey-btn" onclick="createNewSurvey()">
+                    <i class="fas fa-plus"></i>
+                    צור סקר חדש
+                </button>
+            </div>
+
+            <div id="surveysGrid" class="surveys-grid">
+                <!-- Surveys will be loaded here -->
+            </div>
+
+            <div id="emptyState" class="empty-state" style="display: none;">
+                <i class="fas fa-poll"></i>
+                <h3>אין לך עדיין סקרים</h3>
+                <p>התחל ליצור סקרים כדי לאסוף נתונים ולקבל תובנות מהקהל שלך</p>
+                <button class="create-survey-btn" onclick="createNewSurvey()">
+                    <i class="fas fa-plus"></i>
+                    צור סקר ראשון
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check authentication when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Track surveys page view
+            gtag('event', 'surveys_page_view', {
+                'event_category': 'navigation',
+                'event_label': 'surveys_loaded'
+            });
+
+            // Check if user is authenticated
+            if (!requireAuth()) {
+                return; // User will be redirected to login
+            }
+
+            // Load surveys
+            loadSurveys();
+        });
+
+        function loadSurveys() {
+            const user = getCurrentUser();
+            if (!user) {
+                logout();
+                return;
+            }
+
+            // For demo purposes, create some sample surveys
+            const demoSurveys = [
+                {
+                    id: 1,
+                    title: 'סקר שביעות רצון מהשירות',
+                    description: 'סקר כללי על שביעות הרצון מהשירותים שלנו',
+                    category: 'שירות לקוחות',
+                    responses: 45,
+                    completionRate: 92,
+                    status: 'active',
+                    createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) // 7 days ago
+                },
+                {
+                    id: 2,
+                    title: 'סקר על מוצרים חדשים',
+                    description: 'סקר על התעניינות במוצרים חדשים שאנחנו מתכננים',
+                    category: 'פיתוח מוצר',
+                    responses: 23,
+                    completionRate: 78,
+                    status: 'active',
+                    createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000) // 3 days ago
+                }
+            ];
+
+            // Check if user is new (less than 24 hours)
+            const now = new Date();
+            const loginTime = new Date(user.loginTime);
+            const hoursSinceLogin = Math.floor((now - loginTime) / (1000 * 60 * 60));
+
+            if (hoursSinceLogin < 24) {
+                // New user - show empty state
+                showEmptyState();
+            } else {
+                // Returning user - show demo surveys
+                displaySurveys(demoSurveys);
+            }
+
+            // Hide loading, show content
+            document.getElementById('loadingContent').style.display = 'none';
+            document.getElementById('surveysContent').style.display = 'block';
+        }
+
+        function displaySurveys(surveys) {
+            const grid = document.getElementById('surveysGrid');
+            const emptyState = document.getElementById('emptyState');
+
+            if (surveys.length === 0) {
+                showEmptyState();
+                return;
+            }
+
+            // Hide empty state
+            emptyState.style.display = 'none';
+
+            // Display surveys
+            grid.innerHTML = surveys.map(survey => `
+                <div class="survey-card">
+                    <div class="survey-header">
+                        <div>
+                            <h3 class="survey-title">${survey.title}</h3>
+                            <span class="survey-category">${survey.category}</span>
+                        </div>
+                        <div class="survey-status">
+                            <span class="status-badge ${survey.status}">${getStatusText(survey.status)}</span>
+                        </div>
+                    </div>
+                    <p class="survey-description">${survey.description}</p>
+                    <div class="survey-stats">
+                        <div class="stat-item">
+                            <div class="stat-number">${survey.responses}</div>
+                            <div class="stat-label">תגובות</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">${survey.completionRate}%</div>
+                            <div class="stat-label">השלמה</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">${getDaysAgo(survey.createdAt)}</div>
+                            <div class="stat-label">ימים</div>
+                        </div>
+                    </div>
+                    <div class="survey-actions">
+                        <button class="action-btn primary" onclick="viewSurvey(${survey.id})">
+                            <i class="fas fa-eye"></i>
+                            צפה
+                        </button>
+                        <button class="action-btn" onclick="editSurvey(${survey.id})">
+                            <i class="fas fa-edit"></i>
+                            ערוך
+                        </button>
+                        <button class="action-btn danger" onclick="deleteSurvey(${survey.id})">
+                            <i class="fas fa-trash"></i>
+                            מחק
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function showEmptyState() {
+            document.getElementById('surveysGrid').innerHTML = '';
+            document.getElementById('emptyState').style.display = 'block';
+        }
+
+        function getStatusText(status) {
+            const statusMap = {
+                'active': 'פעיל',
+                'draft': 'טיוטה',
+                'paused': 'מושהה',
+                'closed': 'סגור'
+            };
+            return statusMap[status] || status;
+        }
+
+        function getDaysAgo(date) {
+            const now = new Date();
+            const diffTime = Math.abs(now - date);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            return diffDays === 0 ? 'היום' : diffDays;
+        }
+
+        function createNewSurvey() {
+            gtag('event', 'create_survey_click', {
+                'event_category': 'surveys',
+                'event_label': 'create_new_survey'
+            });
+            
+            // Redirect to survey creation page
+            window.location.href = '/create-survey.html';
+        }
+
+        function viewSurvey(id) {
+            gtag('event', 'view_survey_click', {
+                'event_category': 'surveys',
+                'event_label': `survey_${id}`
+            });
+            
+            showNotification('צפייה בסקר', `צפייה בסקר מספר ${id}`);
+        }
+
+        function editSurvey(id) {
+            gtag('event', 'edit_survey_click', {
+                'event_category': 'surveys',
+                'event_label': `survey_${id}`
+            });
+            
+            showNotification('עריכת סקר', `עריכת סקר מספר ${id}`);
+        }
+
+        function deleteSurvey(id) {
+            gtag('event', 'delete_survey_click', {
+                'event_category': 'surveys',
+                'event_label': `survey_${id}`
+            });
+            
+            if (confirm('האם אתה בטוח שברצונך למחוק את הסקר הזה?')) {
+                showNotification('מחיקת סקר', `הסקר מספר ${id} נמחק בהצלחה`);
+                // Here you would actually delete the survey
+            }
+        }
+
+        function showNotification(title, message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 30px;
+                right: 30px;
+                background: rgba(15, 15, 30, 0.95);
+                backdrop-filter: blur(20px);
+                border: 1px solid rgba(99, 102, 241, 0.3);
+                border-radius: 16px;
+                padding: 20px 24px;
+                color: white;
+                font-size: 14px;
+                font-weight: 600;
+                z-index: 10000;
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+                transform: translateX(400px);
+                transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                max-width: 300px;
+            `;
+            
+            notification.innerHTML = `
+                <div style="font-weight: 700; margin-bottom: 4px; color: #6366f1;">${title}</div>
+                <div style="color: #cbd5e1; font-size: 13px;">${message}</div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+            
+            // Animate out and remove
+            setTimeout(() => {
+                notification.style.transform = 'translateX(400px)';
+                setTimeout(() => {
+                    notification.remove();
+                }, 400);
+            }, 3500);
+        }
+    </script>
+</body>
+</html>

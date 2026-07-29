@@ -1,0 +1,282 @@
+.admin-users-shell {
+  min-height: 100vh;
+  direction: rtl;
+  background: #f8fafc;
+}
+
+.admin-users-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.admin-users-header h1 {
+  margin: 0 0 0.25rem;
+  color: #1e293b;
+  font-size: 1.5rem;
+}
+
+.admin-users-header p {
+  margin: 0 0 1rem;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.admin-search-bar {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.admin-search-bar input {
+  flex: 1;
+  min-height: 44px;
+  padding: 0 1rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  outline: none;
+  font: inherit;
+}
+
+.admin-search-bar input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.admin-search-bar button {
+  padding: 0 1.5rem;
+  border: none;
+  border-radius: 10px;
+  color: #ffffff;
+  background: #3b82f6;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.admin-search-bar button:hover {
+  background: #2563eb;
+}
+
+.admin-filter-row {
+  display: flex;
+  gap: 1rem;
+}
+
+.admin-filter-row label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+.admin-filter-row select {
+  min-height: 40px;
+  padding: 0 0.75rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  outline: none;
+  font: inherit;
+}
+
+.admin-users-loading,
+.admin-users-empty {
+  display: grid;
+  place-items: center;
+  min-height: 50vh;
+  color: #64748b;
+}
+
+.admin-users-list {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.admin-user-card {
+  padding: 1.25rem;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.admin-user-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+}
+
+.admin-user-header strong {
+  display: block;
+  margin-bottom: 0.2rem;
+  color: #1e293b;
+  font-size: 1rem;
+}
+
+.admin-user-phone,
+.admin-user-email {
+  display: block;
+  color: #64748b;
+  font-size: 0.85rem;
+}
+
+.admin-status-badge {
+  padding: 0.35rem 0.8rem;
+  border-radius: 16px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.status-new {
+  color: #1e40af;
+  background: #dbeafe;
+}
+
+.status-pending_approval {
+  color: #92400e;
+  background: #fef3c7;
+}
+
+.status-approved {
+  color: #065f46;
+  background: #d1fae5;
+}
+
+.status-rejected {
+  color: #991b1b;
+  background: #fee2e2;
+}
+
+.status-blocked {
+  color: #7c2d12;
+  background: #fed7aa;
+}
+
+.admin-user-meta {
+  display: flex;
+  gap: 1.5rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #f1f5f9;
+  color: #64748b;
+  font-size: 0.85rem;
+}
+
+.admin-user-tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.75rem;
+}
+
+.admin-user-tags-empty {
+  color: #94a3b8;
+  font-size: 0.82rem;
+}
+
+.admin-user-tag-chip {
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  background: #e0e7ff;
+  color: #3730a3;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.admin-user-tags-edit {
+  margin-inline-start: auto;
+  min-height: 32px;
+  padding: 0 0.65rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #fff;
+  color: #334155;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.admin-user-tags-editor {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.65rem;
+  padding: 0.75rem;
+  border-radius: 10px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.admin-user-tag-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.55rem;
+  border-radius: 8px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.admin-user-tags-save {
+  width: 100%;
+  min-height: 40px;
+  margin-top: 0.25rem;
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  background: #1e3a8a;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.admin-user-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.9rem;
+}
+
+.admin-user-actions button {
+  min-height: 38px;
+  padding: 0 0.9rem;
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  background: #1e3a8a;
+  font-size: 0.82rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.admin-user-actions button.danger {
+  background: #dc2626;
+}
+
+.admin-user-actions button.warn {
+  background: #d97706;
+}
+
+.admin-user-actions button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+@media (max-width: 768px) {
+  .admin-users-header,
+  .admin-users-list {
+    padding: 1rem;
+  }
+
+  .admin-user-meta {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}

@@ -1,0 +1,78 @@
+.admin-settings-shell {
+  min-height: 100vh;
+  direction: rtl;
+  background: #f8fafc;
+}
+
+.admin-settings-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+  background: #fff;
+}
+
+.admin-settings-header h1 {
+  margin: 0 0 0.35rem;
+  color: #1e293b;
+}
+
+.admin-settings-header p {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.admin-settings-loading {
+  display: grid;
+  place-items: center;
+  min-height: 50vh;
+  color: #64748b;
+}
+
+.admin-settings-form {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  display: grid;
+  gap: 1.25rem;
+}
+
+.admin-settings-form label {
+  display: grid;
+  gap: 0.35rem;
+  padding: 1.1rem;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.admin-settings-form strong {
+  color: #1e293b;
+}
+
+.admin-settings-form span {
+  color: #64748b;
+  font-size: 0.82rem;
+}
+
+.admin-settings-form input {
+  min-height: 46px;
+  padding: 0 0.9rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  font: inherit;
+}
+
+.admin-settings-form button {
+  min-height: 50px;
+  border: none;
+  border-radius: 12px;
+  color: #fff;
+  background: #1e3a8a;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.admin-settings-form button:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}

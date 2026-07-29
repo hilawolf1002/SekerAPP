@@ -1,0 +1,109 @@
+.answer-intro-card {
+  text-align: center;
+}
+
+.answer-survey-image {
+  margin: 0 0 1rem;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.answer-survey-image img {
+  display: block;
+  width: 100%;
+  max-height: 240px;
+  object-fit: cover;
+}
+
+.answer-intro-title {
+  margin: 0 0 0.5rem;
+  font-size: 1.35rem;
+  font-weight: 800;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.answer-intro-desc {
+  margin: 0 0 1rem;
+  color: var(--gray-600);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.answer-intro-meta {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  font-size: 0.88rem;
+  color: var(--gray-500);
+}
+
+.answer-done {
+  display: flex;
+  align-items: center;
+}
+
+.answer-done-card {
+  text-align: center;
+  padding: 2rem 1.25rem;
+}
+
+.answer-done-icon {
+  font-size: 3rem;
+  color: var(--emerald-500);
+  margin-bottom: 0.75rem;
+}
+
+.answer-done-card h1 {
+  margin: 0 0 0.5rem;
+  font-size: 1.5rem;
+}
+
+.answer-done-card p {
+  margin: 0 0 1rem;
+  color: var(--gray-600);
+}
+
+.answer-done-points {
+  margin: 0 auto 1rem;
+}
+
+.answer-questions-page {
+  padding-bottom: 0;
+}
+
+.survey-open-answer {
+  min-height: 120px;
+  font-size: 1rem;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.survey-char-count {
+  margin: 0.5rem 0 0;
+  text-align: left;
+  font-size: 0.82rem;
+  color: var(--gray-500);
+}
+
+.survey-open-answer {
+  min-height: 120px;
+  font-size: 1rem;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.survey-char-count {
+  margin: 0.5rem 0 0;
+  text-align: left;
+  font-size: 0.82rem;
+  color: var(--gray-500);
+}
+
+.answer-questions-page .survey-content {
+  padding-bottom: 5rem;
+}

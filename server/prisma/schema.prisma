@@ -1,0 +1,325 @@
+// Prisma Schema - SekerApp
+// מטרה: מבנה נתונים לפלטפורמת סקרים + פאנל עונים מתוגמל
+// מסד: PostgreSQL | ORM: Prisma 6
+// לפי האפיון: משתמשים/KYC, תגיות, סקרים, מענים+נעילות, ארנק נקודות
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ========== Enums ==========
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+/// סטטוס עונה במערכת (KYC)
+enum ResponderStatus {
+  NEW
+  PENDING_APPROVAL
+  APPROVED
+  REJECTED
+  BLOCKED
+}
+
+enum SurveyStatus {
+  DRAFT
+  ACTIVE
+  CLOSED
+}
+
+/// מצב מענה – כולל נעילת זמן (Time Lock)
+enum ResponseStatus {
+  STARTED
+  COMPLETED
+  EXPIRED_TIME
+  DISQUALIFIED
+}
+
+enum PointTransactionType {
+  SURVEY_COMPLETION
+  JOIN_BONUS
+  REFERRAL_BONUS
+  GIFT_REDEMPTION
+  ADJUSTMENT
+}
+
+enum RedemptionStatus {
+  PENDING
+  FULFILLED
+  REJECTED
+  CANCELLED
+}
+
+/// סטטוס הזמנה לסקר (SMS / פאנל עונים)
+enum InvitationStatus {
+  SENT
+  OPENED
+  RESPONDED
+  EXPIRED
+}
+
+// ========== Models ==========
+
+/// משתמש / עונה / אדמין
+model User {
+  id            String          @id @default(uuid())
+  phone         String          @unique
+  email         String?         @unique
+  name          String?
+  role          UserRole        @default(USER)
+  status        ResponderStatus @default(NEW)
+
+  /// קישור זמני לאחסון פרטי של ת.ז. – לא קובץ ציבורי. מומלץ למחוק לאחר אישור.
+  idDocumentUrl String?
+  /// אחרי אישור/דחייה: נשאר דגל בלי לשמור את הקובץ לנצח
+  idVerified    Boolean         @default(false)
+
+  /// פרטים דמוגרפיים גמישים (גיל, אזור, מין וכו') – JSON
+  demographics  Json?
+
+  /// חבר מביא חבר
+  referralCode  String          @unique @default(uuid())
+  referredById  String?
+  referredBy    User?           @relation("Referrals", fields: [referredById], references: [id])
+  referrals     User[]          @relation("Referrals")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tags              UserTag[]
+  surveysCreated    Survey[]           @relation("SurveyCreator")
+  responses         SurveyResponse[]
+  invitations       SurveyInvitation[]
+  pointTransactions PointTransaction[]
+  redemptions       RedemptionRequest[]
+
+  @@index([status])
+  @@index([role])
+  @@index([referredById])
+}
+
+/// תגית לניהול קהלים (אזור, גיל, VIP וכו')
+model Tag {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+
+  users   UserTag[]
+  surveys SurveyTag[]
+}
+
+/// קשר רבים-לרבים: משתמש <-> תגית
+model UserTag {
+  userId String
+  tagId  String
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tag    Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([userId, tagId])
+  @@index([tagId])
+}
+
+/// סקר (רגיל או מתוגמל)
+model Survey {
+  id               String       @id @default(uuid())
+  title            String
+  description      String?
+  status           SurveyStatus @default(DRAFT)
+
+  /// האם מזכה בנקודות (סקר מתוגמל)
+  isRewarded       Boolean      @default(false)
+  /// נקודות למענה מלא – ניתן לשינוי פר סקר
+  rewardPoints     Int          @default(0)
+  /// מגבלת זמן מענה בדקות (ברירת מחדל למשל 10)
+  timeLimitMinutes Int          @default(10)
+  /// מכסת תשובות מקסימלית (למשל 500)
+  maxResponses     Int?
+
+  /// מבנה שאלות גמיש (שאלה אחת / רב-שאלות / תמונות וכו')
+  questions Json
+
+  imageUrl        String?
+  backgroundColor String?
+  thankYouMessage String?
+
+  creatorId String?
+  creator   User?   @relation("SurveyCreator", fields: [creatorId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  responses    SurveyResponse[]
+  audienceTags SurveyTag[]
+  invitations  SurveyInvitation[]
+
+  @@index([status])
+  @@index([isRewarded])
+  @@index([creatorId])
+}
+
+/// קהל יעד לסקר לפי תגיות
+model SurveyTag {
+  surveyId String
+  tagId    String
+  survey   Survey @relation(fields: [surveyId], references: [id], onDelete: Cascade)
+  tag      Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([surveyId, tagId])
+  @@index([tagId])
+}
+
+/// מענה / נעילת מקום בסקר
+/// נוצר ב-STARTED כשעונה נכנס לסקר (תופס מקום + מפעיל שעון)
+model SurveyResponse {
+  id          String         @id @default(uuid())
+  surveyId    String
+  userId      String
+  status      ResponseStatus @default(STARTED)
+
+  /// התשובות עצמן – מתמלאות בסיום
+  answers Json?
+
+  startedAt   DateTime  @default(now())
+  completedAt DateTime?
+
+  survey Survey @relation(fields: [surveyId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  /// עונה לא עונה פעמיים על אותו סקר
+  @@unique([surveyId, userId])
+  @@index([surveyId, status])
+  @@index([userId])
+  @@index([startedAt])
+}
+
+/// קוד חד-פעמי להתחברות (OTP) – נשמר מוצפן/hashed, עם תוקף וניסיונות
+model AuthOtp {
+  id        String   @id @default(uuid())
+  phone     String
+  codeHash  String
+  expiresAt DateTime
+  attempts  Int      @default(0)
+  consumed  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([phone, consumed])
+  @@index([expiresAt])
+}
+
+/// ארנק נקודות – Ledger בלבד
+/// יתרה = סכום כל הטרנזקציות. תוספת נקודות רק בשרת אחרי אימות.
+model PointTransaction {
+  id          String               @id @default(uuid())
+  userId      String
+  amount      Int
+  type        PointTransactionType
+  /// מזהה קשור: surveyId / referral userId / redemption id
+  referenceId String?
+  note        String?
+  createdAt   DateTime             @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([type])
+  @@index([referenceId])
+}
+
+/// הגדרות מערכת גלובליות (רשומה יחידה – id=1)
+model GlobalSettings {
+  id                       Int      @id @default(1)
+  /// כמה נקודות נדרשות כדי לפדות מתנה
+  redemptionGoal           Int      @default(100)
+  signupBonus              Int      @default(0)
+  referralBonus            Int      @default(0)
+  /// בונוס נוסף למפנה כשהחבר שהביא הוא צעיר (גיל עד youthMaxAge)
+  youthReferralBonus       Int      @default(0)
+  /// גיל מקסימלי לבונוס צעירים (כולל), מינימום תמיד 18
+  youthMaxAge              Int      @default(22)
+  defaultTimeLimitMinutes  Int      @default(10)
+  defaultMaxResponses      Int?
+  updatedAt                DateTime @updatedAt
+}
+
+/// אפשרות מתנה / חנות לפדיון (למשל קופון לחנות)
+model GiftOption {
+  id          String   @id @default(uuid())
+  /// שם החנות / החברה (למשל "שופרסל")
+  storeName   String
+  /// כותרת המתנה (למשל "שובר לקנייה")
+  title       String
+  description String?
+  /// כמה נקודות עולה הפדיון (בדרך כלל = יעד הפדיון)
+  pointsCost  Int
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  coupons GiftCoupon[]
+
+  @@index([isActive])
+}
+
+/// קוד קופון בודד במלאי של מתנה (אדמין מנהל ידנית, לעיון עתידי)
+model GiftCoupon {
+  id           String    @id @default(uuid())
+  giftOptionId String
+  code         String
+  isUsed       Boolean   @default(false)
+  usedAt       DateTime?
+  createdAt    DateTime  @default(now())
+
+  giftOption GiftOption @relation(fields: [giftOptionId], references: [id], onDelete: Cascade)
+
+  @@unique([giftOptionId, code])
+  @@index([giftOptionId, isUsed])
+}
+
+/// בקשת פדיון נקודות – זרימה ידנית על ידי אדמין
+/// משתמש שמגיע ליעד הנקודות שולח פנייה עם מייל + צילום ת.ז.
+/// האדמין שולח קופון ידנית במייל ומסמן כ-FULFILLED
+model RedemptionRequest {
+  id           String           @id @default(uuid())
+  userId       String
+  /// כתובת מייל לשליחת הקופון (ממולאת על ידי המשתמש בעת הפנייה)
+  email        String?
+  /// מפתח אחסון פרטי של צילום ת.ז. לצורך אימות הפנייה – נמחק לאחר אישור
+  idDocumentKey String?
+  /// נקודות שהופקדו בפנייה (רגע השליחה)
+  pointsSpent  Int
+  status       RedemptionStatus @default(PENDING)
+  adminNote    String?
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([status])
+}
+
+/// הזמנה לענות על סקר (נשלחת ב-SMS לפי תגיות / רשימת טלפונים)
+model SurveyInvitation {
+  id          String           @id @default(uuid())
+  surveyId    String
+  userId      String
+  status      InvitationStatus @default(SENT)
+  sentAt      DateTime         @default(now())
+  openedAt    DateTime?
+  respondedAt DateTime?
+
+  survey Survey @relation(fields: [surveyId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([surveyId, userId])
+  @@index([userId, status])
+  @@index([surveyId])
+  @@index([sentAt])
+}

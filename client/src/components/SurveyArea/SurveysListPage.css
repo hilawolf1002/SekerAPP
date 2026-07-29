@@ -1,0 +1,20 @@
+.surveys-new-top {
+  margin-bottom: 0.85rem;
+}
+
+.surveys-list-card-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.surveys-add-btn {
+  background: var(--gradient-primary);
+  color: #fff;
+  border: none;
+}
+
+.surveys-list-card .survey-reward-pill {
+  margin-bottom: 0;
+}

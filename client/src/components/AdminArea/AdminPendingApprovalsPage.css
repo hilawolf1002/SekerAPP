@@ -1,0 +1,326 @@
+.admin-pending-shell {
+  min-height: 100vh;
+  direction: rtl;
+  background: #f8fafc;
+}
+
+.admin-pending-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.admin-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+  color: #3b82f6;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.admin-back-link:hover {
+  text-decoration: underline;
+}
+
+.admin-pending-header h1 {
+  margin: 0 0 0.25rem;
+  color: #1e293b;
+  font-size: 1.5rem;
+}
+
+.admin-pending-header p {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.admin-pending-loading {
+  display: grid;
+  place-items: center;
+  min-height: 50vh;
+  color: #64748b;
+}
+
+.admin-empty-state {
+  display: grid;
+  place-items: center;
+  gap: 0.75rem;
+  min-height: 50vh;
+  text-align: center;
+}
+
+.admin-empty-icon {
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: #dcfce7;
+  font-size: 2rem;
+}
+
+.admin-empty-state strong {
+  font-size: 1.1rem;
+  color: #1e293b;
+}
+
+.admin-empty-state span {
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.admin-pending-list {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.admin-responder-card {
+  padding: 1.5rem;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.admin-responder-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.admin-responder-header strong {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: #1e293b;
+  font-size: 1.1rem;
+}
+
+.admin-responder-phone {
+  color: #64748b;
+  font-size: 0.85rem;
+}
+
+.admin-pending-badge {
+  padding: 0.4rem 0.9rem;
+  border-radius: 20px;
+  color: #92400e;
+  background: #fef3c7;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.admin-responder-details {
+  display: grid;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.admin-detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid #f8fafc;
+  font-size: 0.9rem;
+}
+
+.admin-detail-label {
+  color: #64748b;
+  font-weight: 700;
+}
+
+.admin-detail-row > span:last-child {
+  color: #1e293b;
+  text-align: left;
+}
+
+.admin-responder-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.admin-btn-view,
+.admin-btn-approve,
+.admin-btn-reject {
+  flex: 1;
+  min-width: 120px;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 160ms ease;
+}
+
+.admin-btn-view {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.admin-btn-view:hover {
+  background: #e2e8f0;
+}
+
+.admin-btn-approve {
+  background: #10b981;
+  color: #ffffff;
+}
+
+.admin-btn-approve:hover:not(:disabled) {
+  background: #059669;
+}
+
+.admin-btn-reject {
+  background: #ef4444;
+  color: #ffffff;
+}
+
+.admin-btn-reject:hover:not(:disabled) {
+  background: #dc2626;
+}
+
+.admin-btn-approve:disabled,
+.admin-btn-reject:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+/* Modal */
+.admin-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+  animation: fadeIn 200ms ease;
+}
+
+.admin-modal-content {
+  position: relative;
+  width: min(100%, 700px);
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 2rem;
+  border-radius: 20px;
+  background: #ffffff;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 250ms ease;
+}
+
+.admin-modal-close {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  color: #64748b;
+  background: #f1f5f9;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 160ms ease;
+}
+
+.admin-modal-close:hover {
+  background: #e2e8f0;
+  color: #1e293b;
+}
+
+.admin-modal-content h2 {
+  margin: 0 0 0.5rem;
+  color: #1e293b;
+  font-size: 1.3rem;
+}
+
+.admin-modal-note {
+  margin: 0 0 1.5rem;
+  color: #64748b;
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+.admin-id-preview {
+  margin-bottom: 1.5rem;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f8fafc;
+}
+
+.admin-id-preview img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.admin-modal-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-pending-header,
+  .admin-pending-list {
+    padding: 1rem;
+  }
+
+  .admin-responder-card {
+    padding: 1.25rem;
+  }
+
+  .admin-responder-actions {
+    flex-direction: column;
+  }
+
+  .admin-btn-view,
+  .admin-btn-approve,
+  .admin-btn-reject {
+    min-width: 100%;
+  }
+
+  .admin-modal-content {
+    padding: 1.5rem;
+  }
+
+  .admin-modal-actions {
+    flex-direction: column;
+  }
+}

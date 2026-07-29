@@ -1,0 +1,26 @@
+node_modules/
+dist/
+
+# Local secrets and environment files (keep *.example files)
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+
+# Legacy provider credentials must never enter version control
+client_secret_*.json
+nadlanet-*.json
+*credentials*.json
+
+# Private local KYC uploads (ID documents – temporary until admin decision)
+server/private-uploads/
+
+# Public survey images (local storage)
+server/public-uploads/
+
+# Logs and local editor/OS files
+*.log
+.DS_Store
+Thumbs.db

@@ -1,0 +1,32 @@
+[Unit]
+Description=SurveyPro Application
+Documentation=https://sekerapp.online
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/sekerapp.online
+ExecStart=/usr/bin/node server.js
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=always
+RestartSec=10
+Environment=NODE_ENV=production
+Environment=PORT=6578
+Environment=HOST=0.0.0.0
+Environment=CORS_ORIGIN=https://sekerapp.online
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadWritePaths=/var/www/sekerapp.online/logs /var/www/sekerapp.online/uploads
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=surveypro
+
+[Install]
+WantedBy=multi-user.target

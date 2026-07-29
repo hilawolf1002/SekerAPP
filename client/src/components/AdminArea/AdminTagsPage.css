@@ -1,0 +1,146 @@
+.admin-tags-shell {
+  min-height: 100vh;
+  direction: rtl;
+  background: #f8fafc;
+}
+
+.admin-tags-header,
+.admin-tags-create,
+.admin-tags-list {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1.25rem;
+}
+
+.admin-tags-header {
+  background: #fff;
+  border-bottom: 1px solid #e2e8f0;
+  max-width: none;
+}
+
+.admin-tags-header h1 {
+  margin: 0 0 0.35rem;
+  color: #1e293b;
+}
+
+.admin-tags-header p {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  max-width: 900px;
+}
+
+.admin-tags-create {
+  display: grid;
+  gap: 0.7rem;
+  margin-top: 1rem;
+  padding: 1.2rem;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.admin-tags-create h2 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.admin-tags-create-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.admin-tags-create-row input {
+  flex: 1;
+  min-height: 44px;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  font: inherit;
+}
+
+.admin-tags-create-row button {
+  min-height: 44px;
+  padding: 0 1.25rem;
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  background: #1e3a8a;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.admin-tags-create-row button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.admin-tags-loading,
+.admin-tags-empty {
+  display: grid;
+  place-items: center;
+  min-height: 30vh;
+  color: #64748b;
+  padding: 2rem;
+}
+
+.admin-tags-list {
+  display: grid;
+  gap: 0.75rem;
+  padding-top: 0;
+}
+
+.admin-tag-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.15rem;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.admin-tag-info {
+  display: grid;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.admin-tag-info strong {
+  color: #1e293b;
+  font-size: 1rem;
+}
+
+.admin-tag-info span {
+  color: #64748b;
+  font-size: 0.85rem;
+}
+
+.admin-tag-delete {
+  min-height: 40px;
+  padding: 0 0.9rem;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  color: #b91c1c;
+  background: #fef2f2;
+  font-weight: 700;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.admin-tag-delete:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.admin-back-link {
+  display: inline-block;
+  margin-bottom: 0.75rem;
+  color: #3b82f6;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+}

@@ -1,0 +1,258 @@
+.admin-dashboard-shell {
+  min-height: 100vh;
+  direction: rtl;
+  background: #f1f5f9;
+}
+
+.admin-dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.admin-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.admin-brand img {
+  height: 36px;
+  width: auto;
+}
+
+.admin-brand div {
+  display: grid;
+  gap: 0.1rem;
+}
+
+.admin-brand strong {
+  font-size: 1.1rem;
+  color: #1e293b;
+}
+
+.admin-brand span {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.admin-logout-btn {
+  padding: 0.6rem 1.2rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  color: #475569;
+  background: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 160ms ease;
+}
+
+.admin-logout-btn:hover {
+  border-color: #94a3b8;
+  background: #f8fafc;
+}
+
+.admin-dashboard-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+.admin-dashboard-content h1 {
+  margin: 0 0 0.5rem;
+  color: #1e293b;
+  font-size: clamp(1.5rem, 4vw, 2rem);
+}
+
+.admin-dashboard-subtitle {
+  margin: 0 0 2rem;
+  color: #64748b;
+  line-height: 1.6;
+}
+
+.admin-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-bottom: 3rem;
+}
+
+.admin-stat-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 160ms ease;
+}
+
+.admin-stat-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.admin-stat-card.highlight {
+  border: 2px solid #3b82f6;
+  background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%);
+}
+
+.admin-stat-icon {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  font-size: 1.5rem;
+}
+
+.admin-stat-card.highlight .admin-stat-icon {
+  background: #dbeafe;
+}
+
+.admin-stat-info {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.admin-stat-info strong {
+  font-size: 1.8rem;
+  color: #1e293b;
+}
+
+.admin-stat-info span {
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.admin-actions {
+  margin-top: 3rem;
+}
+
+.admin-actions h2 {
+  margin: 0 0 1.25rem;
+  color: #1e293b;
+  font-size: 1.3rem;
+}
+
+.admin-action-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.admin-action-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-radius: 14px;
+  color: inherit;
+  background: #ffffff;
+  text-decoration: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 160ms ease;
+}
+
+.admin-action-card:hover {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.admin-action-card.primary {
+  border: 2px solid #3b82f6;
+  background: linear-gradient(135deg, #dbeafe 0%, #ffffff 100%);
+}
+
+.admin-action-icon {
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  background: #f1f5f9;
+  font-size: 1.5rem;
+}
+
+.admin-action-card.primary .admin-action-icon {
+  background: #bfdbfe;
+}
+
+.admin-action-card > div {
+  display: grid;
+  gap: 0.3rem;
+  flex: 1;
+}
+
+.admin-action-card strong {
+  font-size: 1rem;
+  color: #1e293b;
+}
+
+.admin-action-card span {
+  font-size: 0.85rem;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+.admin-badge {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  display: grid;
+  place-items: center;
+  min-width: 32px;
+  height: 32px;
+  padding: 0 0.5rem;
+  border-radius: 16px;
+  color: #ffffff;
+  background: #ef4444;
+  font-size: 0.8rem;
+  font-weight: 900;
+}
+
+.admin-loading {
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+  color: #64748b;
+  font-size: 1.1rem;
+}
+
+@media (max-width: 768px) {
+  .admin-dashboard-header {
+    padding: 1rem;
+  }
+
+  .admin-dashboard-content {
+    padding: 1.5rem 1rem;
+  }
+
+  .admin-stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-action-card {
+    padding: 1.25rem;
+  }
+
+  .admin-action-icon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .admin-badge {
+    top: 0.75rem;
+    left: 0.75rem;
+    min-width: 28px;
+    height: 28px;
+    font-size: 0.75rem;
+  }
+}

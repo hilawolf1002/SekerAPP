@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>יצירת סקר - SekerApp</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" crossorigin="anonymous">
+    
+    <!-- Authentication utilities -->
+    <script src="auth.js"></script>
+    
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WNRFLCEHLT"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-WNRFLCEHLT');
+    </script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4338ca;
+            --secondary: #8b5cf6;
+            --accent: #ec4899;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #0a0a0a;
+            --gray: #64748b;
+            --light: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+
+        /* Enhanced Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(236, 72, 153, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+                linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            z-index: -1;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .logo img {
+            height: 40px;
+            width: auto;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .main-content {
+            padding: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--light);
+            margin-bottom: 1rem;
+        }
+
+        .page-subtitle {
+            font-size: 1.1rem;
+            color: var(--gray);
+        }
+
+        .survey-form {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--light);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            color: var(--light);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .survey-type-toggle {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .toggle-option {
+            flex: 1;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-option:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .toggle-option.selected {
+            background: rgba(99, 102, 241, 0.2);
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+        }
+
+        .toggle-option i {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .toggle-option h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .toggle-option p {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        .question-container {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        
+        /* Question options styling */
+        .question-options {
+            margin: 16px 0;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+        }
+        
+        .question-options .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .question-options .form-help {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 12px;
+            margin-left: 28px;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .question-number {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .remove-question-btn {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: var(--danger);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .remove-question-btn:hover {
+            background: rgba(239, 68, 68, 0.3);
+            border-color: rgba(239, 68, 68, 0.5);
+        }
+
+        .answer-container {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            align-items: center;
+        }
+
+        .answer-input {
+            flex: 1;
+        }
+
+        .remove-answer-btn {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: var(--danger);
+            padding: 0.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            min-width: 40px;
+        }
+
+        .remove-answer-btn:hover {
+            background: rgba(239, 68, 68, 0.3);
+            border-color: rgba(239, 68, 68, 0.5);
+        }
+
+        .add-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            justify-content: center;
+        }
+
+        .add-question-btn {
+            background: linear-gradient(135deg, var(--accent), var(--secondary));
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .add-question-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(236, 72, 153, 0.4);
+        }
+
+        .add-answer-btn {
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .add-answer-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.4);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .cancel-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .cancel-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .create-btn {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .create-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(99, 102, 241, 0.4);
+        }
+
+        .create-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .survey-form {
+                padding: 1.5rem;
+            }
+            
+            .toggle-option {
+                padding: 0.75rem;
+            }
+            
+            .toggle-option i {
+                font-size: 1.5rem;
+            }
+            
+            .toggle-option h3 {
+                font-size: 1rem;
+            }
+            
+            .add-buttons {
+                flex-direction: column;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <img src="/logo.png" alt="SekerApp Logo">
+            SekerApp
+        </div>
+        <div class="nav-buttons">
+            <a href="/surveys.html" class="nav-btn">
+                <i class="fas fa-arrow-right"></i>
+                חזרה לסקרים
+            </a>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">יצירת סקר חדש</h1>
+            <p class="page-subtitle">צור סקר מותאם אישית עם שאלות ותשובות</p>
+        </div>
+
+        <form class="survey-form" id="surveyForm">
+            <!-- Survey Type Selection -->
+            <div class="form-group">
+                <label class="form-label">סוג הסקר</label>
+                <div class="survey-type-toggle">
+                    <div class="toggle-option" data-type="single">
+                        <i class="fas fa-question-circle"></i>
+                        <h3>שאלה אחת</h3>
+                        <p>סקר פשוט עם שאלה אחת ותשובות</p>
+                    </div>
+                    <div class="toggle-option" data-type="multi">
+                        <i class="fas fa-list-ul"></i>
+                        <h3>מספר שאלות</h3>
+                        <p>סקר מורכב עם מספר שאלות</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Basic Survey Info -->
+            <div class="form-group">
+                <label for="title" class="form-label">כותרת הסקר *</label>
+                <input type="text" id="title" name="title" class="form-input" required placeholder="הכנס כותרת לסקר">
+            </div>
+
+            <div class="form-group">
+                <label for="description" class="form-label">תיאור הסקר</label>
+                <textarea id="description" name="description" class="form-textarea" placeholder="תיאור קצר של הסקר (אופציונלי)"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="category" class="form-label">קטגוריה *</label>
+                <select id="category" name="category" class="form-select" required>
+                    <option value="">בחר קטגוריה</option>
+                    <option value="חברתי">חברתי</option>
+                    <option value="עסקי">עסקי</option>
+                    <option value="פוליטי">פוליטי</option>
+                    <option value="מוניציפאלי">מוניציפאלי</option>
+                    <option value="בריאות">בריאות</option>
+                    <option value="חינוך">חינוך</option>
+                    <option value="טכנולוגיה">טכנולוגיה</option>
+                    <option value="אחר">אחר</option>
+                </select>
+            </div>
+
+            <!-- Single Question Section -->
+            <div id="singleQuestionSection" class="hidden">
+                <div class="form-group">
+                    <label for="question" class="form-label">שאלת הסקר *</label>
+                    <textarea id="question" name="question" class="form-textarea" placeholder="הכנס את השאלה שלך"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">תשובות *</label>
+                    <div id="singleAnswersContainer">
+                        <div class="answer-container">
+                            <input type="text" name="answers[]" class="form-input answer-input" placeholder="תשובה 1" required>
+                            <button type="button" class="remove-answer-btn" onclick="removeAnswer(this)" disabled>
+                                <i class="fas fa-minus"></i>
+                            </button>
+                        </div>
+                        <div class="answer-container">
+                            <input type="text" name="answers[]" class="form-input answer-input" placeholder="תשובה 2" required>
+                            <button type="button" class="remove-answer-btn" onclick="removeAnswer(this)" disabled>
+                                <i class="fas fa-minus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="button" class="add-answer-btn" onclick="addAnswer()">
+                        <i class="fas fa-plus"></i>
+                        הוספת תשובה חדשה
+                    </button>
+                </div>
+            </div>
+
+            <!-- Multi Question Section -->
+            <div id="multiQuestionSection" class="hidden">
+                <div id="questionsContainer">
+                    <!-- Questions will be added here -->
+                </div>
+                <button type="button" class="add-question-btn" onclick="addQuestion()">
+                    <i class="fas fa-plus"></i>
+                    הוספת שאלה נוספת
+                </button>
+            </div>
+
+            <!-- Additional Options -->
+            <div class="form-group">
+                <label for="thankYouMessage" class="form-label">הודעת תודה</label>
+                <textarea id="thankYouMessage" name="thankYouMessage" class="form-textarea" placeholder="הודעה שתוצג לאחר השלמת הסקר (אופציונלי)"></textarea>
+            </div>
+
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <a href="/surveys.html" class="cancel-btn">
+                    <i class="fas fa-times"></i>
+                    ביטול
+                </a>
+                <button type="submit" class="create-btn" id="createBtn" disabled>
+                    <i class="fas fa-check"></i>
+                    יצירת סקר
+                </button>
+            </div>
+        </form>
+    </main>
+
+    <script>
+        let surveyType = 'single';
+        let questionCounter = 1;
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is authenticated
+            if (!requireAuth()) {
+                return; // User will be redirected to login
+            }
+
+            initializeSurveyForm();
+        });
+
+        function initializeSurveyForm() {
+            // Set default survey type
+            selectSurveyType('single');
+            
+            // Add first question for multi-question surveys
+            addQuestion();
+            
+            // Setup form validation
+            setupFormValidation();
+        }
+
+        function selectSurveyType(type) {
+            surveyType = type;
+            
+            // Update toggle buttons
+            document.querySelectorAll('.toggle-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            document.querySelector(`[data-type="${type}"]`).classList.add('selected');
+            
+            // Show/hide sections
+            if (type === 'single') {
+                document.getElementById('singleQuestionSection').classList.remove('hidden');
+                document.getElementById('multiQuestionSection').classList.add('hidden');
+            } else {
+                document.getElementById('singleQuestionSection').classList.add('hidden');
+                document.getElementById('multiQuestionSection').classList.remove('hidden');
+            }
+            
+            // Update form data
+            updateFormData();
+        }
+
+        function addQuestion() {
+            const container = document.getElementById('questionsContainer');
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question-container';
+            questionDiv.innerHTML = `
+                <div class="question-header">
+                    <span class="question-number">שאלה ${questionCounter}</span>
+                    ${questionCounter > 1 ? `<button type="button" class="remove-question-btn" onclick="removeQuestion(this)">
+                        <i class="fas fa-trash"></i>
+                        מחק שאלה
+                    </button>` : ''}
+                </div>
+                <div class="form-group">
+                    <label class="form-label">טקסט השאלה *</label>
+                    <textarea name="questions[${questionCounter-1}][questionText]" class="form-textarea" placeholder="הכנס את השאלה שלך" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">אפשרויות השאלה</label>
+                    <div class="question-options">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="questions[${questionCounter-1}][allowMultiple]">
+                            <span class="checkmark"></span>
+                            אפשרות בחירת מרובה
+                        </label>
+                        <small class="form-help">אם תסמן את האפשרות הזו, המשתמשים יוכלו לבחור יותר מתשובה אחת</small>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">תשובות *</label>
+                    <div class="answers-container">
+                        <div class="answer-container">
+                            <input type="text" name="questions[${questionCounter-1}][answers][]" class="form-input answer-input" placeholder="תשובה 1" required>
+                            <button type="button" class="remove-answer-btn" onclick="removeAnswer(this)" disabled>
+                                <i class="fas fa-minus"></i>
+                            </button>
+                        </div>
+                        <div class="answer-container">
+                            <input type="text" name="questions[${questionCounter-1}][answers][]" class="form-input answer-input" placeholder="תשובה 2" required>
+                            <button type="button" class="remove-answer-btn" onclick="removeAnswer(this)" disabled>
+                                <i class="fas fa-minus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="button" class="add-answer-btn" onclick="addAnswerToQuestion(this)">
+                        <i class="fas fa-plus"></i>
+                        הוספת תשובה חדשה
+                    </button>
+                </div>
+            `;
+            
+            container.appendChild(questionDiv);
+            questionCounter++;
+            
+            // Update form data
+            updateFormData();
+        }
+
+        function removeQuestion(button) {
+            if (confirm('האם אתה בטוח שברצונך למחוק את השאלה הזו?')) {
+                button.closest('.question-container').remove();
+                updateQuestionNumbers();
+                updateFormData();
+            }
+        }
+
+        function updateQuestionNumbers() {
+            const questions = document.querySelectorAll('.question-container');
+            questions.forEach((question, index) => {
+                const numberSpan = question.querySelector('.question-number');
+                numberSpan.textContent = `שאלה ${index + 1}`;
+                
+                // Update name attributes
+                const questionTextarea = question.querySelector('textarea[name*="[questionText]"]');
+                const allowMultipleCheckbox = question.querySelector('input[name*="[allowMultiple]"]');
+                const answerInputs = question.querySelectorAll('input[name*="[answers]"]');
+                
+                questionTextarea.name = `questions[${index}][questionText]`;
+                if (allowMultipleCheckbox) {
+                    allowMultipleCheckbox.name = `questions[${index}][allowMultiple]`;
+                }
+                answerInputs.forEach((input, answerIndex) => {
+                    input.name = `questions[${index}][answers][]`;
+                });
+            });
+            questionCounter = questions.length + 1;
+        }
+
+        function addAnswer() {
+            const container = document.getElementById('singleAnswersContainer');
+            const answerDiv = document.createElement('div');
+            answerDiv.className = 'answer-container';
+            answerDiv.innerHTML = `
+                <input type="text" name="answers[]" class="form-input answer-input" placeholder="תשובה חדשה" required>
+                <button type="button" class="remove-answer-btn" onclick="removeAnswer(this)">
+                    <i class="fas fa-minus"></i>
+                </button>
+            `;
+            
+            container.appendChild(answerDiv);
+            updateRemoveButtons();
+            updateFormData();
+        }
+
+        function addAnswerToQuestion(button) {
+            const questionContainer = button.closest('.question-container');
+            const answersContainer = questionContainer.querySelector('.answers-container');
+            const answerDiv = document.createElement('div');
+            answerDiv.className = 'answer-container';
+            answerDiv.innerHTML = `
+                <input type="text" name="questions[${questionContainer.querySelector('.question-number').textContent.split(' ')[1] - 1}][answers][]" class="form-input answer-input" placeholder="תשובה חדשה" required>
+                <button type="button" class="remove-answer-btn" onclick="removeAnswer(this)">
+                    <i class="fas fa-minus"></i>
+                </button>
+            `;
+            
+            answersContainer.appendChild(answerDiv);
+            updateRemoveButtons();
+            updateFormData();
+        }
+
+        function removeAnswer(button) {
+            button.closest('.answer-container').remove();
+            updateRemoveButtons();
+            updateFormData();
+        }
+
+        function updateRemoveButtons() {
+            const removeButtons = document.querySelectorAll('.remove-answer-btn');
+            removeButtons.forEach(button => {
+                const questionContainer = button.closest('.question-container');
+                const answersContainer = questionContainer ? questionContainer.querySelector('.answers-container') : document.getElementById('singleAnswersContainer');
+                const answerContainers = answersContainer.querySelectorAll('.answer-container');
+                
+                // Enable/disable remove buttons based on answer count
+                if (answerContainers.length > 2) {
+                    button.disabled = false;
+                } else {
+                    button.disabled = true;
+                }
+            });
+        }
+
+        function updateFormData() {
+            // Add hidden field for survey type
+            let typeField = document.getElementById('surveyType');
+            if (!typeField) {
+                typeField = document.createElement('input');
+                typeField.type = 'hidden';
+                typeField.id = 'surveyType';
+                typeField.name = 'isMultiQuestion';
+                document.getElementById('surveyForm').appendChild(typeField);
+            }
+            typeField.value = surveyType === 'multi' ? 'true' : 'false';
+        }
+
+        function setupFormValidation() {
+            const form = document.getElementById('surveyForm');
+            const createBtn = document.getElementById('createBtn');
+            
+            form.addEventListener('input', function() {
+                createBtn.disabled = !form.checkValidity();
+            });
+            
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                if (!form.checkValidity()) {
+                    return;
+                }
+                
+                await createSurvey();
+            });
+        }
+
+        async function createSurvey() {
+            try {
+                const createBtn = document.getElementById('createBtn');
+                createBtn.disabled = true;
+                createBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> יוצר סקר...';
+                
+                const formData = new FormData(document.getElementById('surveyForm'));
+                
+                const response = await fetch('/api/surveys/create', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showNotification('הצלחה', 'הסקר נוצר בהצלחה!');
+                    
+                    // Redirect to surveys page after a short delay
+                    setTimeout(() => {
+                        window.location.href = '/surveys.html';
+                    }, 1500);
+                } else {
+                    showNotification('שגיאה', data.error || 'שגיאה ביצירת הסקר');
+                    createBtn.disabled = false;
+                    createBtn.innerHTML = '<i class="fas fa-check"></i> יצירת סקר';
+                }
+            } catch (error) {
+                console.error('Error creating survey:', error);
+                showNotification('שגיאה', 'שגיאה ביצירת הסקר');
+                createBtn.disabled = false;
+                createBtn.innerHTML = '<i class="fas fa-check"></i> יצירת סקר';
+            }
+        }
+
+        function showNotification(title, message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 30px;
+                right: 30px;
+                background: rgba(15, 15, 30, 0.95);
+                backdrop-filter: blur(20px);
+                border: 1px solid rgba(99, 102, 241, 0.3);
+                border-radius: 16px;
+                padding: 20px 24px;
+                color: white;
+                font-size: 14px;
+                font-weight: 600;
+                z-index: 10000;
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+                transform: translateX(400px);
+                transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                max-width: 300px;
+            `;
+            
+            notification.innerHTML = `
+                <div style="font-weight: 700; margin-bottom: 4px; color: #6366f1;">${title}</div>
+                <div style="color: #cbd5e1; font-size: 13px;">${message}</div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+            
+            // Animate out and remove
+            setTimeout(() => {
+                notification.style.transform = 'translateX(400px)';
+                setTimeout(() => {
+                    notification.remove();
+                }, 400);
+            }, 3500);
+        }
+
+        // Add event listeners for survey type toggle
+        document.querySelectorAll('.toggle-option').forEach(option => {
+            option.addEventListener('click', function() {
+                const type = this.dataset.type;
+                selectSurveyType(type);
+            });
+        });
+    </script>
+</body>
+</html>

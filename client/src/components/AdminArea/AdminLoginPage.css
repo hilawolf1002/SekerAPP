@@ -1,0 +1,119 @@
+.admin-login-shell {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 2rem 1rem;
+  direction: rtl;
+  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+}
+
+.admin-login-card {
+  width: min(100%, 480px);
+  padding: clamp(1.5rem, 5vw, 3rem);
+  border-radius: 20px;
+  background: #ffffff;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+}
+
+.admin-login-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-bottom: 1.5rem;
+  color: #1e3a8a;
+  font-size: 1.1rem;
+  font-weight: 900;
+}
+
+.admin-login-brand img {
+  height: 38px;
+  width: auto;
+}
+
+.admin-login-card h1 {
+  margin: 0 0 0.5rem;
+  color: #1e293b;
+  font-size: clamp(1.5rem, 4vw, 1.8rem);
+  text-align: center;
+}
+
+.admin-login-subtitle {
+  margin: 0 0 2rem;
+  color: #64748b;
+  font-size: 0.9rem;
+  text-align: center;
+  line-height: 1.6;
+}
+
+.admin-login-card label {
+  display: grid;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  color: #1e293b;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.admin-login-card input {
+  width: 100%;
+  min-height: 52px;
+  padding: 0 1rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  outline: none;
+  color: #1e293b;
+  background: #f8fafc;
+  font: inherit;
+  font-weight: 500;
+  transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+.admin-login-card input:focus {
+  border-color: #3b82f6;
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+.admin-login-card input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.admin-login-submit {
+  width: 100%;
+  min-height: 52px;
+  padding: 0.8rem 1.2rem;
+  border: none;
+  border-radius: 12px;
+  color: #ffffff;
+  background: #1e3a8a;
+  font-size: 1rem;
+  font-weight: 900;
+  cursor: pointer;
+  transition: background 160ms ease, transform 100ms ease;
+}
+
+.admin-login-submit:hover:not(:disabled) {
+  background: #1e40af;
+}
+
+.admin-login-submit:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.admin-login-submit:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+@media (max-width: 600px) {
+  .admin-login-shell {
+    padding: 1rem;
+  }
+
+  .admin-login-card {
+    padding: 1.5rem;
+  }
+}

@@ -1,0 +1,1114 @@
+[
+  {
+    "id": 1,
+    "title": "סקר דעת קהל על תחבורה ציבורית",
+    "description": "סקר על שביעות רצון מהתחבורה הציבורית בעיר",
+    "category": "מוניציפאלי",
+    "creatorId": 1,
+    "creatorName": "עיריית תל אביב",
+    "status": "active",
+    "isPublic": true,
+    "requirePhone": false,
+    "question": "איך אתה מעריך את השירות של התחבורה הציבורית?",
+    "answers": [
+      {
+        "id": 1,
+        "text": "מעולה",
+        "votes": 46
+      },
+      {
+        "id": 2,
+        "text": "טוב",
+        "votes": 35
+      },
+      {
+        "id": 3,
+        "text": "בסדר",
+        "votes": 30
+      },
+      {
+        "id": 4,
+        "text": "לא טוב",
+        "votes": 15
+      },
+      {
+        "id": 5,
+        "text": "גרוע",
+        "votes": 10
+      }
+    ],
+    "responses": 136,
+    "imageUrl": null,
+    "createdAt": "2024-01-15T00:00:00.000Z",
+    "updatedAt": "2024-01-15T00:00:00.000Z",
+    "isMultiQuestion": false,
+    "backgroundColor": "default"
+  },
+  {
+    "id": 2,
+    "title": "סקר על שימוש בטכנולוגיה בחינוך",
+    "description": "סקר על השימוש בטכנולוגיה בבתי הספר",
+    "category": "חברתי",
+    "creatorId": 2,
+    "creatorName": "משרד החינוך",
+    "status": "active",
+    "isPublic": true,
+    "requirePhone": false,
+    "question": "איך אתה מעריך את השימוש בטכנולוגיה בבית הספר שלך?",
+    "answers": [
+      {
+        "id": 1,
+        "text": "מתקדם מאוד",
+        "votes": 38
+      },
+      {
+        "id": 2,
+        "text": "מתקדם",
+        "votes": 44
+      },
+      {
+        "id": 3,
+        "text": "בסדר",
+        "votes": 35
+      },
+      {
+        "id": 4,
+        "text": "פחות מתקדם",
+        "votes": 22
+      },
+      {
+        "id": 5,
+        "text": "לא מתקדם",
+        "votes": 13
+      }
+    ],
+    "responses": 152,
+    "imageUrl": null,
+    "createdAt": "2024-01-10T00:00:00.000Z",
+    "updatedAt": "2024-01-10T00:00:00.000Z",
+    "isMultiQuestion": false,
+    "backgroundColor": "default"
+  },
+  {
+    "id": 3,
+    "title": "סקר על צריכת מזון בריא",
+    "description": "סקר על הרגלי אכילה ובריאות",
+    "category": "חברתי",
+    "creatorId": 3,
+    "creatorName": "משרד הבריאות",
+    "status": "active",
+    "isPublic": true,
+    "requirePhone": false,
+    "question": "כמה פעמים בשבוע אתה אוכל ירקות ופירות?",
+    "answers": [
+      {
+        "id": 1,
+        "text": "כל יום",
+        "votes": 58
+      },
+      {
+        "id": 2,
+        "text": "5-6 פעמים",
+        "votes": 41
+      },
+      {
+        "id": 3,
+        "text": "3-4 פעמים",
+        "votes": 38
+      },
+      {
+        "id": 4,
+        "text": "1-2 פעמים",
+        "votes": 25
+      },
+      {
+        "id": 5,
+        "text": "לעיתים רחוקות",
+        "votes": 19
+      }
+    ],
+    "responses": 181,
+    "imageUrl": null,
+    "createdAt": "2024-01-05T00:00:00.000Z",
+    "updatedAt": "2024-01-05T00:00:00.000Z",
+    "isMultiQuestion": false,
+    "backgroundColor": "default"
+  },
+  {
+    "id": 4,
+    "title": "סקר על עבודה מהבית",
+    "description": "סקר על חוויית העבודה מהבית",
+    "category": "עסקי",
+    "creatorId": 4,
+    "creatorName": "חברת הייטק",
+    "status": "active",
+    "isPublic": true,
+    "requirePhone": false,
+    "question": "איך אתה מעריך את היעילות בעבודה מהבית?",
+    "answers": [
+      {
+        "id": 1,
+        "text": "גבוהה מאוד",
+        "votes": 35
+      },
+      {
+        "id": 2,
+        "text": "גבוהה",
+        "votes": 50
+      },
+      {
+        "id": 3,
+        "text": "בינונית",
+        "votes": 42
+      },
+      {
+        "id": 4,
+        "text": "נמוכה",
+        "votes": 18
+      },
+      {
+        "id": 5,
+        "text": "נמוכה מאוד",
+        "votes": 12
+      }
+    ],
+    "responses": 157,
+    "imageUrl": null,
+    "createdAt": "2024-01-01T00:00:00.000Z",
+    "updatedAt": "2024-01-01T00:00:00.000Z",
+    "isMultiQuestion": false,
+    "backgroundColor": "default"
+  },
+  {
+    "id": 15,
+    "title": "הימין של הימין - הסקר הגדול במדינה",
+    "description": "סקר על מנהיגות הימין בישראל",
+    "category": "פוליטי",
+    "creatorId": 1,
+    "creatorName": "מערכת הסקרים",
+    "status": "active",
+    "isPublic": true,
+    "requirePhone": true,
+    "question": "מי לדעתך המנהיג המתאים ביותר לימין בישראל?",
+    "answers": [
+      {
+        "id": 1,
+        "text": "ינון מגל",
+        "votes": 2727
+      },
+      {
+        "id": 2,
+        "text": "איתמר בן גביר",
+        "votes": 3069
+      },
+      {
+        "id": 3,
+        "text": "בצלאל סמוטריץ'",
+        "votes": 974
+      },
+      {
+        "id": 4,
+        "text": "עופר וינטר",
+        "votes": 4372
+      },
+      {
+        "id": 5,
+        "text": "משה פייגלין",
+        "votes": 1694
+      },
+      {
+        "id": 6,
+        "text": "אליהו יוסיאן",
+        "votes": 1066
+      },
+      {
+        "id": 7,
+        "text": "יותם זימרי",
+        "votes": 811
+      },
+      {
+        "id": 8,
+        "text": "מתלבט",
+        "votes": 1100
+      },
+      {
+        "id": 9,
+        "text": "אף אחד מהם",
+        "votes": 12218
+      }
+    ],
+    "imageUrl": "/uploads/niz.png",
+    "responses": 530,
+    "createdAt": "2024-01-01T00:00:00.000Z",
+    "updatedAt": "2024-01-01T00:00:00.000Z",
+    "isMultiQuestion": false,
+    "backgroundColor": "default"
+  },
+  {
+    "id": 18,
+    "title": "השמאל כבר מתאחד. עכשיו תורכם לבחור: מי יוביל את הימין? | Vote-MIGA",
+    "description": "זה הרגע להכריע: אחדות או פיצול, הנהגה או כאוס. בסקר הזה נבדוק מי הדמויות שצריכות להוביל את הימין בישראל",
+    "category": "פוליטי",
+    "creatorId": 48,
+    "creatorName": "ליאור יאדו",
+    "status": "active",
+    "isPublic": true,
+    "isMultiQuestion": true,
+    "question": "במפלגות הערביות (רע״ם, בל״ד ותע״ל) מתבצע בימים אלו מהלך לאיחוד – הקמת רשימה ערבית משותפת שנחשבת לזרוע הפוליטית־מדינית של התנועה האיסלאמית. כיצד אתה מתייחס למהלך זה?",
+    "answers": [
+      {
+        "text": "שמעתי ואני בעד",
+        "votes": 0
+      },
+      {
+        "text": "שמעתי ואני נגד",
+        "votes": 3
+      },
+      {
+        "text": "לא שמעתי ואני בעד",
+        "votes": 0
+      },
+      {
+        "text": "לא שמעתי ואני נגד",
+        "votes": 0
+      }
+    ],
+    "questions": [
+      {
+        "id": 1,
+        "questionText": "במפלגות הערביות (רע״ם, בל״ד ותע״ל) מתבצע בימים אלו מהלך לאיחוד – הקמת רשימה ערבית משותפת שנחשבת לזרוע הפוליטית־מדינית של התנועה האיסלאמית. כיצד אתה מתייחס למהלך זה?",
+        "answers": [
+          {
+            "text": "שמעתי ואני בעד",
+            "votes": 67
+          },
+          {
+            "text": "שמעתי ואני נגד",
+            "votes": 663
+          },
+          {
+            "text": "לא שמעתי ואני בעד",
+            "votes": 27
+          },
+          {
+            "text": "לא שמעתי ואני נגד",
+            "votes": 515
+          }
+        ],
+        "allowMultiple": false
+      },
+      {
+        "id": 2,
+        "questionText": "מפלגות הימין עומדות על סף אחוז החסימה וחיבור ביניהן מתבקש לטובת שמירה על ממשלת ימין, האם אתה בעד איחוד במחנה הימין?",
+        "answers": [
+          {
+            "text": "אני בעד, אין זכות קיום לגוש ללא איחוד",
+            "votes": 1008
+          },
+          {
+            "text": "אני מתנגד. מוטב שכל מפלגה תרוץ לבד",
+            "votes": 150
+          },
+          {
+            "text": "אין לי עמדה בנושא",
+            "votes": 114
+          }
+        ],
+        "allowMultiple": false
+      },
+      {
+        "id": 3,
+        "questionText": "האם שמעת על היוזמה לגיבוש ברית לאומית־אמונית – חיבור רחב של כלל הכוחות בימין הלאומי־אמוני: עוצמה יהודית, הציונות הדתית, מפלגת זהות, תנועות שטח ומנהיגים חדשים שצמחו מאז תחילת המלחמה? ברית שכזו עומדת כרגע על 16 מנדטים",
+        "answers": [
+          {
+            "text": "שמעתי ואני בעד",
+            "votes": 576
+          },
+          {
+            "text": "שמעתי ואני נגד",
+            "votes": 47
+          },
+          {
+            "text": "לא שמעתי ואני בעד",
+            "votes": 558
+          },
+          {
+            "text": "לא שמעתי ואני נגד",
+            "votes": 91
+          }
+        ],
+        "allowMultiple": false
+      },
+      {
+        "id": 4,
+        "questionText": "ומי לדעתך צריך להוביל ברית שכזו?  (אפשר לבחור אחד או יותר)",
+        "answers": [
+          {
+            "text": "ראש המפלגה הגדולה בגוש צריך להוביל, המפלגה השניה במקום השני וכך הלאה.",
+            "votes": 586
+          },
+          {
+            "text": "לא חשוב לי מי יוביל העיקר שאיחוד שכזה יתקיים",
+            "votes": 281
+          },
+          {
+            "text": "מישהו מהמנהיגים הקיימים (סמוטריץ'\\בן-גביר\\פייגלין)",
+            "votes": 255
+          },
+          {
+            "text": "אצביע לברית שכזו רק אם יעמוד בראשה מנהיג חדש",
+            "votes": 150
+          }
+        ],
+        "allowMultiple": false
+      },
+      {
+        "id": 5,
+        "questionText": "מי מהאישים הבאים בעיניך הוא אכן איש ימין אידיאולוגי שחייב להיות חלק מן הברית הלאומית־אמונית המאוחדת? ",
+        "answers": [
+          {
+            "text": "איתמר בן גביר",
+            "votes": 602
+          },
+          {
+            "text": "עופר וינטר",
+            "votes": 661
+          },
+          {
+            "text": "משה פייגלין",
+            "votes": 467
+          },
+          {
+            "text": "בצלאל סמוטריץ'",
+            "votes": 422
+          },
+          {
+            "text": "ארז וינר",
+            "votes": 315
+          },
+          {
+            "text": "חזי נחמה",
+            "votes": 236
+          },
+          {
+            "text": "אמיר אביבי",
+            "votes": 431
+          },
+          {
+            "text": "דדי שמחי",
+            "votes": 374
+          },
+          {
+            "text": "מתן פלג",
+            "votes": 136
+          },
+          {
+            "text": "גלעד אך",
+            "votes": 73
+          },
+          {
+            "text": "שי קלך",
+            "votes": 314
+          },
+          {
+            "text": "אפי איתם",
+            "votes": 455
+          },
+          {
+            "text": "ירון זליכה",
+            "votes": 343
+          },
+          {
+            "text": "דיצה אור",
+            "votes": 97
+          },
+          {
+            "text": "גרשון הכהן",
+            "votes": 103
+          },
+          {
+            "text": "מיכאל בן ארי",
+            "votes": 338
+          },
+          {
+            "text": "דני ון בירן",
+            "votes": 123
+          },
+          {
+            "text": "איתמר איתם",
+            "votes": 230
+          },
+          {
+            "text": "יסכה בינה",
+            "votes": 295
+          }
+        ],
+        "allowMultiple": true
+      },
+      {
+        "id": 6,
+        "questionText": "מי לדעתך צריך לעמוד בראש הברית הלאומית־אמונית המאוחדת?  (בחר/י אחד בלבד)",
+        "answers": [
+          {
+            "text": "עופר וינטר",
+            "votes": 411
+          },
+          {
+            "text": "מיכאל בן ארי",
+            "votes": 71
+          },
+          {
+            "text": "משה פייגלין",
+            "votes": 264
+          },
+          {
+            "text": "איתמר בן גביר",
+            "votes": 278
+          },
+          {
+            "text": "בצלאל סמוטריץ",
+            "votes": 110
+          },
+          {
+            "text": "דדי שמחי",
+            "votes": 154
+          },
+          {
+            "text": "אמיר אביבי",
+            "votes": 216
+          }
+        ],
+        "allowMultiple": true
+      },
+      {
+        "id": 7,
+        "questionText": "אם תוקם ברית לאומית־אמונית – חיבור רחב של כלל הכוחות בימין הלאומי־אמוני, כפי שתואר כאן – האם תהיה מוכן/ה להצביע לה בבחירות הקרובות?",
+        "answers": [
+          {
+            "text": "בהחלט כן",
+            "votes": 632
+          },
+          {
+            "text": "כנראה שכן",
+            "votes": 241
+          },
+          {
+            "text": "כנראה שלא",
+            "votes": 129
+          },
+          {
+            "text": "בהחלט לא",
+            "votes": 49
+          },
+          {
+            "text": "מתלבט",
+            "votes": 221
+          }
+        ],
+        "allowMultiple": false
+      }
+    ],
+    "thankYouMessage": "תודה שמילאת את הסקר! תשובתך נשמרה בהצלחה",
+    "imageUrl": "/uploads/survey-1756394576968-594675159.jpg",
+    "requirePhone": true,
+    "responses": 1345,
+    "createdAt": "2025-08-28T15:22:56.985Z",
+    "updatedAt": "2025-08-31T16:18:58.297Z",
+    "backgroundColor": "dark"
+  },
+  {
+    "id": 19,
+    "title": "מה אתה חושב על משה פייגלין",
+    "description": "לבדוק את השטח",
+    "category": "חברתי",
+    "backgroundColor": "default",
+    "creatorId": 61,
+    "creatorName": "חנוך כיטוב",
+    "status": "active",
+    "isPublic": true,
+    "isMultiQuestion": true,
+    "question": "",
+    "answers": [],
+    "questions": [
+      {
+        "id": 1,
+        "questionText": "מה אתה חושב עליו?",
+        "allowMultiple": false,
+        "answers": [
+          {
+            "id": 1,
+            "text": "בן אדם עם כוונות טובות אבל לא מתאים להיות פוליטיקאי",
+            "votes": 0
+          },
+          {
+            "id": 2,
+            "text": "ראוי להיות ראש הממשלה הבא",
+            "votes": 1
+          },
+          {
+            "id": 3,
+            "text": "משיחי הזוי",
+            "votes": 0
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "questionText": "האם תצביע לו בבחירות הקרובות?",
+        "allowMultiple": false,
+        "answers": [
+          {
+            "id": 1,
+            "text": "כן",
+            "votes": 1
+          },
+          {
+            "id": 2,
+            "text": "לא",
+            "votes": 0
+          },
+          {
+            "id": 3,
+            "text": "מתלבט",
+            "votes": 0
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "questionText": "האם אתה מכיר את משה פייגלין?",
+        "allowMultiple": false,
+        "answers": [
+          {
+            "id": 1,
+            "text": "כן",
+            "votes": 1
+          },
+          {
+            "id": 2,
+            "text": "לא",
+            "votes": 0
+          },
+          {
+            "id": 3,
+            "text": "שמעתי את השם...",
+            "votes": 0
+          }
+        ]
+      }
+    ],
+    "thankYouMessage": null,
+    "imageUrl": null,
+    "requirePhone": true,
+    "responses": 1,
+    "createdAt": "2025-10-04T19:29:59.984Z",
+    "updatedAt": "2025-10-04T19:29:59.984Z"
+  },
+  {
+    "id": 20,
+    "title": "סקר פריימריז",
+    "description": "סקר על בחירת מועמדים בפריימריז הקרוב",
+    "category": "פוליטי",
+    "backgroundColor": "default",
+    "creatorId": 1,
+    "creatorName": "מנהל מערכת",
+    "status": "active",
+    "isPublic": true,
+    "isMultiQuestion": false,
+    "allowMultiple": true,
+    "maxSelections": 12,
+    "question": "במי את/ה מתכוון לבחור בפריימריז הקרוב?\n*ניתן לבחור עד 12 מועמדים.",
+    "answers": [
+      {
+        "id": 1,
+        "text": "יולי אדלשטיין",
+        "votes": 340
+      },
+      {
+        "id": 2,
+        "text": "אמיר אוחנה",
+        "votes": 1624
+      },
+      {
+        "id": 3,
+        "text": "דן אילוז",
+        "votes": 202
+      },
+      {
+        "id": 4,
+        "text": "זאב אלקין",
+        "votes": 232
+      },
+      {
+        "id": 5,
+        "text": "דודי אמסלם",
+        "votes": 825
+      },
+      {
+        "id": 6,
+        "text": "אביחי בוארון",
+        "votes": 523
+      },
+      {
+        "id": 7,
+        "text": "דוד ביטן",
+        "votes": 233
+      },
+      {
+        "id": 8,
+        "text": "בועז ביסמוט",
+        "votes": 1339
+      },
+      {
+        "id": 9,
+        "text": "ניר ברקת",
+        "votes": 743
+      },
+      {
+        "id": 10,
+        "text": "ששון גואטה",
+        "votes": 76
+      },
+      {
+        "id": 11,
+        "text": "טלי גוטליב",
+        "votes": 1522
+      },
+      {
+        "id": 12,
+        "text": "מאי גולן",
+        "votes": 743
+      },
+      {
+        "id": 13,
+        "text": "יואב גלנט",
+        "votes": 329
+      },
+      {
+        "id": 14,
+        "text": "גילה גמליאל",
+        "votes": 340
+      },
+      {
+        "id": 15,
+        "text": "אבי דיכטר",
+        "votes": 723
+      },
+      {
+        "id": 16,
+        "text": "גלית דיסטל אטבריאן",
+        "votes": 410
+      },
+      {
+        "id": 17,
+        "text": "אלי דלל",
+        "votes": 83
+      },
+      {
+        "id": 18,
+        "text": "שלום דנינו",
+        "votes": 66
+      },
+      {
+        "id": 19,
+        "text": "רון דרמר",
+        "votes": 1282
+      },
+      {
+        "id": 20,
+        "text": "עמית הלוי",
+        "votes": 434
+      },
+      {
+        "id": 21,
+        "text": "ניסים ואטורי",
+        "votes": 257
+      },
+      {
+        "id": 22,
+        "text": "מיקי זוהר",
+        "votes": 484
+      },
+      {
+        "id": 23,
+        "text": "ישראל כ״ץ",
+        "votes": 1451
+      },
+      {
+        "id": 24,
+        "text": "אלי כהן",
+        "votes": 1198
+      },
+      {
+        "id": 25,
+        "text": "חיים כץ",
+        "votes": 240
+      },
+      {
+        "id": 26,
+        "text": "אופיר כץ",
+        "votes": 630
+      },
+      {
+        "id": 27,
+        "text": "יריב לוין",
+        "votes": 1018
+      },
+      {
+        "id": 28,
+        "text": "חנוך מילביצקי",
+        "votes": 502
+      },
+      {
+        "id": 29,
+        "text": "צגה מלקו",
+        "votes": 83
+      },
+      {
+        "id": 30,
+        "text": "עידית סילמן",
+        "votes": 275
+      },
+      {
+        "id": 31,
+        "text": "משה סעדה",
+        "votes": 1295
+      },
+      {
+        "id": 32,
+        "text": "גדעון סער",
+        "votes": 496
+      },
+      {
+        "id": 33,
+        "text": "עפיף עבד",
+        "votes": 88
+      },
+      {
+        "id": 34,
+        "text": "אתי עטיה",
+        "votes": 65
+      },
+      {
+        "id": 35,
+        "text": "מושיקו פסל",
+        "votes": 51
+      },
+      {
+        "id": 36,
+        "text": "יואב קיש",
+        "votes": 580
+      },
+      {
+        "id": 37,
+        "text": "אריאל קלנר",
+        "votes": 263
+      },
+      {
+        "id": 38,
+        "text": "שלמה קרעי",
+        "votes": 660
+      },
+      {
+        "id": 39,
+        "text": "אליהו רביבו",
+        "votes": 51
+      },
+      {
+        "id": 40,
+        "text": "מירי רגב",
+        "votes": 786
+      },
+      {
+        "id": 41,
+        "text": "קטי שטרית",
+        "votes": 261
+      },
+      {
+        "id": 42,
+        "text": "עמיחי שיקלי",
+        "votes": 885
+      },
+      {
+        "id": 43,
+        "text": "אושר שקלים",
+        "votes": 66
+      }
+    ],
+    "thankYouMessage": "תודה על השתתפותך בסקר!",
+    "imageUrl": null,
+    "requirePhone": true,
+    "responses": 2287,
+    "createdAt": "2025-11-02T15:04:59.746Z",
+    "updatedAt": "2025-11-02T15:04:59.746Z"
+  },
+  {
+    "id": 21,
+    "title": "בחירת מועמדים לפריימריז",
+    "description": "סקר חשוב על בחירת המועמדים בפריימריז הקרוב",
+    "category": "פוליטי",
+    "backgroundColor": "default",
+    "creatorId": 1,
+    "creatorName": "מערכת סקרים",
+    "status": "active",
+    "isPublic": true,
+    "isMultiQuestion": false,
+    "allowMultiple": true,
+    "maxSelections": 12,
+    "question": "במי אתה בוחר בפריימריז הקרוב?\n*ניתן לבחור עד 12 מועמדים.",
+    "answers": [
+      {
+        "id": 1,
+        "text": "יולי אדלשטיין",
+        "votes": 211
+      },
+      {
+        "id": 2,
+        "text": "אמיר אוחנה",
+        "votes": 995
+      },
+      {
+        "id": 3,
+        "text": "דן אילוז",
+        "votes": 122
+      },
+      {
+        "id": 4,
+        "text": "זאב אלקין",
+        "votes": 140
+      },
+      {
+        "id": 5,
+        "text": "דודי אמסלם",
+        "votes": 507
+      },
+      {
+        "id": 6,
+        "text": "אביחי בוארון",
+        "votes": 300
+      },
+      {
+        "id": 7,
+        "text": "דוד ביטן",
+        "votes": 158
+      },
+      {
+        "id": 8,
+        "text": "בועז ביסמוט",
+        "votes": 818
+      },
+      {
+        "id": 9,
+        "text": "ניר ברקת",
+        "votes": 450
+      },
+      {
+        "id": 10,
+        "text": "ששון גואטה",
+        "votes": 48
+      },
+      {
+        "id": 11,
+        "text": "טלי גוטליב",
+        "votes": 934
+      },
+      {
+        "id": 12,
+        "text": "מאי גולן",
+        "votes": 469
+      },
+      {
+        "id": 13,
+        "text": "יואב גלנט",
+        "votes": 202
+      },
+      {
+        "id": 14,
+        "text": "גילה גמליאל",
+        "votes": 218
+      },
+      {
+        "id": 15,
+        "text": "אבי דיכטר",
+        "votes": 446
+      },
+      {
+        "id": 16,
+        "text": "גלית דיסטל אטבריאן",
+        "votes": 246
+      },
+      {
+        "id": 17,
+        "text": "אלי דלל",
+        "votes": 49
+      },
+      {
+        "id": 18,
+        "text": "שלום דנינו",
+        "votes": 41
+      },
+      {
+        "id": 19,
+        "text": "רון דרמר",
+        "votes": 784
+      },
+      {
+        "id": 20,
+        "text": "עמית הלוי",
+        "votes": 271
+      },
+      {
+        "id": 21,
+        "text": "ניסים ואטורי",
+        "votes": 150
+      },
+      {
+        "id": 22,
+        "text": "מיקי זוהר",
+        "votes": 295
+      },
+      {
+        "id": 23,
+        "text": "ישראל כ״ץ",
+        "votes": 945
+      },
+      {
+        "id": 24,
+        "text": "אלי כהן",
+        "votes": 764
+      },
+      {
+        "id": 25,
+        "text": "חיים כץ",
+        "votes": 146
+      },
+      {
+        "id": 26,
+        "text": "אופיר כץ",
+        "votes": 408
+      },
+      {
+        "id": 27,
+        "text": "יריב לוין",
+        "votes": 630
+      },
+      {
+        "id": 28,
+        "text": "חנוך מילביצקי",
+        "votes": 322
+      },
+      {
+        "id": 29,
+        "text": "צגה מלקו",
+        "votes": 51
+      },
+      {
+        "id": 30,
+        "text": "עידית סילמן",
+        "votes": 179
+      },
+      {
+        "id": 31,
+        "text": "משה סעדה",
+        "votes": 802
+      },
+      {
+        "id": 32,
+        "text": "גדעון סער",
+        "votes": 301
+      },
+      {
+        "id": 33,
+        "text": "עפיף עבד",
+        "votes": 57
+      },
+      {
+        "id": 34,
+        "text": "אתי עטיה",
+        "votes": 41
+      },
+      {
+        "id": 35,
+        "text": "מושיקו פסל",
+        "votes": 28
+      },
+      {
+        "id": 36,
+        "text": "יואב קיש",
+        "votes": 363
+      },
+      {
+        "id": 37,
+        "text": "אריאל קלנר",
+        "votes": 159
+      },
+      {
+        "id": 38,
+        "text": "שלמה קרעי",
+        "votes": 385
+      },
+      {
+        "id": 39,
+        "text": "אליהו רביבו",
+        "votes": 33
+      },
+      {
+        "id": 40,
+        "text": "מירי רגב",
+        "votes": 480
+      },
+      {
+        "id": 41,
+        "text": "קטי שטרית",
+        "votes": 158
+      },
+      {
+        "id": 42,
+        "text": "עמיחי שיקלי",
+        "votes": 553
+      },
+      {
+        "id": 43,
+        "text": "אושר שקלים",
+        "votes": 33
+      }
+    ],
+    "thankYouMessage": "תודה על השתתפותך בסקר!",
+    "imageUrl": "/02e1465276d61713b7ef8c4a4d23939e.jpg",
+    "requirePhone": true,
+    "responses": 1424,
+    "createdAt": "2025-11-02T15:04:59.746Z",
+    "updatedAt": "2025-11-02T15:04:59.746Z"
+  },
+  {
+    "id": 22,
+    "title": "כעכגדעכג",
+    "description": "גכעכגע",
+    "category": "חברתי",
+    "backgroundColor": "default",
+    "creatorId": 63,
+    "creatorName": "מיכל פמיני-זריהן",
+    "status": "active",
+    "isPublic": true,
+    "isMultiQuestion": false,
+    "question": "כעדג",
+    "answers": [
+      {
+        "id": 1,
+        "text": "כגד",
+        "votes": 1
+      },
+      {
+        "id": 2,
+        "text": "כג",
+        "votes": 0
+      }
+    ],
+    "thankYouMessage": "גכעכעג",
+    "imageUrl": null,
+    "requirePhone": true,
+    "responses": 1,
+    "createdAt": "2025-11-03T07:00:39.369Z",
+    "updatedAt": "2025-11-03T07:00:39.369Z"
+  }
+]

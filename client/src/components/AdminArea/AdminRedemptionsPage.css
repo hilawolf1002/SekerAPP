@@ -1,0 +1,244 @@
+.admin-redemptions-shell {
+  min-height: 100vh;
+  direction: rtl;
+  background: #f8fafc;
+}
+
+.admin-redemptions-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.admin-redemptions-header h1 {
+  margin: 0 0 0.25rem;
+  color: #1e293b;
+  font-size: 1.5rem;
+}
+
+.admin-redemptions-header p {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.admin-redemptions-loading {
+  display: grid;
+  place-items: center;
+  min-height: 50vh;
+  color: #64748b;
+}
+
+.admin-redemptions-list {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.admin-redemptions-note {
+  display: grid;
+  gap: 0.4rem;
+  padding: 1.25rem;
+  border-radius: 12px;
+  background: #fef3c7;
+  border: 1px solid #fbbf24;
+}
+
+.admin-redemptions-note strong {
+  color: #92400e;
+  font-size: 0.9rem;
+}
+
+.admin-redemptions-note span {
+  color: #78350f;
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+.admin-redemption-card {
+  padding: 1.5rem;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.admin-redemption-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.admin-redemption-header strong {
+  display: block;
+  margin-bottom: 0.2rem;
+  color: #1e293b;
+  font-size: 1.1rem;
+}
+
+.admin-redemption-phone {
+  color: #64748b;
+  font-size: 0.85rem;
+}
+
+.admin-redemption-points {
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+}
+
+.admin-points-number {
+  display: block;
+  color: #92400e;
+  font-size: 1.8rem;
+  font-weight: 900;
+}
+
+.admin-points-label {
+  display: block;
+  color: #78350f;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.admin-redemption-info {
+  margin-bottom: 1rem;
+}
+
+.admin-redemption-info p {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.admin-redemption-info strong {
+  color: #1e293b;
+}
+
+.admin-redemption-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.admin-btn-secondary,
+.admin-btn-approve,
+.admin-btn-reject {
+  min-height: 44px;
+  padding: 0 1rem;
+  border: none;
+  border-radius: 10px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.admin-btn-secondary {
+  color: #334155;
+  background: #e2e8f0;
+}
+
+.admin-btn-approve {
+  color: #fff;
+  background: #10b981;
+}
+
+.admin-btn-reject {
+  color: #fff;
+  background: #ef4444;
+}
+
+.admin-btn-secondary:disabled,
+.admin-btn-approve:disabled,
+.admin-btn-reject:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.admin-id-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(15, 23, 42, 0.65);
+}
+
+.admin-id-modal-content {
+  width: min(640px, 100%);
+  max-height: 90vh;
+  overflow: auto;
+  padding: 1rem;
+  border-radius: 16px;
+  background: #fff;
+  display: grid;
+  gap: 0.85rem;
+}
+
+.admin-id-modal-content header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.admin-id-modal-content img {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+.admin-btn-call {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 1.5rem;
+  border-radius: 10px;
+  color: #ffffff;
+  background: #10b981;
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 160ms ease;
+}
+
+.admin-btn-call:hover {
+  background: #059669;
+}
+
+@media (max-width: 768px) {
+  .admin-redemptions-header,
+  .admin-redemptions-list {
+    padding: 1rem;
+  }
+
+  .admin-redemption-card {
+    padding: 1.25rem;
+  }
+
+  .admin-redemption-header {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .admin-redemption-points {
+    width: 100%;
+  }
+
+  .admin-redemption-actions {
+    flex-direction: column;
+  }
+}

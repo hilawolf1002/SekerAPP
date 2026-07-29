@@ -1,0 +1,1963 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>סקר - SekerApp</title>
+    
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WNRFLCEHLT"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-WNRFLCEHLT');
+    </script>
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" crossorigin="anonymous">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4338ca;
+            --secondary: #8b5cf6;
+            --accent: #ec4899;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #0a0a0a;
+            --gray: #64748b;
+            --light: #ffffff;
+            
+            /* Modern Design System */
+            --gradient-primary: linear-gradient(135deg, #6366f1, #8b5cf6);
+            --gradient-secondary: linear-gradient(135deg, #8b5cf6, #ec4899);
+            --gradient-success: linear-gradient(135deg, #10b981, #059669);
+            --gradient-warning: linear-gradient(135deg, #f59e0b, #d97706);
+            --gradient-danger: linear-gradient(135deg, #ef4444, #dc2626);
+            
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
+            --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.2);
+            
+            --border-radius: 20px;
+            --border-radius-lg: 28px;
+            --border-radius-xl: 36px;
+            
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            line-height: 1.7;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            animation: fadeIn 0.8s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Enhanced Animated Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(236, 72, 153, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 60% 50%, rgba(16, 185, 129, 0.1) 0%, transparent 40%),
+                linear-gradient(135deg, #f8fafc 0%, #e2e8f0 25%, #cbd5e1 50%, #94a3b8 75%, #64748b 100%);
+            z-index: -1;
+            animation: backgroundShift 20s ease infinite;
+        }
+        
+        @keyframes backgroundShift {
+            0%, 100% { 
+                background-position: 0% 0%, 100% 0%, 0% 100%, 50% 50%, 0% 0%;
+            }
+            50% { 
+                background-position: 100% 100%, 0% 100%, 100% 0%, 50% 50%, 0% 0%;
+            }
+        }
+        
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.03) 0%, transparent 70%);
+            z-index: -1;
+            animation: shimmer 25s linear infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%); }
+            100% { transform: translateX(100%) translateY(100%); }
+        }
+        
+        /* Survey Background Colors - Light Theme */
+        body.bg-blue::before {
+            background: 
+                linear-gradient(135deg, #eff6ff 0%, #dbeafe 25%, #bfdbfe 50%, #93c5fd 75%, #3b82f6 100%);
+        }
+        
+        body.bg-green::before {
+            background: 
+                linear-gradient(135deg, #f0fdf4 0%, #dcfce7 25%, #bbf7d0 50%, #86efac 75%, #22c55e 100%);
+        }
+        
+        body.bg-purple::before {
+            background: 
+                linear-gradient(135deg, #faf5ff 0%, #f3e8ff 25%, #e9d5ff 50%, #c4b5fd 75%, #8b5cf6 100%);
+        }
+        
+        body.bg-orange::before {
+            background: 
+                linear-gradient(135deg, #fff7ed 0%, #fed7aa 25%, #fdba74 50%, #fb923c 75%, #f97316 100%);
+        }
+        
+        body.bg-pink::before {
+            background: 
+                linear-gradient(135deg, #fdf2f8 0%, #fce7f3 25%, #fbcfe8 50%, #f9a8d4 75%, #ec4899 100%);
+        }
+        
+        body.bg-teal::before {
+            background: 
+                linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 25%, #99f6e4 50%, #5eead4 75%, #14b8a6 100%);
+        }
+        
+        body.bg-red::before {
+            background: 
+                linear-gradient(135deg, #fef2f2 0%, #fee2e2 25%, #fecaca 50%, #fca5a5 75%, #ef4444 100%);
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.98));
+            backdrop-filter: blur(30px) saturate(180%);
+            border-bottom: 2px solid transparent;
+            border-image: linear-gradient(90deg, #6366f1, #ec4899, #8b5cf6, #10b981) 1;
+            padding: 0 32px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 30px rgba(99, 102, 241, 0.15);
+            animation: slideDown 0.6s ease-out;
+        }
+        
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 24px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(99, 102, 241, 0.5);
+            animation: logoGlow 3s ease-in-out infinite;
+            transition: transform 0.3s ease;
+        }
+        
+        @keyframes logoGlow {
+            0%, 100% { filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.4)); }
+            50% { filter: drop-shadow(0 0 20px rgba(236, 72, 153, 0.6)); }
+        }
+        
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .logo i {
+            background: linear-gradient(135deg, #6366f1, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Home Button */
+        .home-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6, #ec4899);
+            background-size: 200% 200%;
+            color: white;
+            text-decoration: none;
+            padding: 16px 28px;
+            border-radius: var(--border-radius);
+            font-weight: 700;
+            font-size: 16px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4), 0 0 0 0 rgba(99, 102, 241, 0.7);
+            position: relative;
+            overflow: hidden;
+            animation: buttonGradient 3s ease infinite;
+        }
+        
+        @keyframes buttonGradient {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        .home-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .home-btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .home-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 10px 35px rgba(99, 102, 241, 0.6), 0 0 0 4px rgba(99, 102, 241, 0.3);
+        }
+
+        .home-btn:active {
+            transform: translateY(-1px) scale(1.02);
+        }
+
+        .home-btn i {
+            font-size: 16px;
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .survey-container {
+            background: linear-gradient(135deg, #ffffff, #f8fafc);
+            backdrop-filter: blur(20px);
+            border: 2px solid #e2e8f0;
+            border-radius: var(--border-radius-lg);
+            padding: 50px;
+            margin: 40px auto;
+            max-width: 1200px;
+            box-shadow: var(--shadow-xl);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .survey-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-primary);
+        }
+
+        /* Phone Input Container */
+        .phone-input-container {
+            background: linear-gradient(135deg, #ffffff, #f8fafc);
+            backdrop-filter: blur(20px);
+            border: 2px solid #e2e8f0;
+            border-radius: var(--border-radius-lg);
+            padding: 50px;
+            margin: 40px auto;
+            max-width: 800px;
+            box-shadow: var(--shadow-xl);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .phone-input-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-success);
+        }
+
+        .phone-input-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .phone-input-title {
+            font-size: 36px;
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 20px;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        .phone-input-description {
+            font-size: 20px;
+            color: #475569;
+            margin-bottom: 24px;
+            line-height: 1.6;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .phone-input-category {
+            display: inline-block;
+            background: var(--gradient-primary);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 700;
+            box-shadow: var(--shadow-md);
+            margin: 0 auto 20px;
+            display: block;
+            width: fit-content;
+        }
+
+        .phone-input-image-container {
+            text-align: center;
+            margin: 0 auto 32px;
+            max-width: 600px;
+        }
+
+        .phone-input-image {
+            width: 100%;
+            max-width: 600px;
+            height: 350px;
+            object-fit: cover;
+            border-radius: var(--border-radius-lg);
+            display: block;
+            border: 3px solid #e2e8f0;
+            box-shadow: var(--shadow-xl);
+            transition: var(--transition);
+            margin: 0 auto;
+        }
+
+        .phone-input-image:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2);
+        }
+
+        .phone-input-form {
+            text-align: center;
+        }
+
+        .phone-input-question {
+            font-size: 28px;
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 20px;
+            text-align: center;
+            background: var(--gradient-secondary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .phone-input-instruction {
+            font-size: 18px;
+            color: #64748b;
+            margin-bottom: 32px;
+            line-height: 1.6;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .phone-input-field {
+            margin-bottom: 32px;
+        }
+
+        .phone-input {
+            width: 100%;
+            max-width: 400px;
+            background: #ffffff;
+            border: 2px solid #e2e8f0;
+            border-radius: var(--border-radius);
+            padding: 20px 24px;
+            font-size: 18px;
+            color: #1e293b;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .phone-input:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2), var(--shadow-lg);
+            transform: translateY(-2px);
+            background: #ffffff;
+        }
+
+        .phone-input-help {
+            display: block;
+            margin-top: 12px;
+            font-size: 16px;
+            color: #64748b;
+            font-style: italic;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .phone-input-btn {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            padding: 20px 36px;
+            font-size: 20px;
+            font-weight: 700;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow-lg);
+            display: block;
+            margin: 0 auto;
+            min-width: 200px;
+        }
+
+        .phone-input-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-xl);
+            background: var(--gradient-secondary);
+        }
+
+        .phone-input-btn:active {
+            transform: translateY(0);
+        }
+
+        .survey-15-notice {
+            background: var(--gradient-warning);
+            color: white;
+            padding: 12px 20px;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            font-weight: 700;
+            margin-top: 16px;
+            display: block;
+            text-align: center;
+            box-shadow: var(--shadow-md);
+            max-width: 300px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .survey-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .survey-title {
+            font-size: 42px;
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 20px;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        .survey-description {
+            font-size: 20px;
+            color: #475569;
+            margin-bottom: 24px;
+            text-align: center;
+            line-height: 1.6;
+            font-weight: 500;
+        }
+
+        .survey-category {
+            display: inline-block;
+            background: var(--gradient-primary);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 700;
+            box-shadow: var(--shadow-md);
+            margin: 0 auto 20px;
+            display: block;
+            width: fit-content;
+        }
+
+        .survey-image-container {
+            text-align: center;
+            margin: 0 auto 40px;
+            max-width: 600px;
+        }
+
+        .survey-image {
+            width: 100%;
+            max-width: 600px;
+            height: 350px;
+            object-fit: cover;
+            border-radius: var(--border-radius-lg);
+            display: block;
+            border: 3px solid #e2e8f0;
+            box-shadow: var(--shadow-xl);
+            transition: var(--transition);
+            margin: 0 auto;
+        }
+
+        .survey-image:hover {
+            transform: translateY(-5px) scale(1.02);
+            border-color: #6366f1;
+            box-shadow: 0 30px 60px rgba(99, 102, 241, 0.3);
+        }
+
+        .survey-question {
+            font-size: 32px;
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 40px;
+            text-align: center;
+            background: var(--gradient-secondary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.3;
+        }
+
+        .answers-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+
+        .answer-option {
+            background: linear-gradient(135deg, #ffffff, #f8fafc);
+            border: 2px solid #e2e8f0;
+            border-radius: var(--border-radius);
+            padding: 24px;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+        }
+
+        .answer-option::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.2), transparent);
+            transition: left 0.6s;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .answer-option:hover::before {
+            left: 100%;
+        }
+
+        .answer-option:hover {
+            background: linear-gradient(135deg, #f8fafc, #ffffff);
+            border-color: #6366f1;
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .answer-option.selected {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
+            border-color: #6366f1;
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
+        }
+
+        .answer-text {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1e293b;
+            position: relative;
+            z-index: 2;
+            line-height: 1.5;
+            word-wrap: break-word;
+            word-break: break-word;
+            overflow-wrap: break-word;
+            white-space: normal;
+            width: 100%;
+            text-align: right;
+        }
+        
+        /* Checkbox indicator for multiple choice */
+        .checkbox-indicator {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 24px;
+            height: 24px;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            background: transparent;
+            transition: var(--transition);
+            flex-shrink: 0;
+        }
+        
+        /* Ensure text doesn't overlap checkbox */
+        .answer-option[data-allow-multiple="true"] .answer-text {
+            padding-right: 40px;
+        }
+        
+        .answer-option.selected .checkbox-indicator {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .answer-option.selected .checkbox-indicator::after {
+            content: '✓';
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            position: absolute;
+            top: -2px;
+            left: 3px;
+        }
+        
+        .answer-option[data-allow-multiple="true"] {
+            position: relative;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6, #ec4899);
+            background-size: 200% 200%;
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 24px 40px;
+            color: white;
+            font-size: 20px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 100%;
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4), 0 0 0 0 rgba(99, 102, 241, 0.7);
+            max-width: 400px;
+            margin: 0 auto;
+            display: block;
+            position: relative;
+            overflow: hidden;
+            animation: buttonGradient 3s ease infinite;
+        }
+        
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .submit-btn:hover::before {
+            width: 400px;
+            height: 400px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 12px 35px rgba(99, 102, 241, 0.6), 0 0 0 4px rgba(99, 102, 241, 0.3);
+        }
+
+        .submit-btn:disabled {
+            background: #64748b;
+            background-size: 100% 100%;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            animation: none;
+        }
+
+        /* Success Message */
+        .success-message {
+            text-align: center;
+            padding: 50px;
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            border: 2px solid #10b981;
+            border-radius: var(--border-radius-lg);
+            margin-top: 30px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .success-icon {
+            font-size: 60px;
+            color: #10b981;
+            margin-bottom: 20px;
+        }
+
+        .success-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #10b981;
+            margin-bottom: 12px;
+        }
+
+        .success-text {
+            font-size: 18px;
+            color: #059669;
+            font-weight: 500;
+        }
+
+        /* WhatsApp Button */
+        .whatsapp-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #25d366, #128c7e);
+            color: white;
+            text-decoration: none;
+            padding: 18px 36px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 18px;
+            margin-top: 24px;
+            transition: var(--transition);
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .whatsapp-button:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .whatsapp-button i {
+            margin-left: 8px;
+            font-size: 18px;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 50px;
+        }
+
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid #e2e8f0;
+            border-left: 4px solid #6366f1;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 24px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Error Message */
+        .error-message {
+            text-align: center;
+            padding: 50px;
+            background: linear-gradient(135deg, #fef2f2, #fee2e2);
+            border: 2px solid #ef4444;
+            border-radius: var(--border-radius-lg);
+            margin-top: 30px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .error-icon {
+            font-size: 60px;
+            color: #ef4444;
+            margin-bottom: 20px;
+        }
+
+        .error-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ef4444;
+            margin-bottom: 12px;
+        }
+
+        .error-text {
+            font-size: 18px;
+            color: #dc2626;
+            font-weight: 500;
+        }
+
+        /* Multi-Question Survey Styles */
+        .question-container {
+            background: linear-gradient(135deg, #ffffff, #f8fafc);
+            backdrop-filter: blur(20px);
+            border: 2px solid #e2e8f0;
+            border-radius: var(--border-radius-lg);
+            padding: 40px;
+            margin-top: 30px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .question-progress {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .progress-text {
+            display: block;
+            font-size: 18px;
+            color: #475569;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: #e2e8f0;
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--gradient-primary);
+            transition: width 0.3s ease;
+            box-shadow: 0 2px 4px rgba(99, 102, 241, 0.3);
+        }
+
+        .question-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+            gap: 20px;
+        }
+
+        .nav-btn {
+            background: #ffffff;
+            border: 2px solid #e2e8f0;
+            border-radius: var(--border-radius);
+            padding: 16px 28px;
+            color: #1e293b;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            min-width: 140px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .next-btn {
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            border-color: #6366f1;
+        }
+
+        .next-btn:hover:not(:disabled) {
+            background: linear-gradient(135deg, #4f46e5, #4338ca);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+        }
+
+        .prev-btn {
+            background: rgba(139, 92, 246, 0.2);
+            border-color: rgba(139, 92, 246, 0.3);
+        }
+
+        .prev-btn:hover:not(:disabled) {
+            background: rgba(139, 92, 246, 0.3);
+            border-color: rgba(139, 92, 246, 0.5);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 20px 10px;
+            }
+            
+            .survey-container {
+                padding: 20px;
+            }
+            
+            .survey-title {
+                font-size: 24px;
+            }
+            
+            .survey-question {
+                font-size: 20px;
+            }
+            
+            .answer-option {
+                padding: 16px;
+            }
+            
+            .answer-text {
+                font-size: 16px;
+            }
+            
+            .question-navigation {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .nav-btn {
+                width: 100%;
+                min-width: auto;
+            }
+            
+            .phone-input-container {
+                padding: 30px 20px;
+                margin: 20px auto;
+            }
+            
+            .phone-input-title {
+                font-size: 28px;
+            }
+            
+            .phone-input-description {
+                font-size: 18px;
+            }
+            
+            .phone-input-question {
+                font-size: 22px;
+            }
+            
+            .phone-input-instruction {
+                font-size: 16px;
+            }
+            
+            .phone-input {
+                padding: 16px 20px;
+                font-size: 16px;
+            }
+            
+            .phone-input-btn {
+                padding: 16px 28px;
+                font-size: 18px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 15px 8px;
+            }
+            
+            .survey-container {
+                padding: 15px;
+            }
+            
+            .survey-title {
+                font-size: 20px;
+            }
+            
+            .survey-question {
+                font-size: 18px;
+            }
+            
+            .answer-option {
+                padding: 14px;
+            }
+            
+            .answer-text {
+                font-size: 15px;
+            }
+            
+            .phone-input-container {
+                padding: 25px 15px;
+                margin: 15px auto;
+            }
+            
+            .phone-input-title {
+                font-size: 24px;
+            }
+            
+            .phone-input-description {
+                font-size: 16px;
+            }
+            
+            .phone-input-question {
+                font-size: 20px;
+            }
+            
+            .phone-input-instruction {
+                font-size: 14px;
+            }
+            
+            .phone-input {
+                padding: 14px 18px;
+                font-size: 16px;
+            }
+            
+            .phone-input-btn {
+                padding: 14px 24px;
+                font-size: 16px;
+            }
+            
+            .submit-btn {
+                padding: 18px 32px;
+                font-size: 18px;
+            }
+        }
+        
+        /* For long answer lists - add scrollable container */
+        .answers-container {
+            max-height: 80vh;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        
+        .answers-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .answers-container::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 10px;
+        }
+        
+        .answers-container::-webkit-scrollbar-thumb {
+            background: var(--gradient-primary);
+            border-radius: 10px;
+        }
+        
+        .answers-container::-webkit-scrollbar-thumb:hover {
+            background: var(--gradient-secondary);
+        }
+        
+        @media (max-width: 768px) {
+            .answers-container {
+                max-height: 70vh;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .answers-container {
+                max-height: 65vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+                            <img src="/logo.png" alt="SekerApp Logo" style="height: 40px; width: auto;">
+            SekerApp
+        </div>
+        <a href="/" class="home-btn">
+            <i class="fas fa-home"></i>
+            <span>לעמוד הבית</span>
+        </a>
+    </header>
+
+    <main class="main-content">
+        <div id="surveyContainer" class="survey-container">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>טוען סקר...</p>
+            </div>
+        </div>
+    </main>
+
+    <script src="survey-15-tracker.js"></script>
+    <script>
+        // Get survey ID from URL
+        const surveyId = window.location.pathname.split('/').pop();
+
+        // Load survey data
+        async function loadSurvey() {
+            try {
+                const response = await fetch(`/api/surveys/${surveyId}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Always require phone if not already provided in URL
+                    if (!getUrlParameter('mp_phone')) {
+                        displayPhoneInput(data.survey);
+                    } else {
+                        displaySurvey(data.survey);
+                    }
+                } else {
+                    showError(data.error || 'לא ניתן לטעון את הסקר');
+                }
+            } catch (error) {
+                console.error('Error loading survey:', error);
+                showError('שגיאה בטעינת הסקר');
+            }
+        }
+
+        // Display survey
+        function displaySurvey(survey) {
+            // Debug: Log survey data structure
+            console.log('Survey data received:', survey);
+            console.log('Survey answers:', survey.answers);
+            if (survey.answers && Array.isArray(survey.answers)) {
+                survey.answers.forEach((answer, index) => {
+                    console.log(`Answer ${index}:`, answer, 'Type:', typeof answer);
+                });
+            }
+            
+            // Apply background color if specified
+            if (survey.backgroundColor && survey.backgroundColor !== 'default') {
+                applySurveyBackgroundColor(survey.backgroundColor);
+            }
+            
+            // Store current survey for navigation
+            window.currentSurvey = survey;
+            
+            const container = document.getElementById('surveyContainer');
+            
+            if (survey.isMultiQuestion) {
+                // Multi-question survey
+                displayMultiQuestionSurvey(survey);
+            } else {
+                // Single question survey (backward compatibility)
+                displaySingleQuestionSurvey(survey);
+            }
+        }
+        
+        // Apply survey background color
+        function applySurveyBackgroundColor(backgroundColor) {
+            const body = document.body;
+            
+            // Remove existing background color classes
+            body.classList.remove('bg-default', 'bg-blue', 'bg-green', 'bg-purple', 'bg-orange', 'bg-pink', 'bg-teal', 'bg-red');
+            
+            // Add new background color class
+            body.classList.add(`bg-${backgroundColor}`);
+            
+            console.log(`Applied background color: ${backgroundColor}`);
+        }
+        
+        // Display single question survey
+        function displaySingleQuestionSurvey(survey) {
+            const container = document.getElementById('surveyContainer');
+            
+            // Check if survey allows multiple selections
+            const allowMultiple = survey.allowMultiple === true || surveyId === '20';
+            const maxSelections = survey.maxSelections || (surveyId === '20' ? 12 : null);
+            
+            // Format question text with line breaks
+            let questionText = survey.question || '';
+            if (questionText.includes('\\n')) {
+                questionText = questionText.split('\\n').join('<br>');
+            } else if (questionText.includes('\n')) {
+                questionText = questionText.split('\n').map((line, i) => {
+                    if (i === 0) return line;
+                    return `<span style="font-size: 0.9em; color: #6366f1; font-weight: 600;">${line}</span>`;
+                }).join('<br>');
+            }
+            
+            container.innerHTML = `
+                <div class="survey-header">
+                    <h1 class="survey-title">${survey.title}</h1>
+                    ${survey.description ? `<p class="survey-description">${survey.description}</p>` : ''}
+                    <span class="survey-category">${survey.category}</span>
+                </div>
+                
+                ${survey.imageUrl ? `<div class="survey-image-container"><img src="${survey.imageUrl}" alt="תמונת הסקר" class="survey-image"></div>` : ''}
+                
+                <h2 class="survey-question">${questionText}</h2>
+                ${surveyId === '20' ? `<p style="text-align: center; margin-top: -20px; margin-bottom: 30px; font-size: 13px; color: #64748b; font-weight: 400;">
+                    סדר המועמדים לפי סדר ה א,ב
+                </p>` : ''}
+                ${allowMultiple && maxSelections ? `<div class="selection-limit" style="text-align: center; margin: 16px 0; color: #6366f1; font-weight: 600; font-size: 18px;">
+                    <i class="fas fa-info-circle"></i> ניתן לבחור עד ${maxSelections} מועמדים
+                </div>` : ''}
+                
+                <div class="answers-container">
+                    ${survey.answers.map((answer, index) => {
+                        let answerText = '';
+                        if (typeof answer === 'object' && answer !== null) {
+                            answerText = answer.text || answer.answer || JSON.stringify(answer);
+                        } else {
+                            answerText = String(answer || '');
+                        }
+                        return `
+                            <div class="answer-option" data-answer="${index}" ${allowMultiple ? 'data-allow-multiple="true"' : ''}>
+                                <div class="answer-text">${answerText}</div>
+                                ${allowMultiple ? '<div class="checkbox-indicator"></div>' : ''}
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+                
+                <div id="selectionCounter" style="text-align: center; margin: 20px 0; font-weight: 600; color: #6366f1; ${allowMultiple && maxSelections ? '' : 'display: none;'}">
+                    נבחרו <span id="selectedCount">0</span> מתוך ${maxSelections} מועמדים
+                </div>
+                
+                <button class="submit-btn" id="submitBtn" disabled>
+                    שלח תשובה
+                </button>
+                
+                <div style="text-align: center; margin-top: 20px;">
+                    <a href="https://bit.ly/47Drmnw" target="_blank" style="font-size: 12px; color: #6366f1; text-decoration: none; transition: color 0.3s ease; display: inline-block; opacity: 0.8;">
+                        להזמנת סקרים מקצועיים מתקדמים
+                    </a>
+                </div>
+                
+                <style>
+                    a[href="https://bit.ly/47Drmnw"]:hover {
+                        color: #8b5cf6 !important;
+                        text-decoration: underline !important;
+                        opacity: 1 !important;
+                    }
+                </style>
+            `;
+            
+            // Add event listeners
+            setupAnswerSelection(allowMultiple, maxSelections);
+        }
+        
+        // Display multi-question survey
+        function displayMultiQuestionSurvey(survey) {
+            const container = document.getElementById('surveyContainer');
+            
+            container.innerHTML = `
+                <div id="surveyHeader" style="display: block;">
+                    <div class="survey-header">
+                        <h1 class="survey-title">${survey.title}</h1>
+                        ${survey.description ? `<p class="survey-description">${survey.description}</p>` : ''}
+                        <span class="survey-category">${survey.category}</span>
+                    </div>
+                    
+                    ${survey.imageUrl ? `<div class="survey-image-container"><img src="${survey.imageUrl}" alt="תמונת הסקר" class="survey-image"></div>` : ''}
+                </div>
+                
+                <div id="multiQuestionContainer">
+                    <!-- Questions will be displayed here -->
+                </div>
+            `;
+            
+            // Initialize question tracking
+            window.currentQuestionIndex = 0;
+            window.surveyAnswers = [];
+            
+            // Display first question
+            displayQuestion(survey, 0);
+        }
+        
+        // Display a specific question in multi-question survey
+        function displayQuestion(survey, questionIndex) {
+            const container = document.getElementById('multiQuestionContainer');
+            const question = survey.questions[questionIndex];
+            const isLastQuestion = questionIndex === survey.questions.length - 1;
+            
+            // Hide header and image for questions after the first one
+            const surveyHeader = document.getElementById('surveyHeader');
+            if (surveyHeader) {
+                if (questionIndex === 0) {
+                    surveyHeader.style.display = 'block';
+                } else {
+                    surveyHeader.style.display = 'none';
+                }
+            }
+            
+            // Update current question index
+            window.currentQuestionIndex = questionIndex;
+            
+            container.innerHTML = `
+                <div class="question-container">
+                    <div class="question-progress">
+                        <span class="progress-text">שאלה ${questionIndex + 1} מתוך ${survey.questions.length}</span>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${((questionIndex + 1) / survey.questions.length) * 100}%"></div>
+                        </div>
+                    </div>
+                    
+                    <h2 class="survey-question">${question.questionText}</h2>
+                    
+                    <div class="answers-container">
+                        ${question.answers.map((answer, index) => {
+                            let answerText = '';
+                            if (typeof answer === 'object' && answer !== null) {
+                                answerText = answer.text || answer.answer || JSON.stringify(answer);
+                            } else {
+                                answerText = String(answer || '');
+                            }
+                            return `
+                                <div class="answer-option" data-question="${questionIndex}" data-answer="${index}" ${question.allowMultiple ? 'data-allow-multiple="true"' : ''}>
+                                    <div class="answer-text">${answerText}</div>
+                                    ${question.allowMultiple ? '<div class="checkbox-indicator"></div>' : ''}
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                    
+                    <div class="question-navigation">
+                        ${questionIndex > 0 ? `<button class="nav-btn prev-btn" onclick="previousQuestion(${survey.id}, ${questionIndex})">הקודם</button>` : ''}
+                        <button class="nav-btn next-btn" id="nextBtn" disabled>
+                            ${isLastQuestion ? 'סיימתי' : 'הבא'}
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // Scroll to top of the page for better UX
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            // Add event listeners for this question
+            setupMultiQuestionAnswerSelection(survey, questionIndex);
+        }
+
+        // Setup answer selection for single question surveys
+        function setupAnswerSelection(allowMultiple = false, maxSelections = null) {
+            const answerOptions = document.querySelectorAll('.answer-option');
+            const submitBtn = document.getElementById('submitBtn');
+            const selectionCounter = document.getElementById('selectionCounter');
+            const selectedCountSpan = document.getElementById('selectedCount');
+            let selectedAnswers = [];
+            
+            answerOptions.forEach((option, index) => {
+                option.addEventListener('click', function() {
+                    const answerIndex = parseInt(this.dataset.answer);
+                    
+                    if (allowMultiple) {
+                        // Multiple selection mode
+                        if (this.classList.contains('selected')) {
+                            // Deselect
+                            this.classList.remove('selected');
+                            selectedAnswers = selectedAnswers.filter(a => a !== answerIndex);
+                        } else {
+                            // Check if max selections reached
+                            if (maxSelections && selectedAnswers.length >= maxSelections) {
+                                alert(`ניתן לבחור עד ${maxSelections} מועמדים בלבד`);
+                                return;
+                            }
+                            // Select
+                            this.classList.add('selected');
+                            selectedAnswers.push(answerIndex);
+                        }
+                        
+                        // Update selection counter
+                        if (selectionCounter && selectedCountSpan) {
+                            selectedCountSpan.textContent = selectedAnswers.length;
+                            if (maxSelections && selectedAnswers.length >= maxSelections) {
+                                selectedCountSpan.style.color = '#ef4444';
+                            } else {
+                                selectedCountSpan.style.color = '#6366f1';
+                            }
+                        }
+                    } else {
+                        // Single selection mode
+                        answerOptions.forEach(opt => opt.classList.remove('selected'));
+                        this.classList.add('selected');
+                        selectedAnswers = [answerIndex];
+                    }
+                    
+                    // Store the selected answer index for survey 15
+                    if (surveyId === '15') {
+                        sessionStorage.setItem('selectedAnswerIndex', selectedAnswers[0]?.toString() || '');
+                    }
+                    
+                    // Enable submit button if at least one answer is selected
+                    submitBtn.disabled = selectedAnswers.length === 0;
+                });
+            });
+            
+            // Submit answer
+            submitBtn.addEventListener('click', async function() {
+                if (selectedAnswers.length === 0) {
+                    showError('אנא בחר תשובה');
+                    return;
+                }
+                
+                try {
+                    // For multiple selection, join answer indices with comma
+                    // The submitAnswer function will convert them to answer texts with ||| separator
+                    const answerToSubmit = allowMultiple && selectedAnswers.length > 1 
+                        ? selectedAnswers.join(',') 
+                        : selectedAnswers[0].toString();
+                    await submitAnswer(answerToSubmit);
+                } catch (error) {
+                    console.error('Error calling submitAnswer:', error);
+                    showError('שגיאה בשליחת התשובה');
+                }
+            });
+        }
+        
+        // Setup answer selection for multi-question surveys
+        function setupMultiQuestionAnswerSelection(survey, questionIndex) {
+            const answerOptions = document.querySelectorAll('.answer-option');
+            const nextBtn = document.getElementById('nextBtn');
+            let selectedAnswers = [];
+            const question = survey.questions[questionIndex];
+            const allowMultiple = question.allowMultiple || false;
+            
+
+            
+            answerOptions.forEach((option, index) => {
+                option.addEventListener('click', function() {
+                    const answerIndex = parseInt(this.dataset.answer);
+
+                    
+                    if (allowMultiple) {
+                        // Multiple selection mode
+                        if (this.classList.contains('selected')) {
+                            // Deselect
+                            this.classList.remove('selected');
+                            selectedAnswers = selectedAnswers.filter(a => a !== answerIndex);
+
+                        } else {
+                            // Select
+                            this.classList.add('selected');
+                            selectedAnswers.push(answerIndex);
+
+                        }
+                    } else {
+                        // Single selection mode
+                        answerOptions.forEach(opt => opt.classList.remove('selected'));
+                        this.classList.add('selected');
+                        selectedAnswers = [answerIndex];
+
+                    }
+                    
+                    // Enable next button if at least one answer is selected
+                    nextBtn.disabled = selectedAnswers.length === 0;
+                });
+            });
+            
+            // Handle next/previous navigation
+            nextBtn.addEventListener('click', async function() {
+                if (selectedAnswers.length === 0) {
+                    showError('אנא בחר תשובה');
+                    return;
+                }
+                
+                // Store the answer for this question
+                if (!window.surveyAnswers) {
+                    window.surveyAnswers = [];
+                }
+                
+                // Store answer indices (not text)
+                window.surveyAnswers[questionIndex] = selectedAnswers;
+                
+                if (questionIndex === survey.questions.length - 1) {
+                    // Last question - submit all answers
+                    try {
+                        await submitMultiQuestionAnswers(survey);
+                    } catch (error) {
+                        console.error('Error calling submitMultiQuestionAnswers:', error);
+                        showError('שגיאה בשליחת התשובות');
+                    }
+                } else {
+                    // Go to next question
+                    window.currentQuestionIndex = questionIndex + 1;
+                    displayQuestion(survey, window.currentQuestionIndex);
+                    
+                    // Scroll to top for better UX
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            });
+        }
+        
+        // Navigate to previous question
+        function previousQuestion(surveyId, currentQuestionIndex) {
+            if (currentQuestionIndex > 0) {
+                window.currentQuestionIndex = currentQuestionIndex - 1;
+                displayQuestion(window.currentSurvey, window.currentQuestionIndex);
+                
+                // Show header and image again if going back to first question
+                if (window.currentQuestionIndex === 0) {
+                    const surveyHeader = document.getElementById('surveyHeader');
+                    if (surveyHeader) {
+                        surveyHeader.style.display = 'block';
+                    }
+                }
+                
+                // Scroll to top for better UX
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+        
+        // Submit answers for multi-question survey
+        async function submitMultiQuestionAnswers(survey) {
+            try {
+                const nextBtn = document.getElementById('nextBtn');
+                nextBtn.disabled = true;
+                nextBtn.textContent = 'שולח...';
+                
+                // Get all answers
+                const answers = window.surveyAnswers || [];
+                
+                // Validate that all questions were answered
+                if (answers.length !== survey.questions.length) {
+                    showError('יש לענות על כל השאלות בסקר');
+                    nextBtn.disabled = false;
+                    nextBtn.textContent = 'סיימתי';
+                    return;
+                }
+                
+                // Get the actual answer texts from the survey data
+                const surveyResponse = await fetch(`/api/surveys/${surveyId}`);
+                const surveyData = await surveyResponse.json();
+                
+                if (!surveyData.success) {
+                    throw new Error('לא ניתן לטעון את הסקר');
+                }
+                
+                const currentSurvey = surveyData.survey;
+                const answerTexts = answers.map((answerIndices, questionIndex) => {
+                    const question = currentSurvey.questions[questionIndex];
+                    
+                    // Handle multiple answers (array of indices)
+                    if (Array.isArray(answerIndices) && answerIndices.length > 1) {
+                        return answerIndices.map(answerIndex => {
+                            const selectedAnswer = question.answers[answerIndex];
+                            return getAnswerText(selectedAnswer);
+                        }).join('|||');
+                    } else {
+                        // Single answer (array with one element or single index)
+                        const answerIndex = Array.isArray(answerIndices) ? answerIndices[0] : answerIndices;
+                        const selectedAnswer = question.answers[answerIndex];
+                        return getAnswerText(selectedAnswer);
+                    }
+                });
+                
+                // Track answer submission attempt
+                gtag('event', 'survey_answer_submit', {
+                    'survey_id': surveyId,
+                    'event_category': 'survey_interaction',
+                    'event_label': 'multi_question_answer_submit_attempt',
+                    'question_count': survey.questions.length
+                });
+                
+                const response = await fetch(`/api/surveys/${surveyId}/answer`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        answers: answerTexts,
+                        surveyUrl: window.location.href // Send the full URL including query parameters
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Track successful answer submission
+                    gtag('event', 'survey_answer_success', {
+                        'survey_id': surveyId,
+                        'event_category': 'survey_interaction',
+                        'event_label': 'multi_question_answer_submit_success',
+                        'question_count': survey.questions.length
+                    });
+                    
+                    showSuccess();
+                } else {
+                    showError(data.error || 'לא ניתן לשלוח את התשובות');
+                    nextBtn.disabled = false;
+                    nextBtn.textContent = 'סיימתי';
+                }
+            } catch (error) {
+                console.error('Error submitting multi-question answers:', error);
+                
+                // Track error in answer submission
+                gtag('event', 'survey_answer_error', {
+                    'survey_id': surveyId,
+                    'event_category': 'survey_interaction',
+                    'event_label': 'multi_question_answer_submit_exception',
+                    'error_message': error.message || 'Network error'
+                });
+                
+                showError('שגיאה בשליחת התשובות');
+                nextBtn.disabled = false;
+                nextBtn.textContent = 'סיימתי';
+            }
+        }
+
+        // Submit answer
+        async function submitAnswer(answerIndex) {
+            try {
+                const submitBtn = document.getElementById('submitBtn');
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'שולח...';
+                
+                // Get the actual answer text from the survey data
+                const surveyResponse = await fetch(`/api/surveys/${surveyId}`);
+                const surveyData = await surveyResponse.json();
+                
+                if (!surveyData.success) {
+                    throw new Error('לא ניתן לטעון את הסקר');
+                }
+                
+                const survey = surveyData.survey;
+                
+                // Handle multiple answers (comma-separated)
+                let answerText;
+                const isMultipleSelection = typeof answerIndex === 'string' && answerIndex.includes(',');
+                
+                if (isMultipleSelection) {
+                    const answerIndices = answerIndex.split(',').map(idx => parseInt(idx.trim())).filter(idx => !isNaN(idx));
+                    // Use ||| separator for backend compatibility
+                    answerText = answerIndices.map(idx => {
+                        const selectedAnswer = survey.answers[idx];
+                        return getAnswerText(selectedAnswer);
+                    }).join('|||');
+                } else {
+                    // Single answer
+                    const idx = parseInt(answerIndex);
+                    const selectedAnswer = survey.answers[idx];
+                    answerText = getAnswerText(selectedAnswer);
+                }
+                
+                // Track answer submission attempt
+                gtag('event', 'survey_answer_submit', {
+                    'survey_id': surveyId,
+                    'event_category': 'survey_interaction',
+                    'event_label': 'answer_submit_attempt',
+                    'answer_value': answerText
+                });
+                const response = await fetch(`/api/surveys/${surveyId}/answer`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        answer: answerText,
+                        surveyUrl: window.location.href // Send the full URL including query parameters
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Track successful answer submission
+                    gtag('event', 'survey_answer_success', {
+                        'survey_id': surveyId,
+                        'event_category': 'survey_interaction',
+                        'event_label': 'answer_submit_success',
+                        'answer_value': answerText
+                    });
+                    
+                    // Update survey 15 statistics if this is survey 15
+                    if (surveyId === '15' && window.survey15Tracker) {
+                        const answerIndex = selectedAnswer.dataset.answer || selectedAnswer;
+                        
+                        // Get the full survey URL and other tracking data
+                        const surveyUrl = window.location.href; // Full URL including query parameters
+                        const userAgent = navigator.userAgent;
+                        
+                        await window.survey15Tracker.recordResponse(answerIndex, answerText, surveyUrl, userAgent);
+                    }
+                    
+                    showSuccess();
+                } else {
+                    showError(data.error || 'לא ניתן לשלוח את התשובה');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'שלח תשובה';
+                }
+            } catch (error) {
+                console.error('Error submitting answer:', error);
+                
+                // Track error in answer submission
+                gtag('event', 'survey_answer_error', {
+                    'survey_id': surveyId,
+                    'event_category': 'survey_interaction',
+                    'event_label': 'answer_submit_exception',
+                    'error_message': error.message || 'Network error'
+                });
+                
+                showError('שגיאה בשליחת התשובה');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'שלח תשובה';
+            }
+        }
+
+        // Show success message
+        async function showSuccess() {
+            const container = document.getElementById('surveyContainer');
+            
+            try {
+                // Check if this is survey 20 (primaries survey)
+                if (surveyId === '20') {
+                    // Special handling for primaries survey
+                    container.innerHTML = `
+                        <div class="success-message">
+                            <div class="success-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <h2 class="success-title">תודה על השתתפותך בסקר! הנך מועבר להצטרפות לקבוצת הליכוד</h2>
+                        </div>
+                    `;
+                    
+                    // Wait 500ms (half a second) then redirect
+                    setTimeout(() => {
+                        window.location.href = 'https://mix.shortl.live/r/3QsdA09K';
+                    }, 500);
+                    return;
+                }
+                
+                // Get survey data to check for custom thank you message
+                const surveyResponse = await fetch(`/api/surveys/${surveyId}`);
+                const surveyData = await surveyResponse.json();
+                
+                let thankYouTitle = 'תודה על התשובה שלך!';
+                let thankYouText = 'התשובה שלך נשמרה בהצלחה';
+                
+                if (surveyData.success && surveyData.survey.thankYouMessage) {
+                    // Use custom thank you message if available
+                    const customMessage = surveyData.survey.thankYouMessage;
+                    
+                    // Check if message contains URLs and convert them to clickable buttons
+                    const urlRegex = /(https?:\/\/[^\s]+)/g;
+                    const hasUrls = urlRegex.test(customMessage);
+                    
+                    if (customMessage.includes('\n')) {
+                        // Split by newlines if message contains multiple lines
+                        const lines = customMessage.split('\n');
+                        thankYouTitle = lines[0] || thankYouTitle;
+                        thankYouText = lines.slice(1).join('\n') || thankYouText;
+                    } else {
+                        // Single line message
+                        thankYouTitle = customMessage;
+                    }
+                    
+                    // If message contains URLs, we'll handle them specially in the HTML
+                    if (hasUrls) {
+                        thankYouText = customMessage;
+                    }
+                }
+                
+                // Process thank you message to convert URLs to buttons
+                let processedText = thankYouText;
+                let hasWhatsAppButton = false;
+                
+                if (thankYouText.includes('http')) {
+                    const urlRegex = /(https?:\/\/[^\s]+)/g;
+                    processedText = thankYouText.replace(urlRegex, (url) => {
+                        hasWhatsAppButton = true;
+                        const buttonText = url.includes('bit.ly/nitachon2') ? 'הצטרף לקבוצת הוואטסאפ של ניצחון ישראל' : 'הצטרף לקבוצת הוואטספ של ניצחון ישראל';
+                        return `<br><br><a href="${url}" target="_blank" class="whatsapp-button">
+                            <i class="fab fa-whatsapp"></i> ${buttonText}
+                        </a>`;
+                    });
+                }
+                
+                // Add WhatsApp button for survey 15 based on selected answer
+                if (!hasWhatsAppButton && surveyId === '15') {
+                    // Get the selected answer from localStorage or session
+                    const selectedAnswerIndex = sessionStorage.getItem('selectedAnswerIndex');
+                    let whatsappLink = 'https://bit.ly/nitzahon'; // Default link
+                    let buttonText = 'הצטרף לקבוצת הוואטספ של ניצחון ישראל';
+                    
+                    // If answer 2, 3, or 4 was selected (indexes 1, 2, 3)
+                    if (selectedAnswerIndex && ['1', '2', '3'].includes(selectedAnswerIndex)) {
+                        whatsappLink = 'https://bit.ly/nitachon2';
+                        buttonText = 'הצטרף לקבוצת הוואטספ של ניצחון ישראל';
+                    }
+                    
+                    processedText += `<br><br><a href="${whatsappLink}" target="_blank" class="whatsapp-button">
+                        <i class="fab fa-whatsapp"></i> ${buttonText}
+                    </a>`;
+                }
+                
+                container.innerHTML = `
+                    <div class="success-message">
+                        <div class="success-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <h2 class="success-title">${thankYouTitle}</h2>
+                        <div class="success-text">${processedText}</div>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Error loading custom thank you message:', error);
+                // Fallback to default message
+                container.innerHTML = `
+                    <div class="success-message">
+                        <div class="success-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <h2 class="success-title">תודה על התשובה שלך!</h2>
+                        <p class="success-text">התשובה שלך נשמרה בהצלחה</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Show error message
+        function showError(message) {
+            const container = document.getElementById('surveyContainer');
+            
+            container.innerHTML = `
+                <div class="error-message">
+                    <div class="error-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <h2 class="error-title">שגיאה</h2>
+                    <p class="error-text">${message}</p>
+                </div>
+            `;
+        }
+
+        // Get URL parameter
+        function getUrlParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        // Display phone input page
+        function displayPhoneInput(survey) {
+            const container = document.getElementById('surveyContainer');
+            
+            container.innerHTML = `
+                <div class="phone-input-container">
+                    <div class="phone-input-header">
+                        <h1 class="phone-input-title">
+                            ${surveyId === '15' ? 'סקר חשוב: ' + survey.title : survey.title}
+                        </h1>
+                        ${survey.description ? `<p class="phone-input-description">${survey.description}</p>` : ''}
+                        <span class="phone-input-category">${survey.category}</span>
+                        ${surveyId === '15' ? '<div class="survey-15-notice">סקר זה דורש הזנת מספר טלפון</div>' : ''}
+                    </div>
+                    
+                    ${survey.imageUrl ? `<div class="phone-input-image-container"><img src="${survey.imageUrl}" alt="תמונת הסקר" class="phone-input-image"></div>` : ''}
+                    
+                    <div class="phone-input-form">
+                        <h2 class="phone-input-question">${survey.question}</h2>
+                        <p class="phone-input-instruction">
+                            ${surveyId === '15' ? 
+                                'כדי להשתתף בסקר החשוב הזה, אנא הזן את מספר הטלפון שלך:' : 
+                                'כדי להשתתף בסקר, אנא הזן את מספר הטלפון שלך:'
+                            }
+                        </p>
+                        
+                        <div class="phone-input-field">
+                            <input type="tel" id="phoneInput" placeholder="הכנס מספר טלפון" class="phone-input">
+                            <small class="phone-input-help">
+                                ${surveyId === '15' ? 
+                                    'המספר יישמר לצורך מעקב אחרי התשובות שלך בסקר החשוב הזה' : 
+                                    'המספר יישמר לצורך מעקב אחרי התשובות שלך'
+                                }
+                            </small>
+                        </div>
+                        
+                        <button class="phone-input-btn" id="phoneSubmitBtn">
+                            ${surveyId === '15' ? 'המשך לסקר החשוב' : 'המשך לסקר'}
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // Add event listener for phone submission
+            const phoneSubmitBtn = document.getElementById('phoneSubmitBtn');
+            const phoneInput = document.getElementById('phoneInput');
+            
+            phoneSubmitBtn.addEventListener('click', function() {
+                const phone = phoneInput.value.trim();
+                
+                if (!phone) {
+                    alert('אנא הזן מספר טלפון');
+                    return;
+                }
+                
+                // Normalize phone number (remove spaces, dashes, etc.)
+                const normalizedPhone = phone.replace(/[\s\-\(\)]/g, '');
+                
+                // Add country code if not present (assume Israel +972)
+                let finalPhone = normalizedPhone;
+                if (normalizedPhone.startsWith('0')) {
+                    finalPhone = '972' + normalizedPhone.substring(1);
+                } else if (!normalizedPhone.startsWith('972')) {
+                    finalPhone = '972' + normalizedPhone;
+                }
+                
+                // Redirect to survey with phone parameter
+                const surveyUrl = new URL(window.location.href);
+                surveyUrl.searchParams.set('mp_phone', finalPhone);
+                window.location.href = surveyUrl.toString();
+            });
+            
+            // Allow Enter key to submit
+            phoneInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    phoneSubmitBtn.click();
+                }
+            });
+        }
+
+        // Helper function to get answer text
+        function getAnswerText(answer) {
+            if (typeof answer === 'object' && answer !== null && answer.text) {
+                return answer.text;
+            }
+            return answer || '';
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if tracker is loaded
+            setTimeout(() => {
+                if (window.survey15Tracker) {
+                    // Tracker loaded successfully
+                }
+            }, 2000);
+            
+            loadSurvey();
+        });
+    </script>
+</body>
+</html>

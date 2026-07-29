@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SekerApp - הפצת סקר ב-SMS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-50: #f0f9ff;
+            --primary-100: #e0f2fe;
+            --primary-200: #bae6fd;
+            --primary-300: #7dd3fc;
+            --primary-400: #38bdf8;
+            --primary-500: #0ea5e9;
+            --primary-600: #0284c7;
+            --primary-700: #0369a1;
+            --primary-800: #075985;
+            --primary-900: #0c4a6e;
+            
+            --purple-400: #a855f7;
+            --purple-500: #9333ea;
+            --purple-600: #7c3aed;
+            --purple-700: #6d28d9;
+            
+            --pink-400: #f472b6;
+            --pink-500: #ec4899;
+            --pink-600: #db2777;
+            
+            --emerald-400: #34d399;
+            --emerald-500: #10b981;
+            --emerald-600: #059669;
+            
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-400: #94a3b8;
+            --gray-500: #64748b;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --gray-900: #0f172a;
+            
+            --dark-bg: #020617;
+            --dark-surface: #0f172a;
+            --dark-card: #1e293b;
+            --dark-border: #334155;
+            
+            --red-400: #f87171;
+            --red-500: #ef4444;
+            --red-600: #dc2626;
+            
+            --glass-bg: rgba(255, 255, 255, 0.08);
+            --glass-border: rgba(255, 255, 255, 0.18);
+            --shadow-primary: 0 8px 32px rgba(0, 0, 0, 0.12);
+            --shadow-hover: 0 20px 60px rgba(0, 0, 0, 0.15);
+            --shadow-intense: 0 25px 80px rgba(0, 0, 0, 0.25);
+            
+            --border-radius: 16px;
+            --border-radius-lg: 24px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--dark-bg);
+            color: var(--gray-100);
+            line-height: 1.6;
+            min-height: 100vh;
+            direction: rtl;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-400);
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            color: var(--gray-400);
+        }
+
+        .survey-info {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .step-card {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: var(--transition);
+        }
+
+        .step-card:hover {
+            border-color: var(--primary-500);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .step-number {
+            background: var(--primary-500);
+            color: white;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-left: 1rem;
+        }
+
+        .step-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-400);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--gray-300);
+        }
+
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--dark-surface);
+            border: 1px solid var(--dark-border);
+            border-radius: 8px;
+            color: var(--gray-100);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--primary-500);
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: var(--primary-500);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-600);
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: var(--emerald-500);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: var(--emerald-600);
+            transform: translateY(-2px);
+        }
+
+        .btn-warning {
+            background: var(--pink-500);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: var(--pink-600);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: var(--gray-600);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-700);
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+
+        /* Recipient Method Selector Styles */
+        .recipient-method-selector {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 0.75rem;
+            background: var(--dark-surface);
+            border: 1px solid var(--dark-border);
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+
+        .radio-option:hover {
+            border-color: var(--primary-500);
+            background: var(--dark-card);
+        }
+
+        .radio-option input[type="radio"] {
+            margin-left: 0.75rem;
+            width: 1.2rem;
+            height: 1.2rem;
+            accent-color: var(--primary-500);
+        }
+
+        .radio-option input[type="radio"]:checked + .radio-custom {
+            background: var(--primary-500);
+        }
+
+        .recipient-section {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 8px;
+        }
+
+        .recipient-section:not(:first-child) {
+            margin-top: 1rem;
+        }
+
+        .summary-box {
+            background: var(--dark-surface);
+            border: 1px solid var(--dark-border);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .summary-item {
+            text-align: center;
+            padding: 1rem;
+            background: var(--dark-card);
+            border-radius: 8px;
+        }
+
+        .summary-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-400);
+        }
+
+        .summary-label {
+            font-size: 0.9rem;
+            color: var(--gray-400);
+            margin-top: 0.5rem;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
+        .modal-content {
+            background: var(--dark-card);
+            margin: 5% auto;
+            padding: 2rem;
+            border: 1px solid var(--dark-border);
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 600px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .close {
+            color: var(--gray-400);
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: var(--gray-100);
+        }
+
+        .preview-box {
+            background: var(--dark-surface);
+            border: 1px solid var(--dark-border);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-left: 0.5rem;
+        }
+
+        .status-active {
+            background: var(--emerald-500);
+        }
+
+        .status-pending {
+            background: var(--pink-500);
+        }
+
+        .status-error {
+            background: var(--red-500);
+        }
+
+        .back-button {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            z-index: 100;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .spinner {
+            border: 4px solid var(--dark-border);
+            border-top: 4px solid var(--primary-500);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--emerald-500);
+            color: var(--emerald-400);
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--red-500);
+            color: var(--red-400);
+        }
+
+        .alert-warning {
+            background: rgba(236, 72, 153, 0.1);
+            border: 1px solid var(--pink-500);
+            color: var(--pink-400);
+        }
+
+        .toggle-group {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .toggle {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--gray-600);
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--primary-500);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .schedule-input {
+            text-align: center;
+        }
+
+        .schedule-input input {
+            width: 100%;
+            padding: 0.5rem;
+            text-align: center;
+        }
+
+        .schedule-label {
+            font-size: 0.8rem;
+            color: var(--gray-400);
+            text-align: center;
+            margin-top: 0.5rem;
+        }
+
+        .auth-error {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: var(--dark-card);
+            border: 1px solid var(--red-500);
+            border-radius: var(--border-radius);
+            margin: 2rem;
+        }
+
+        .auth-error h2 {
+            color: var(--red-400);
+            margin-bottom: 1rem;
+        }
+
+        .auth-error p {
+            color: var(--gray-400);
+            margin-bottom: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .schedule-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Authentication Check Section -->
+        <div id="authCheck" style="display: none;">
+            <div class="auth-error">
+                <h2>🔒 גישה מוגבלת</h2>
+                <p>עליך להיות מחובר כסופר אדמין כדי לגשת לעמוד זה</p>
+                <a href="/s-admin.html" class="btn btn-primary">חזרה לדף התחברות</a>
+            </div>
+        </div>
+
+        <!-- Main Content Section -->
+        <div id="mainContent">
+            <a href="/s-admin.html" class="btn btn-secondary back-button">← חזרה</a>
+            
+            <div class="header">
+                <h1>הפצת סקר ב-SMS</h1>
+                <p>שלח סקר למספרי טלפון מרובים דרך מערכת Micropay</p>
+            </div>
+
+            <div class="survey-info" id="surveyInfo">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>טוען פרטי סקר...</p>
+                </div>
+            </div>
+
+            <!-- Step 1: Recipient Selection -->
+            <div class="step-card">
+                <div class="step-header">
+                    <div class="step-number">1</div>
+                    <div class="step-title">בחירת נמענים</div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">בחר שיטת שליחה:</label>
+                    <div class="recipient-method-selector">
+                        <label class="radio-option">
+                            <input type="radio" name="recipientMethod" value="bigquery" checked>
+                            <span class="radio-custom"></span>
+                            בחירה מרשימה מוגדרת
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="recipientMethod" value="csv">
+                            <span class="radio-custom"></span>
+                            העלאת קובץ CSV
+                        </label>
+                    </div>
+                </div>
+
+                <!-- CSV Upload Section -->
+                <div id="csvSection" class="recipient-section" style="display: none;">
+                    <div class="form-group">
+                        <label class="form-label">בחר קובץ CSV עם מספרי טלפון:</label>
+                        <input type="file" id="csvFile" accept=".csv" class="form-input">
+                        <small style="color: var(--gray-400); margin-top: 0.5rem; display: block;">
+                            הקובץ צריך להכיל מספרי טלפון בעמודה אחת או בכל שורה (מספר ראשון בכל שורה)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BigQuery List Selection Section -->
+                <div id="bigquerySection" class="recipient-section">
+                    <div class="form-group">
+                        <label class="form-label">בחר רשימת נמענים:</label>
+                        <select id="recipientList" class="form-input">
+                            <option value="">טוען רשימות...</option>
+                        </select>
+                        <small style="color: var(--gray-400); margin-top: 0.5rem; display: block;">
+                            בחר רשימה מהרשימות המוגדרות במערכת
+                        </small>
+                    </div>
+                    
+                    <div id="listSummary" style="display: none;">
+                        <h4>פרטי הרשימה:</h4>
+                        <div class="summary-grid">
+                            <div class="summary-item">
+                                <div class="summary-number" id="listCount">0</div>
+                                <div class="summary-label">מספר נמענים בקובץ</div>
+                            </div>
+                            <div class="summary-item">
+                                <div class="summary-number" id="listValidPhones">0</div>
+                                <div class="summary-label">טלפונים שנטענו מ-BigQuery</div>
+                            </div>
+                            <div class="summary-item">
+                                <div class="summary-number" id="listLoadingStatus">-</div>
+                                <div class="summary-label">סטטוס טעינה</div>
+                            </div>
+                            <div class="summary-item">
+                                <div class="summary-number" id="tempFileStatus">-</div>
+                                <div class="summary-label">סטטוס קובץ זמני</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="csvSummary" style="display: none;">
+                    <h4>סיכום הקובץ:</h4>
+                    <div class="summary-grid">
+                        <div class="summary-item">
+                            <div class="summary-number" id="totalRows">0</div>
+                            <div class="summary-label">סה"כ שורות</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-number" id="validPhones">0</div>
+                            <div class="summary-label">טלפונים תקינים</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-number" id="duplicatesRemoved">0</div>
+                            <div class="summary-label">כפילויות הוסרו</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-number" id="blacklistedRemoved">0</div>
+                            <div class="summary-label">רשימה שחורה הוסרה</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-number" id="invalidPhones">0</div>
+                            <div class="summary-label">טלפונים לא תקינים</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-number" id="csvFileStatus">✓ נטען</div>
+                            <div class="summary-label">סטטוס קובץ</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Blacklist Management -->
+            <div class="step-card">
+                <div class="step-header">
+                    <div class="step-number">2</div>
+                    <div class="step-title">ניהול רשימה שחורה</div>
+                </div>
+                
+                <button class="btn btn-warning" onclick="openBlacklistModal()">ניהול רשימה שחורה</button>
+                
+                <div id="blacklistSummary" style="display: none;">
+                    <h4>סיכום רשימה שחורה:</h4>
+                    <div class="summary-grid">
+                        <div class="summary-item">
+                            <div class="summary-number" id="totalAfter">0</div>
+                            <div class="summary-label">סה"כ אחרי עדכון</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-number" id="addedNew">0</div>
+                            <div class="summary-label">נוספו חדשים</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-number" id="skippedExisting">0</div>
+                            <div class="summary-label">דולגו קיימים</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Message Composition -->
+            <div class="step-card">
+                <div class="step-header">
+                    <div class="step-number">3</div>
+                    <div class="step-title">ניסוח ההודעה</div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">נוסח ההודעה:</label>
+                    <textarea id="messageTemplate" class="form-textarea" placeholder="לדוגמה: שלום! לחצו על הלינק הבא כדי להשתתף בסקר: {{survey_link}}"></textarea>
+                    <button class="btn btn-secondary btn-small" onclick="insertSurveyLink()" style="margin-top: 0.5rem;">לינק לסקר</button>
+                </div>
+
+                <div id="messagePreview" style="display: none;">
+                    <h4>תצוגה מקדימה:</h4>
+                    <div class="preview-box" id="previewText"></div>
+                </div>
+            </div>
+
+            <!-- Step 4: Sending Options -->
+            <div class="step-card">
+                <div class="step-header">
+                    <div class="step-number">4</div>
+                    <div class="step-title">אפשרויות שליחה</div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">משלח (From):</label>
+                    <input type="text" id="fromField" class="form-input" value="0509899528" placeholder="מספר/שם שולח מאומת">
+                </div>
+
+
+
+                <div class="toggle-group">
+                    <label class="toggle">
+                        <input type="checkbox" id="validateRecipients" checked>
+                        <span class="slider"></span>
+                    </label>
+                    <span>ודא כמות נמענים (validate)</span>
+                </div>
+            </div>
+
+            <!-- Step 5: Sending -->
+            <div class="step-card">
+                <div class="step-header">
+                    <div class="step-number">5</div>
+                    <div class="step-title">שליחה</div>
+                </div>
+                
+                <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                    <button class="btn btn-success" onclick="sendSMS()" id="sendButton">שלח עכשיו</button>
+                    <button class="btn btn-warning" onclick="stopSMS()" id="stopButton" style="display: none;">עצור שליחה</button>
+                </div>
+                
+                <!-- Real-time sending progress -->
+                <div id="sendingProgress" style="display: none;">
+                    <h4>התקדמות השליחה:</h4>
+                    <div class="summary-grid">
+                        <div class="summary-item">
+                            <div class="summary-number" id="progressTotal">0</div>
+                            <div class="summary-label">סה"כ נמענים</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-number" id="progressSent">0</div>
+                            <div class="summary-label">נשלחו</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-number" id="progressRemaining">0</div>
+                            <div class="summary-label">נותרו</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-number" id="progressSuccess">0</div>
+                            <div class="summary-label">הצלחות</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-number" id="progressErrors">0</div>
+                            <div class="summary-label">שגיאות</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-number" id="progressSpeed">0</div>
+                            <div class="summary-label">SMS/דקה</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Progress bar -->
+                    <div style="margin: 1rem 0;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span>התקדמות</span>
+                            <span id="progressPercentage">0%</span>
+                        </div>
+                        <div style="width: 100%; height: 20px; background: var(--dark-surface); border-radius: 10px; overflow: hidden;">
+                            <div id="progressBar" style="height: 100%; background: var(--primary-500); width: 0%; transition: width 0.3s ease;"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Last update time -->
+                    <div style="text-align: center; color: var(--gray-400); font-size: 0.9rem;">
+                        <span>עדכון אחרון: </span>
+                        <span id="lastUpdateTime">-</span>
+                    </div>
+                </div>
+                
+                <div id="sendingResult" style="display: none;">
+                    <h4>תוצאת השליחה:</h4>
+                    <div class="summary-grid">
+                        <div class="summary-item">
+                            <div class="summary-number" id="statusResult">-</div>
+                            <div class="summary-label">סטטוס</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-number" id="campaignId">-</div>
+                            <div class="summary-label">מזהה קמפיין</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-number" id="acceptedCount">-</div>
+                            <div class="summary-label">נשלחו</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-number" id="skippedCount">-</div>
+                            <div class="summary-label">דולגו</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 6: Status -->
+            <div class="step-card">
+                <div class="step-header">
+                    <div class="step-number">6</div>
+                    <div class="step-title">סטטוס ועקיבה</div>
+                </div>
+                
+                <div id="campaignStatus" style="display: none;">
+                    <h4>סטטוס קמפיין:</h4>
+                    <div class="summary-grid">
+                        <div class="summary-item">
+                            <div class="summary-number" id="totalRecipients">0</div>
+                            <div class="summary-label">סה"כ נמענים</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-number" id="sentCount">0</div>
+                            <div class="summary-label">נשלחו</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-number" id="remainingCount">0</div>
+                            <div class="summary-label">נותרו</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-number" id="lastUpdate">-</div>
+                            <div class="summary-label">עדכון אחרון</div>
+                        </div>
+                    </div>
+                    
+                    <div id="statusLogs" style="margin-top: 1rem;">
+                        <h5>לוג עדכונים:</h5>
+                        <div id="logsContainer"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Blacklist Modal -->
+    <div id="blacklistModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>ניהול רשימה שחורה</h3>
+                <span class="close" onclick="closeBlacklistModal()">&times;</span>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">מספרי טלפון (כל טלפון בשורה):</label>
+                <textarea id="blacklistText" class="form-textarea" placeholder="0501234567&#10;0509876543&#10;972524200111"></textarea>
+            </div>
+            
+            <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                <button class="btn btn-secondary" onclick="clearBlacklist()">נקה</button>
+                <button class="btn btn-success" onclick="saveBlacklist()">שמור</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/send_sms.js?v=20250818_15"></script>
+    <script>
+        // Super Admin Authentication Check
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, checking super admin auth...');
+            // Add a small delay to ensure all elements are loaded
+            setTimeout(() => {
+                checkSuperAdminAuth();
+            }, 100);
+        });
+
+        async function checkSuperAdminAuth() {
+            try {
+                console.log('Checking super admin auth...');
+                console.log('Cookies:', document.cookie);
+                
+                // First check server session
+                const response = await fetch('/api/check_super_admin', {
+                    method: 'GET',
+                    credentials: 'include',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                console.log('Response status:', response.status);
+                console.log('Response headers:', response.headers);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('Response data:', data);
+                    
+                    if (data.is_super_admin) {
+                        console.log('User is super admin from server, showing main content');
+                        // Show main content
+                        document.getElementById('authCheck').style.display = 'none';
+                        document.getElementById('mainContent').style.display = 'block';
+                        // Initialize the page
+                        initializePage();
+                        return;
+                    } else {
+                        console.log('User is not super admin, showing auth error');
+                        // Show auth error
+                        document.getElementById('authCheck').style.display = 'block';
+                        document.getElementById('mainContent').style.display = 'none';
+                    }
+                } else {
+                    console.log('Response not ok, showing auth error');
+                    // Try to get error details
+                    try {
+                        const errorData = await response.json();
+                        console.log('Error response:', errorData);
+                    } catch (e) {
+                        console.log('Could not parse error response');
+                    }
+                    // Show auth error
+                    document.getElementById('authCheck').style.display = 'block';
+                    document.getElementById('mainContent').style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error in checkSuperAdminAuth:', error);
+                // Show auth error
+                document.getElementById('authCheck').style.display = 'block';
+                document.getElementById('mainContent').style.display = 'none';
+            }
+        }
+
+        function initializePage() {
+            console.log('Initializing page...');
+            // Initialize the page functionality here
+            // This will be called only after successful super admin authentication
+            try {
+                // Create the SMS system instance after auth check
+                if (typeof SMSSystem !== 'undefined') {
+                    smsSystem = new SMSSystem();
+                    // Initialize the system to load data
+                    smsSystem.init();
+                } else {
+                    console.error('SMSSystem class not found');
+                    // Show error message to user
+                    const surveyInfo = document.getElementById('surveyInfo');
+                    if (surveyInfo) {
+                        surveyInfo.innerHTML = `
+                            <div class="alert alert-error">
+                                <h3>שגיאה בטעינת המערכת</h3>
+                                <p>לא ניתן לטעון את מערכת ה-SMS. אנא רענן את הדף או חזור לדף הראשי.</p>
+                                <a href="/s-admin.html" class="btn btn-primary">חזרה לדף הראשי</a>
+                            </div>
+                        `;
+                    }
+                }
+            } catch (error) {
+                console.error('Error initializing SMS system:', error);
+                // Show error message to user
+                const surveyInfo = document.getElementById('surveyInfo');
+                if (surveyInfo) {
+                    surveyInfo.innerHTML = `
+                        <div class="alert alert-error">
+                            <h3>שגיאה בטעינת המערכת</h3>
+                            <p>שגיאה: ${error.message}</p>
+                            <a href="/s-admin.html" class="btn btn-primary">חזרה לדף הראשי</a>
+                        </div>
+                    `;
+                }
+            }
+        }
+    </script>
+</body>
+</html>
