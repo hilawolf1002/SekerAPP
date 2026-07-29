@@ -303,10 +303,14 @@ passport.deserializeUser((userId, done) => {
 });
 
 // Google OAuth Strategy
+if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
+    throw new Error('GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET must be configured');
+}
+
 passport.use(new GoogleStrategy({
-    clientID: process.env.GOOGLE_CLIENT_ID || '279303819452-4oclcf2fqjvdkbumt44oih2uqcvq4e18.apps.googleusercontent.com',
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET || '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',
-            callbackURL: `${process.env.BASE_URL || 'https://sekerapp.online'}/auth/google/callback`
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: `${process.env.BASE_URL || 'https://sekerapp.online'}/auth/google/callback`
 }, async (accessToken, refreshToken, profile, done) => {
     try {
         // Create or find user from Google profile
