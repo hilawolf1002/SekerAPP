@@ -1,5 +1,4 @@
-# Railway — שירות אחד: API + React + Postgres נפרד
-# Root Directory = שורש הריפו
+# Railway — שירות אחד: API + React (+ Postgres נפרד)
 
 [build]
 builder = "NIXPACKS"
@@ -7,7 +6,9 @@ buildCommand = "npm run railway:build"
 
 [deploy]
 startCommand = "npm run railway:start"
-healthcheckPath = "/health"
-healthcheckTimeout = 120
+# Healthcheck מושבת זמנית כדי לראות לוגים אם חסרים משתנים.
+# אחרי שהאתר עולה – אפשר להחזיר:
+# healthcheckPath = "/health"
+# healthcheckTimeout = 120
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 5
